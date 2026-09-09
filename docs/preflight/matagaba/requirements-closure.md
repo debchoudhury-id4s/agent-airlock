@@ -2,21 +2,15 @@
 
 ## Problems
 
-1. **Safe steps that add up to an unsafe run.** The agent reads a maintenance ticket, reads a site load report, summarises both, and posts the summary to a Teams channel. Every step passed its own check. The chain moved capacity data into a channel that should never have seen it. No single action was wrong, so no single check fires.
-   *Not #1: the tools were named and permitted. The sequence was never evaluated.*
-2. **Rules that outlive the system they name.** A rule blocks writes to an internal tool. The tool is decommissioned and its replacement ships under a new name. The rule still passes review, still loads at start, and now protects nothing while everyone assumes it does.
-   *Not #5: the contract and the rules agree with each other. Both are wrong about the world.*
-3. **Read is treated as one thing.** The contract allows read. In practice that covers reading a local repo and reading production telemetry for a live site. Nothing names the environment, tenant, or site, so a permission written as narrow is enforced as broad.
-   *Not #1: the tool is named. What the tool may be pointed at is not.*
-4. **No way to stop everything at once.** During an incident someone asks to halt every agent while the cause is found. There is no switch. The options are revoking credentials one at a time or asking each team to stop its own run.
+1. **No way to stop everything at once.** During an incident someone asks to halt every agent while the cause is found. There is no switch. The options are revoking credentials one at a time or asking each team to stop its own run.
    *No existing item covers the incident case. Every current control is per-run and decided before the run starts.*
-5. **A data boundary nobody reads.** The rule says never send sensitive information outside the company. Nothing inspects the content of an outbound action, so whether a draft carrying a site diagram counts is the agent's own judgement. Two runs, two answers.
+2. **A data boundary nobody reads.** The rule says never send sensitive information outside the company. Nothing inspects the content of an outbound action, so whether a draft carrying a site diagram counts is the agent's own judgement. Two runs, two answers.
    *Not #2: the problem is not where the rule lives. Move it to a rules file and it still cannot be applied, because no check reads the payload.*
-6. **One domain proven, the rest assumed.** The prototype proves a local coding flow. Operations, company search, external messages, and finance are assumed to work the same way. Nobody has run a contract against a maintenance ticket or an outbound comms draft to find out whether the vocabulary even fits.
+3. **One domain proven, the rest assumed.** The prototype proves a local coding flow. Operations, company search, external messages, and finance are assumed to work the same way. Nobody has run a contract against a maintenance ticket or an outbound comms draft to find out whether the vocabulary even fits.
    *A coverage gap rather than a control gap. It is the reason the other items here surfaced late.*
-7. **Delegation with no contract.** Agent A is scoped to read-only investigation and hands a subtask to Agent B. Agent B loads its own rules, which allow a write. The user approved one scope and got two.
+4. **Delegation with no contract.** Agent A is scoped to read-only investigation and hands a subtask to Agent B. Agent B loads its own rules, which allow a write. The user approved one scope and got two.
    *Not #1 or #2: both agents have contracts and both load a rules file. Neither inherits the other's limits.*
-8. **A log is not an audit.** A reviewer asks for evidence that a blocked action was blocked. What exists is a console transcript in a session that has since ended. Nothing is exported, timestamped as a record, or retained.
+5. **A log is not an audit.** A reviewer asks for evidence that a blocked action was blocked. What exists is a console transcript in a session that has since ended. Nothing is exported, timestamped as a record, or retained.
    *Adjacent to #4, and downstream of it. #4 is a log that does not say why. This is a log nobody can produce a week later, however good it was on screen.*
 
 ## Capabilities
