@@ -2,7 +2,7 @@
 
 ## Problems
 
-1. **No way to stop everything at once.** During an incident someone asks to halt every agent while the cause is found. There is no switch. The options are revoking credentials one at a time or asking each team to stop its own run.
+1. **No way to stop at certain points in time. There are no checks and balances at each stage, the assumption is that when you ask the agent to do something it is inferring what you actually intend.** During an incident someone asks to halt a step in the agent. There is no switch. The options are revoking credentials one at a time or asking each team to stop its own run.
    *No existing item covers the incident case. Every current control is per-run and decided before the run starts.*
 2. **A data boundary nobody reads.** The rule says never send sensitive information outside the company. Nothing inspects the content of an outbound action, so whether a draft carrying a site diagram counts is the agent's own judgement. Two runs, two answers.
    *Not #2: the problem is not where the rule lives. Move it to a rules file and it still cannot be applied, because no check reads the payload.*
@@ -15,21 +15,15 @@
 
 ## Capabilities
 
-1. **Chain check across steps, not just per step.** The rules mark a sequence, not only an action: read from a sensitive source, then send outward, pauses even when both steps are individually allowed. The pause screen names the earlier read that caused it.
-   *Extends #3 from one action to a window of actions.*
-2. **Rules expire and must be re-signed.** Each rule carries an owner and a review date. Past that date it fails the automatic check and the release does not publish until someone confirms the rule still matches a system that exists.
-   *Extends #2 from where the rule lives to whether it is still true.*
-3. **Scope named in the contract.** Read and write entries name the environment, so read local repo, read production telemetry, and write to a live site are three separate permissions. A contract that says only read does not reach production.
-   *Adds a target column to #1, which today names the verb and the tool but not what they point at.*
-4. **One switch that stops everything.** A single local flag turns every decision into block for the duration of an incident, and the activity summary records that the stop was on and who set it.
-   *The only capability here that acts during a run rather than before it.*
-5. **Outbound content is checked, not trusted.** A classification check reads the content of an outbound action, so a draft carrying a site diagram pauses on what it contains rather than on the agent's opinion of it. Runs the same way twice.
-   *#3 decides by action type. This decides by payload, which is what the sensitive-data rule actually turns on.*
-6. **A second scenario outside coding.** Ship one operations contract alongside the coding one. The agent reads a critical-environment maintenance ticket and local site notes with no prompt, pauses before sending the comms draft outward, and is blocked from any write to a production or critical-environment system. Adding "just send it, do not interrupt me" changes nothing.
-   *Not a new control. It is the same nine controls run against a second domain, which is what proves the contract generalises.*
-7. **Evidence export for a reviewer.** One command produces a timestamped record of what was requested, what ran, what was approved and by whom, what was blocked, and the rule behind each decision, in a file a compliance reviewer can keep.
-   *#5 is the screen at the end of a run. This is the artefact that survives it.*
-8. **Trust tiers instead of repeated clicks.** After the user approves the same low-risk action several times in one session, it becomes allowed for the rest of that session. Anything new, and anything online, still pauses.
-   *#6 closes the `/yolo` escape hatch. This removes the reason to reach for it. Pitch the two together or the fatigue problem is only half solved.*
-9. **Starter rule packs and a linter.** Ship ready-made rule files for coding, operations, and communications, plus a check that catches a rule naming a tool that does not exist, an allow with no matching limit, and an ask-first with no approver. Teams start from a pack instead of writing their own and drifting apart.
-   *#7 checks the contract against the rules. This checks the rules file itself, before anything is compared to it.*
+6. **Stage gates inside the run, not just before it.** The contract declares checkpoints between phases: after investigation and before edits, after edits and before tests, after tests and before any outbound step. At each gate the agent stops and states what it concluded and what it plans next, in one line. Nothing about the plan is inferred past a gate. A run configured with no gates behaves exactly as it does today, so gates are opt-in per contract.
+    *#1 is a single decision made before takeoff, and #3 decides one action at a time. Neither gives a person a place to stand mid-run. Closes the first half of problem 1.*
+7. **A stop that applies to a run in flight.** One local flag turns every subsequent decision into block, and it takes effect on the current run rather than the next one. In-flight work is left where it stands, no partial write is completed, and the activity summary records that the stop was set, by whom, and at which step. Clearing it needs a person, not a retry.
+    *Every existing control resolves before the run starts. This is the only one that acts during it. Closes the second half of problem 1.*
+8. **Outbound content is checked, not trusted.** A classification check reads the content of an outbound action, so a draft carrying a site diagram pauses on what it contains rather than on the agent's opinion of it. The pause screen names the matched content, not just the action type. Same input, same decision, every run.
+    *#3 decides by action type and #2 decides by rule location. Problem 2 turns on the payload, which neither one reads. Closes problem 2.*
+9. **A second scenario outside coding.** Ship one operations contract alongside the coding one, using the same vocabulary. The agent reads a critical-environment maintenance ticket and local site notes with no prompt, pauses before sending the comms draft outward, and is blocked from any write to a production or critical-environment system. Adding "just send it, do not interrupt me" changes nothing. Where the coding vocabulary does not fit the ops case, that mismatch is the finding.
+    *Not a new control. It is the existing nine run against a second domain, which is the only thing that shows the contract generalises. Closes problem 3.*
+10. **Delegated work inherits the caller's contract.** When an agent hands a subtask to another agent, the second one starts from the first one's contract and may narrow it, never widen it. A subagent that loads rules granting more than its caller holds fails the pre-flight check and does not start. The activity summary shows the delegation and the scope it ran under.
+    *#1 and #2 both assume one agent and one contract. Neither says what happens when a contract is passed along. Closes problem 4.*
+11. **Evidence export for a reviewer.** One command produces a timestamped record of what was requested, what ran, what was approved and by whom, what was blocked, and the rule behind each decision, as a file that outlives the session. It includes the rule file version in force at the time, so a decision can be replayed against the rules as they actually were.
+    *#5 is the screen at the end of a run. This is the artefact that survives it, which is what problem 5 is about. Closes problem 5.*
