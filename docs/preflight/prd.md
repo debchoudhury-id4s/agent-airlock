@@ -74,7 +74,7 @@ Only supported tools routed through Airlock are covered. The POC is not a securi
 3. Distinguish permission to run from successful execution. Show rejected, blocked, failed, and unfinished actions clearly.
 4. When enabled, include delegation links, child scopes and results, checkpoint decisions, and stop or resume events. Record who set or cleared a stop, when, and at which step.
 5. Show a short final summary. Include what was requested, what ran locally, what needed approval, what was blocked, and the final result.
-6. Redact sensitive content before saving any record. Keep safe target labels, input fingerprints, and matched rules instead of raw secrets.
+6. Use the shared sensitive-content rules to redact each record before saving it. Keep safe target labels, input fingerprints, and matched rules instead of raw secrets.
 7. Export the record as JSON and a readable Markdown summary with one command. The files must remain available after the session ends.
 8. Replay decisions for the synthetic demo inputs against the saved rules without rerunning actions. If missing or redacted input prevents replay, report that limit instead of claiming a match.
 9. Treat exports as local demo evidence. Reviewer labels are not verified identities. Do not claim tamper-proof records or compliance certification.
@@ -94,7 +94,7 @@ Only supported tools routed through Airlock are covered. The POC is not a securi
 6. Select the default permitted model for the task and data. Require approval for a non-default choice only when the catalog permits it. Block unknown models, forbidden endpoints, and choices outside the data boundary.
 7. Use two stub models to demonstrate an allowed default, an approved override, and a blocked choice.
 8. Set caps for context, model calls, and tokens. Reserve an output allowance. Flag likely overruns in the plan and pause before a step is expected to exceed the remaining budget.
-9. Remove duplicate context and load only relevant findings. Keep reusable prompt prefixes stable. Use compact formats only when the receiving tool supports them.
+9. Remove duplicate context before counting the budget. When research reuse is enabled, use its selected findings rather than retrieving a second copy. Keep reusable prompt prefixes stable. Use compact formats only when the receiving tool supports them.
 10. Batch independent calls only when the tool supports it. Keep dependent calls in order. Count and check every action in a batch.
 11. Never remove safety rules, required evidence, approvals, or task constraints to fit a budget. Explain what cannot fit and wait for a revised plan. Only the local user may raise a limit.
 12. Add efficiency metrics to the shared run record. Include findings reused or saved, research avoided, overlapping sessions connected, scripts used, calls batched, and input/output tokens. Link choices to their rules. Report cache hits only when the provider reports them.
@@ -129,7 +129,7 @@ Only supported tools routed through Airlock are covered. The POC is not a securi
 4. Before reuse, check source revisions and validity. Verify stale, weak, inaccessible, or conflicting claims using permitted evidence. Research only missing or unresolved facts. Do not guess from an earlier answer.
 5. Load only relevant findings inside the mission's data boundary. Show what was reused and why. Share only published findings allowed by both contracts. Stored findings cannot grant permissions or change rules.
 6. For overlapping work, show the common scope, each session's owner, published findings, and remaining steps. Let the user choose to reuse findings, divide the work, or combine results.
-7. Keep conflicting claims and their sources side by side until evidence or a person resolves them. Never silently overwrite another session's findings or widen its contract.
+7. Keep conflicting claims and their sources side by side until evidence or a person resolves them. Never silently overwrite another session's findings.
 8. At the end, save reusable findings and decisions with their supporting evidence and artifact links. Do not save full transcripts by default.
 9. Apply the contract's retention and sharing limits. Exclude expired entries from reuse and let the local user delete them.
 10. Demonstrate with two local saved sessions and manual refresh. Global session discovery, live subscriptions, and cross-user access management are not required.
