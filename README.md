@@ -223,15 +223,15 @@ After the demo, a judge should be able to answer:
 
 ## Contribute gates and policies
 
-The runnable starter plugin lives in **[`poc/neha-bhargava`](./poc/neha-bhargava)**.
-Despite the folder name, this is the shared contribution point for the current
-plugin; other personal POC folders can remain experiments.
+The shared plugin lives in **[`plugins/AirlockPlugin`](./plugins/AirlockPlugin)**.
+Personal `poc/` folders remain experiments; independent future plugins go beside
+AirlockPlugin under `plugins/`.
 
-Start with its **[structure and contribution guide](./poc/neha-bhargava/README.md#structure)**.
-It explains how to [add detector rules](./poc/neha-bhargava/README.md#add-a-detector-rule-to-the-existing-gate),
-[register gates and policy bindings](./poc/neha-bhargava/README.md#add-another-gate),
-and [add guarded tools or demo skills](./poc/neha-bhargava/README.md#add-a-tool-or-demo-scenario).
-The [PRD contribution map](./poc/neha-bhargava/README.md#prd-contribution-map)
+Start with its **[structure and contribution guide](./plugins/AirlockPlugin/README.md#structure)**.
+It explains how to [add detector rules](./plugins/AirlockPlugin/README.md#add-a-detector-rule-to-the-existing-gate),
+[register gates and policy bindings](./plugins/AirlockPlugin/README.md#add-another-gate),
+and [add guarded tools or demo skills](./plugins/AirlockPlugin/README.md#add-a-tool-or-demo-scenario).
+The [PRD contribution map](./plugins/AirlockPlugin/README.md#prd-contribution-map)
 identifies the remaining work by use case.
 
 The implemented demo covers secret scanning before a **local outbox copy**, not
@@ -240,7 +240,7 @@ every required gate and records the decision before executing. Only all-allow
 can run; blocks and pending approvals cannot be bypassed by prompt instructions.
 
 ```powershell
-Set-Location .\poc\neha-bhargava
+Set-Location .\plugins\AirlockPlugin
 npm ci
 npm run setup
 npm test
