@@ -79,61 +79,32 @@ The agent stays free to solve the problem inside the approved space. It cannot c
 
 ---
 
-## What we are building
+## Focused use cases
 
-The hackathon prototype will run locally and prove one complete flow.
+The core prototype proves the first four use cases. The last three are optional local extensions built on the same rule checks, approval flow, and activity record.
 
-### 1. A clear mission
+### Core
 
-Agent Airlock turns the request into a short **agent contract** that a person can review.
+1. **Start a safe mission.** A developer asks an agent to fix a bug. Agent Airlock validates a contract and versioned rules before work starts, and keeps helper agents inside the same limits.
+2. **Approve or stop actions.** Safe local work continues without interruption, while an exact simulated online write needs single-use approval and forbidden actions are blocked. Optional checkpoints and a local stop control can prevent later steps.
+3. **Share content safely.** Before a simulated pull request or maintenance message leaves the computer, Agent Airlock checks its text for fake secrets, personal-data patterns, and internal-only labels. It blocks or pauses the action and explains how to make the content safe.
+4. **Explain a finished run.** A reviewer gets a redacted local record of what was requested, allowed, approved, blocked, and completed. Approval receipts and rule versions make each important decision easy to understand later.
 
-```text
- +------------------------------------------------------+
- |                  AGENT CONTRACT                      |
- +------------------------------------------------------+
- | Goal        What outcome is requested?               |
- | Data        What information may be used?            |
- | Tools       What may the agent use?                  |
- | Changes     What may the agent modify?               |
- | Approvals   When must a person confirm?              |
- | Limits      What must never happen?                  |
- | Records     What must be saved for review?           |
- +------------------------------------------------------+
-```
+### Optional local extensions
 
-The request helps describe the goal. It does **not** grant permission.
+5. **Choose tools within budget.** For repeatable work, Agent Airlock prefers a reviewed repository script and uses only permitted model choices. It enforces simple context, call, and token limits without dropping safety checks.
+6. **Review a security change.** A sign-in or dependency change is checked against a small local standards checklist and dated advisory fixture. Failed or unclear checks stop simulated review until resolved or explicitly approved where the rules permit.
+7. **Reuse research across sessions.** A later or overlapping local session reuses evidence-backed findings instead of repeating repository research. Stale or conflicting claims stay visible and must be verified.
 
-### 2. A check before work starts
-
-Agent Airlock compares the contract with trusted rules and catches simple conflicts, such as:
-
-- A read-only task includes a write action.
-- A task asks for a production change where production writes are forbidden.
-- An online action has no approval step.
-
-### 3. A ready-to-use rule file
-
-The prototype turns the approved contract into a rule file. Microsoft's Agent Control Specification and Agent Governance Toolkit use that file to decide whether an action can run. Agent Airlock adds the easy mission review and the check before work begins.
-
-### 4. A check before important actions
-
-Local actions such as reading files, editing a working copy, and running tests can continue automatically. A simulated online write pauses for approval. A forbidden action is stopped.
-
-### 5. A simple approval screen
-
-When approval is needed, the user sees the exact action, why it is paused, and what will happen next.
-
-### 6. A readable activity summary
-
-The final view shows the request, rules, approvals, blocked attempts, completed actions, and reasons in one place.
-
-The demo needs no special Microsoft account, cloud setup, administrator role, or real online write. It uses a local repository, sample rules, and simulated outside actions.
+The POC uses a sample repository, local rules and records, a terminal interface, stub models, and simulated online writes. It needs no cloud deployment, administrator role, cross-team permission, or real online write. See the [full product requirements](./docs/preflight/prd.md).
 
 ---
 
 ## Easy to share and adopt
 
 Agent Airlock can be shared the same way teams already share code. The first version does not need a new central service.
+
+This is a future adoption path, not part of the local hackathon build.
 
 The contract, organization rules, examples, and Agent Airlock files can live in GitHub or Azure DevOps.
 
@@ -198,6 +169,8 @@ Agent Airlock shows the mission before the agent starts:
 
 The agent reads the sample issue, changes local files, and runs tests without repeatedly interrupting the user.
 
+Before the simulated online write, Agent Airlock finds a fake token in the pull-request draft and blocks the content. The agent removes the token, and the content check passes.
+
 It then tries a simulated online write. Agent Airlock pauses and asks for approval. The user can approve or reject that exact step.
 
 Next, the agent attempts the forbidden protected-branch update. Agent Airlock blocks it and points the agent toward the safer branch-and-review path.
@@ -212,7 +185,7 @@ The closing screen shows:
  Requested       Fix and complete the bug
  Ran locally     Read, edit, branch, and test
  Needed approval Simulated online write
- Blocked         Direct protected-branch write
+ Blocked         Fake token and direct protected-branch write
  Reason          Organization rule
  Final result    Only approved actions ran
 ```
@@ -238,13 +211,13 @@ The business value is simple: organizations can adopt useful agents faster, redu
 
 After the demo, a judge should be able to answer:
 
-1. What did the user ask the agent to do?
-2. Which steps ran without interruption?
-3. Which step needed approval?
-4. Which step was stopped, and why?
-5. Could prompt wording override the organization rule?
-6. Could the team review and publish a new rule through its code repository?
-7. Did the final summary explain every important result?
+1. Did the mission clearly state the goal, data, tools, changes, approvals, and limits?
+2. Which safe local steps ran without interruption?
+3. Did an exact simulated online write require approval?
+4. Which forbidden or sensitive action was stopped, and why?
+5. Could prompt wording or auto-approve widen the mission?
+6. Did the same rules produce the same decision in two local sessions?
+7. Did the final record explain every important decision and result?
 
 ---
 
@@ -255,9 +228,9 @@ The first prototype proves one local coding example. The following ideas are val
 - **More agent platforms** - Use the same contract with Microsoft Agent Framework, Copilot Studio, Microsoft Foundry, and other agent tools.
 - **Live Microsoft connections** - Connect with Agent 365, Entra, Defender, Purview, and company approval systems. These may require licenses and administrator setup.
 - **Real online actions** - Use controlled test repositories, cloud resources, messages, and production systems with proper credentials and safeguards.
-- **More business scenarios** - Cover operations, company search, external messages, financial work, and agents working with other agents.
-- **Central control and reporting** - Add a live dashboard, an emergency stop, company-wide update tracking, and removal of old rules. Repository review and releases are already part of the first approach.
-- **Time and cost improvements** - Find repeated work, unnecessary tools, slow approvals, and opportunities to use less expensive AI options.
+- **Live business scenarios** - Connect operations, company search, external messages, financial work, and helper agents to real systems. The POC uses local fixtures and simulated helpers.
+- **Central control and reporting** - Add a live dashboard, a remote company-wide stop, update tracking, and removal of old rules. The POC may include one local stop control.
+- **Production optimization** - Measure real prompt caching, token costs, repeated work, and model choices. The POC may compare local or simulated counts.
 - **Multi-step safety** - Check whether a series of individually allowed actions becomes risky when combined.
 - **Production readiness** - Add trusted releases, fast rule removal, secure sign-in and records, recovery, privacy checks, and testing for large use.
 
