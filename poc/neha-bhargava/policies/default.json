@@ -1,0 +1,7 @@
+{
+  "id": "outbound-demo",
+  "version": "1",
+  "tools": {
+    "publish_draft": ["no-secrets-in-drafts"]
+  }
+}

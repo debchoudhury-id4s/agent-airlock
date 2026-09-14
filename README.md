@@ -221,6 +221,33 @@ After the demo, a judge should be able to answer:
 
 ---
 
+## Contribute gates and policies
+
+The runnable starter plugin lives in **[`poc/neha-bhargava`](./poc/neha-bhargava)**.
+Despite the folder name, this is the shared contribution point for the current
+plugin; other personal POC folders can remain experiments.
+
+Start with its **[structure and contribution guide](./poc/neha-bhargava/README.md#structure)**.
+It explains how to [add detector rules](./poc/neha-bhargava/README.md#add-a-detector-rule-to-the-existing-gate),
+[register gates and policy bindings](./poc/neha-bhargava/README.md#add-another-gate),
+and [add guarded tools or demo skills](./poc/neha-bhargava/README.md#add-a-tool-or-demo-scenario).
+The [PRD contribution map](./poc/neha-bhargava/README.md#prd-contribution-map)
+identifies the remaining work by use case.
+
+The implemented demo covers secret scanning before a **local outbox copy**, not
+real PR creation or the full hackathon flow above. Shared runtime code evaluates
+every required gate and records the decision before executing. Only all-allow
+can run; blocks and pending approvals cannot be bypassed by prompt instructions.
+
+```powershell
+Set-Location .\poc\neha-bhargava
+npm ci
+npm run setup
+npm test
+```
+
+---
+
 ## Follow-up / Out of scope for this hackathon
 
 The first prototype proves one local coding example. The following ideas are valuable, but they are not promises for the initial demo:
