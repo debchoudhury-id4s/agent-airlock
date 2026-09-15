@@ -246,6 +246,17 @@ npm run setup
 npm test
 ```
 
+## Configure the Copilot CLI sandbox
+
+The root-level **[`sandbox`](./sandbox)** directory contains recommended Copilot
+CLI sandbox configurations and a preview-first setup tool. It composes a shared
+base with optional overrides and safely merges the result into user, repository,
+or local Copilot settings without replacing unrelated configuration.
+
+The sandbox limits filesystem, network, credential, and local-process access.
+It complements Airlock's semantic gates but does not replace them. The supplied
+profiles keep sandbox bypass available for legitimate development needs.
+
 ---
 
 ## Follow-up / Out of scope for this hackathon

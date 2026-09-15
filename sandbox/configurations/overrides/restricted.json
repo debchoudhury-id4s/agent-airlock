@@ -1,0 +1,15 @@
+{
+  "sandbox": {
+    "allowDevToolAccess": false,
+    "auth": {
+      "git": false,
+      "gh": false
+    },
+    "userPolicy": {
+      "network": {
+        "allowOutbound": false,
+        "allowLocalNetwork": false
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "allowBypass": true,
+    "addCurrentWorkingDirectory": true,
+    "sandboxMcpServers": true,
+    "sandboxLspServers": true
+  }
+}
