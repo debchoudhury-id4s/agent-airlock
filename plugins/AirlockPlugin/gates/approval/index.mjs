@@ -1,33 +1,18 @@
 /**
-2
-* Signals that a validated action requires explicit local approval.
-3
-*
-4
-* This gate does not grant approval. The shared broker owns approval
-5
-* collection, exact-action binding, expiry, redemption, and receipts.
-6
-*/
-7
+ * Marks an action as requiring explicit local approval.
+ *
+ * This gate does not grant approval or execute the action.
+ * The shared broker owns approval collection, validation,
+ * expiration, redemption, rechecking, and receipts.
+ */
 export const approvalGate = Object.freeze({
-8
-id: "local-approval-required",
-9
- 
-10
-async evaluate() {
-11
-return {
-12
-decision: "ask-first",
-13
-reason: "local-review-required",
-14
-findings: [],
-15
-};
-16
-},
-17
+  id: "local-approval-required",
+
+  async evaluate() {
+    return {
+      decision: "ask-first",
+      reason: "local-review-required",
+      findings: [],
+    };
+  },
 });
