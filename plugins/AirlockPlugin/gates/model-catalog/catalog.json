@@ -1,0 +1,23 @@
+{
+  "models": [
+    {
+      "id": "stub-default",
+      "endpoint": "local-stub-default",
+      "taskTypes": ["code-edit", "summarize"],
+      "dataClasses": ["repo-local", "synthetic"]
+    },
+    {
+      "id": "stub-override",
+      "endpoint": "local-stub-override",
+      "taskTypes": ["code-edit"],
+      "dataClasses": ["repo-local"]
+    }
+  ],
+  "defaults": {
+    "code-edit": {
+      "repo-local": { "model": "stub-default", "endpoint": "local-stub-default" }
+    }
+  },
+  "blockedModels": ["stub-public"],
+  "blockedEndpoints": ["remote-public"]
+}

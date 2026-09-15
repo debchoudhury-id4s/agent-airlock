@@ -8,11 +8,13 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { createPublishDraft } from "../tools/publish-draft.mjs";
 import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createSecretsGate } from "../gates/secrets/index.mjs";
+import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
+import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
 import { pluginRoot, scan } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
 function createGate({ root, scanner } = {}) {
-  const evaluate = createPolicyEvaluator({ policy, gates: [createSecretsGate({ scanner })] });
+  const evaluate = createPolicyEvaluator({ policy, gates: [createSecretsGate({ scanner }), createNoOnlineWritesGate(), createModelCatalogGate()] });
   return createPublishDraft({ root, evaluate });
 }
 
@@ -143,7 +145,7 @@ test("MCP exposes only the guarded tool and works outside this repository", asyn
   });
   await client.connect(transport);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(tool => tool.name), ["publish_draft"]);
+  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "select_model"]);
   const accepted = await client.callTool({ name: "publish_draft", arguments: { content: clean } });
   assert.equal(accepted.isError, false);
   assert.equal(accepted.structuredContent.status, "published");

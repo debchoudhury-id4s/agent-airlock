@@ -1,0 +1,14 @@
+{
+  "rules": [
+    { "id": "git-push", "pattern": "\\bgit\\s+push\\b", "flags": "i" },
+    { "id": "push-origin", "pattern": "\\bpush\\s+to\\s+origin\\b", "flags": "i" },
+    { "id": "gh-pr", "pattern": "\\bgh\\s+pr\\b", "flags": "i" },
+    { "id": "create-pull-request", "pattern": "\\bcreate\\s+(a\\s+)?pull\\s+request\\b", "flags": "i" },
+    { "id": "az-deployment", "pattern": "\\baz\\s+deployment\\b", "flags": "i" },
+    { "id": "kubectl-apply", "pattern": "\\bkubectl\\s+apply\\b", "flags": "i" },
+    { "id": "npm-publish", "pattern": "\\bnpm\\s+publish\\b", "flags": "i" },
+    { "id": "docker-push", "pattern": "\\bdocker\\s+push\\b", "flags": "i" },
+    { "id": "terraform-apply", "pattern": "\\bterraform\\s+apply\\b", "flags": "i" },
+    { "id": "production-deploy", "pattern": "\\bproduction\\s+deploy\\b", "flags": "i" }
+  ]
+}

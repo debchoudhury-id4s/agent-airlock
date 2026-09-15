@@ -4,11 +4,15 @@ The shared plugin lives in `plugins\AirlockPlugin` at the repository root.
 Any teammate can contribute here. Personal `poc\` folders remain available for
 experiments; independent future plugins belong beside this one in `plugins\`.
 
-**Implemented today:** one demo skill, one publishing tool, and one secrets gate.
+**Implemented today:** three demo skills, `publish_draft` with a secrets gate,
+`check_intent` with a no-online-writes gate, and `select_model` with a model-catalog
+gate.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
-This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely),
-not the entire PRD. There is no approval flow or real GitHub publication yet.
+This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely)
+and [PRD section 1 item 3](../../docs/preflight/prd.md#1-start-a-safe-mission)
+(`/yolo` cannot authorize an online write). There is no approval flow or real
+GitHub publication yet.
 
 ## Prepare once
 
@@ -70,6 +74,25 @@ For your own synthetic draft, ask the agent to pass its text to this plugin's
 `publish_draft` tool. The only argument is `content`; there is no policy override,
 approval tool, destination URL, or arbitrary output path.
 
+To show that `/yolo` cannot authorize an online write, ask:
+
+> Run the airlock-intent-demo skill. Show the local clearance, the online-write
+> block, and the yolo override attempt.
+
+Expected results: **cleared, blocked, blocked**. The only argument is `prompt`.
+A cleared intent is not permission to push, publish, or send anything online.
+The executor writes a local clearance record that does not include the prompt.
+
+To show team-decided models for a task, ask:
+
+> Run the airlock-model-demo skill. Show the default selection, the non-default
+> approval pause, and the blocked model.
+
+Expected results: **selected, blocked, blocked**. Non-default permitted models
+return `approval-required` because shared approval is not implemented. Nothing
+calls a remote model. Arguments are `taskType`, `dataClass`, and optional
+`model` / `endpoint`.
+
 ## Structure
 
 ```text
@@ -89,14 +112,26 @@ plugins\AirlockPlugin\
       index.mjs                        Read-only secrets decision
       scanner.mjs                      Pinned, isolated local scanner adapter
       gitleaks.toml                    Detector rules, including the synthetic marker
+    no-online-writes\
+      index.mjs                        Read-only online-write intent decision
+      rules.json                       Team-specified online-write patterns
+    model-catalog\
+      index.mjs                        Read-only model/endpoint catalog decision
+      catalog.json                     Team defaults, allowed stubs, and blocked choices
   tools\
     publish-draft.mjs                   Input validation and fixed local outbox executor
+    check-intent.mjs                    Intent validation and local clearance executor
+    select-model.mjs                    Catalog validation and local selection executor
   skills\
     airlock-demo\SKILL.md               Three-call presentation, not enforcement
+    airlock-intent-demo\SKILL.md        /yolo cannot authorize online writes
+    airlock-model-demo\SKILL.md         Team default vs blocked/non-default models
   tests\
     policies.test.mjs                   Composition and configuration tests
     broker.test.mjs                     Zero-execution and receipt-order tests
     publish-draft.test.mjs              Secrets and actual MCP transport regression tests
+    check-intent.test.mjs               Intent, yolo, and MCP transport tests
+    select-model.test.mjs               Catalog, ask-first, and MCP transport tests
   setup.mjs                            Checksum-verified scanner installation
 ```
 
@@ -226,11 +261,11 @@ Create new modules only when implementing them; there are no allow-all placehold
 
 | PRD area | Extend | Still to build |
 |---|---|---|
-| 1. Safe mission | `runtime\`, `policies\`, tool input schemas | Mission confirmation, contract narrowing, complete rule snapshots, dry run, helpers |
+| 1. Safe mission | `runtime\`, `policies\`, `check_intent`, `gates\no-online-writes\` | Mission confirmation, contract narrowing, complete rule snapshots, dry run, helpers; `/yolo` cannot authorize online-write intent |
 | 2. Approve or stop | Shared `runtime\broker.mjs` before execution | Exact-action single-use approvals, expiry/recheck, protected targets, local stop |
 | 3. Share safely | `gates\secrets\`, additional gates and `tools\` | Personal-data/label rules, forbidden destinations, other payload sources; secrets draft demo exists |
 | 4. Explain a run | Shared broker receipts | Run context, approval receipts, export, replay; per-action receipts exist |
-| 5. Budget/tools (optional) | Additional `gates\`, reviewed `tools\`, shared runtime accounting | Script/version checks, stub model catalog, budgets and atomic reservations |
+| 5. Budget/tools (optional) | `select_model`, `gates\model-catalog\` | Script/version checks, budgets and atomic reservations; stub catalog default/ask-first/block exists |
 | 6. Security review (optional) | Additional `gates\` and dated local fixtures | Standards/dependency checks and shared review flow |
 | 7. Research reuse (optional) | New local research-store module and guarded `tools\` | Provenance, freshness, access checks and conflict retention |
 
@@ -254,6 +289,17 @@ failures, and decision-receipt failures cannot publish. Repository instructions,
 personal instructions, and text inside the draft do not participate in this
 decision.
 
+`check_intent` applies team-specified online-write patterns to the user prompt.
+A match is blocked even when the prompt also contains `/yolo`, auto-approve, or
+"do everything automatically". `/yolo` alone does not grant rights and does not
+block local-only work. The tool never performs a network write.
+
+`select_model` uses the local stub catalog. Omitting `model` records the default
+for that task and data class. A permitted non-default is `ask-first` (currently
+blocked as `approval-required`). Unknown models, blocked models, forbidden
+endpoints, and task/data pairs outside the catalog are blocked. No remote model
+is called.
+
 The plugin uses the legacy Copilot manifest with `.mcp.json` for compatibility
 with the installed Agency/Copilot host. All runtime files live here; it does not
 depend on source or packages at the repository root.
@@ -262,8 +308,10 @@ depend on source or packages at the repository root.
 
 - This is a local publication simulation. Online writes and human approval are
   outside this one-policy demo.
-- The plugin protects only its own tool. It cannot stop native shell writes,
+- The plugin protects only its own tools. It cannot stop native shell writes,
   another MCP publisher, or data sent to the agent's model.
+- `check_intent` is a keyword/regex intent check, not a sandbox around `git` or `gh`.
+- `select_model` does not change Copilot's model picker or call a model API.
 - Pattern scanning is not comprehensive DLP. Clean means no configured detector
   matched, not proof that text has no sensitive information.
 - The local operator and installed plugin files are trusted. This is not a
