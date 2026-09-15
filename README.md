@@ -81,7 +81,10 @@ The agent stays free to solve the problem inside the approved space. It cannot c
 
 ## Focused use cases
 
-The core prototype proves the first four use cases. The last three are optional local extensions built on the same rule checks, approval flow, and activity record.
+The PRD defines four core use cases and three optional extensions. The current
+repository implements narrower local slices: secret scanning, online-write
+intent checks, model-catalog checks, and per-action receipts. Mission contracts,
+interactive approval, and complete run summaries remain product targets.
 
 ### Core
 
@@ -138,7 +141,11 @@ The same check can run on a developer's computer or in the repository. Teams can
 
 ---
 
-## The hackathon demo
+## Target hackathon demo
+
+This is the intended end-to-end experience. It is not a claim that every step is
+implemented in the current repository; see [How it works](#how-it-works) for the
+runtime that exists today.
 
 A user asks:
 
@@ -207,44 +214,165 @@ The business value is simple: organizations can adopt useful agents faster, redu
 
 ---
 
-## What success looks like
+## How it works
 
-After the demo, a judge should be able to answer:
+The repository currently has two independent layers:
 
-1. Did the mission clearly state the goal, data, tools, changes, approvals, and limits?
-2. Which safe local steps ran without interruption?
-3. Did an exact simulated online write require approval?
-4. Which forbidden or sensitive action was stopped, and why?
-5. Could prompt wording or auto-approve widen the mission?
-6. Did the same rules produce the same decision in two local sessions?
-7. Did the final record explain every important decision and result?
+1. **Airlock plugin** - an Agency Copilot plugin under
+   [`plugins/AirlockPlugin`](./plugins/AirlockPlugin) that exposes guarded MCP
+   tools over standard input/output.
+2. **Host sandbox kit** - optional settings under [`sandbox`](./sandbox) that
+   restrict filesystem, network, credentials, and child-process access.
 
----
+The plugin is the semantic checkpoint. The sandbox is host containment. Neither
+one replaces the other, and the current implementation is smaller than the full
+product vision described above.
 
-## Contribute gates and policies
+### Runtime architecture
 
-The shared plugin lives in **[`plugins/AirlockPlugin`](./plugins/AirlockPlugin)**.
-Personal `poc/` folders remain experiments; independent future plugins go beside
-AirlockPlugin under `plugins/`.
+```mermaid
+flowchart LR
+    User["User in Agency Copilot"] --> Skill["Airlock demo skill"]
+    Skill --> Server["MCP server<br/>server.mjs"]
 
-Start with its **[structure and contribution guide](./plugins/AirlockPlugin/README.md#structure)**.
-It explains how to [add detector rules](./plugins/AirlockPlugin/README.md#add-a-detector-rule-to-the-existing-gate),
-[register gates and policy bindings](./plugins/AirlockPlugin/README.md#add-another-gate),
-and [add guarded tools or demo skills](./plugins/AirlockPlugin/README.md#add-a-tool-or-demo-scenario).
-The [PRD contribution map](./plugins/AirlockPlugin/README.md#prd-contribution-map)
-identifies the remaining work by use case.
+    Server --> Draft["publish_draft"]
+    Server --> Intent["check_intent"]
+    Server --> Model["select_model"]
 
-The implemented demo covers secret scanning before a **local outbox copy**, not
-real PR creation or the full hackathon flow above. Shared runtime code evaluates
-every required gate and records the decision before executing. Only all-allow
-can run; blocks and pending approvals cannot be bypassed by prompt instructions.
+    Draft --> Validation["Strict Zod input validation"]
+    Intent --> Validation
+    Model --> Validation
 
-```powershell
-Set-Location .\plugins\AirlockPlugin
-npm ci
-npm run setup
-npm test
+    Validation --> Broker["Shared broker<br/>snapshot + fingerprint"]
+    Policy["policies/default.json<br/>tool-to-gate bindings"] --> Evaluator["Policy evaluator"]
+    Registry["gates/index.mjs<br/>trusted gate registry"] --> Evaluator
+    Broker --> Evaluator
+
+    Evaluator --> Decision{"Combined decision"}
+    Decision -->|"all gates allow"| Receipt["Write decision receipt"]
+    Receipt --> Executor["Fixed local executor"]
+    Executor --> Artifact["Write local artifact"]
+    Artifact --> Completion["Append completion receipt"]
+
+    Decision -->|"ask-first"| Approval["Return approval-required<br/>no execution"]
+    Decision -->|"block or error"| Denied["Return blocked or error<br/>no execution"]
 ```
+
+Agency loads [`plugin.json`](./plugins/AirlockPlugin/plugin.json), then
+[`.mcp.json`](./plugins/AirlockPlugin/.mcp.json) launches the Node.js MCP server.
+The caller can choose a registered tool and provide that tool's documented
+arguments. It cannot choose the policy, gate list, executor, artifact path, or
+approval state.
+
+Each tool validates its input before creating a normalized action:
+
+```json
+{
+  "tool": "check_intent",
+  "target": "local-mission-review",
+  "input": {
+    "prompt": "Fix the local test."
+  }
+}
+```
+
+The broker deep-freezes that action, hashes it, and sends the same snapshot to
+the policy evaluator and, only after an allow decision, the fixed executor. The
+evaluator runs every gate bound to the tool. Decision precedence is:
+
+```text
+block > error > ask-first > allow
+```
+
+An action executes only when every required gate returns `allow`. `ask-first`
+does not currently open an approval prompt; the broker returns
+`approval-required` and performs zero execution.
+
+### Current tool and gate map
+
+| MCP tool | Required gate | Current result and local artifact |
+|---|---|---|
+| `publish_draft(content)` | `no-secrets-in-drafts` | Clean text is copied to `~/.agent-airlock/outbound-demo/outbox/<id>.md`; detected secrets block execution |
+| `check_intent(prompt)` | `no-online-writes` | Local-only intent writes `cleared-intents/<id>.json`; configured online-write patterns block even when the prompt contains `/yolo` |
+| `select_model(taskType, dataClass, model?, endpoint?)` | `model-catalog` | The team default writes `model-selections/<id>.json`; unknown, blocked, or out-of-boundary choices block; permitted non-default choices return `approval-required` |
+| `publish_approved_draft` | `no-secrets-in-drafts` and `local-approval-required` | Policy entry only; no MCP tool or executor is registered in `server.mjs` |
+
+The rules are local, reviewed plugin files:
+
+- Gitleaks configuration:
+  [`gates/secrets/gitleaks.toml`](./plugins/AirlockPlugin/gates/secrets/gitleaks.toml)
+- Online-write patterns:
+  [`gates/no-online-writes/rules.json`](./plugins/AirlockPlugin/gates/no-online-writes/rules.json)
+- Model defaults and boundaries:
+  [`gates/model-catalog/catalog.json`](./plugins/AirlockPlugin/gates/model-catalog/catalog.json)
+
+### Decision and evidence lifecycle
+
+```mermaid
+sequenceDiagram
+    participant A as Agency Copilot
+    participant T as Guarded MCP tool
+    participant B as Broker
+    participant P as Policy evaluator
+    participant G as Required gates
+    participant X as Fixed local executor
+    participant F as Local filesystem
+
+    A->>T: Tool arguments
+    T->>T: Strict validation
+    T->>B: Frozen action + executor
+    B->>P: Evaluate action snapshot
+    P->>G: Run every policy-bound gate
+    G-->>P: allow / ask-first / block
+    P-->>B: Combined redacted decision
+
+    alt every gate allows
+        B->>F: Write allowed receipt
+        B->>X: Execute same action snapshot
+        X->>F: Write local artifact
+        X-->>B: Safe artifact metadata
+        B->>F: Append completed receipt
+        B-->>T: completed
+        T-->>A: published / cleared / selected
+    else ask-first
+        B->>F: Write blocked receipt
+        B-->>A: approval-required; execution not started
+    else block or check error
+        B->>F: Write blocked or error receipt
+        B-->>A: denied; execution not started
+    end
+```
+
+Receipts are JSON Lines files under
+`~/.agent-airlock/outbound-demo/receipts`. They contain the policy identity,
+action hash and size, gate decisions, rule IDs, line numbers, timestamps, and
+execution state. They do not contain the raw prompt, draft, matched secret, or
+model payload.
+
+> [!WARNING]
+> The current gate registry has an incomplete approval integration.
+> [`gates/approval/index.mjs`](./plugins/AirlockPlugin/gates/approval/index.mjs)
+> exports `approvalGate` as an object, while
+> [`gates/index.mjs`](./plugins/AirlockPlugin/gates/index.mjs) invokes it as
+> `approvalGate()`. Node.js therefore raises `TypeError: approvalGate is not a
+> function` while loading the registry, before the MCP server starts. In
+> addition, `publish_approved_draft` is bound in the policy but is not exposed
+> by `server.mjs`. The current repository does not yet provide a working
+> approval flow.
+
+### Enforcement boundary
+
+Airlock enforces only calls routed through its registered MCP tools. It does not
+intercept native shell commands, another MCP server, Agency's own model traffic,
+or arbitrary processes running as the same user. All implemented executors write
+only local demo artifacts; they do not push Git branches, create pull requests,
+publish packages, deploy infrastructure, or call a hosted model.
+
+Use the scenario runbooks for prescriptive setup and verification:
+
+- [`no-online-writes` demo](./plugins/AirlockPlugin/gates/no-online-writes/README.md)
+- [`model-catalog` demo](./plugins/AirlockPlugin/gates/model-catalog/README.md)
+- [`secrets` and plugin setup](./plugins/AirlockPlugin/README.md)
 
 ## Configure the Copilot CLI sandbox
 
