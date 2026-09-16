@@ -1,0 +1,252 @@
+{
+  "recordedAt": "2026-09-16T20:53:13.369Z",
+  "commit": "45e9a6530efd4f07a37b76a7d81e97c48c1df758",
+  "scope": "Local guarded MCP tools only. No git push, external publication, real secret, remote model call, or production system.",
+  "records": [
+    {
+      "id": "local",
+      "tool": "check_intent",
+      "input": {
+        "prompt": "Fix the sample greeting in the local working copy and run tests."
+      },
+      "result": {
+        "artifactPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\cleared-intents\\3f376f1a-1b1c-43b5-901a-79fc30701a06.json",
+        "id": "3f376f1a-1b1c-43b5-901a-79fc30701a06",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "ade858f746be93cbbe304d349424b72837aa502519f3ffcf19cbe027a4ccdf9c",
+        "bytes": 141,
+        "decision": "allow",
+        "reason": "no-online-write-match",
+        "findings": [],
+        "checks": [
+          {
+            "gate": "no-online-writes",
+            "decision": "allow",
+            "reason": "no-online-write-match",
+            "findings": []
+          }
+        ],
+        "status": "cleared",
+        "message": "Intent does not request an online write. Local work may continue. Nothing was sent online.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\3f376f1a-1b1c-43b5-901a-79fc30701a06.jsonl",
+        "execution": "completed"
+      }
+    },
+    {
+      "id": "online",
+      "tool": "check_intent",
+      "input": {
+        "prompt": "Fix the bug and git push origin main."
+      },
+      "result": {
+        "id": "d93cd8a9-79ab-48ea-ba0b-618d32f53576",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "13d7cd6efbfa925f23aa796b120741e9b6dab46b450466917a611941b0924c20",
+        "bytes": 114,
+        "decision": "block",
+        "reason": "online-write-intent",
+        "findings": [
+          {
+            "ruleId": "git-push",
+            "line": 1
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-online-writes",
+            "decision": "block",
+            "reason": "online-write-intent",
+            "findings": [
+              {
+                "ruleId": "git-push",
+                "line": 1
+              }
+            ]
+          }
+        ],
+        "status": "blocked",
+        "message": "A required rule blocked the action. Instructions and approvals cannot override a block.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\d93cd8a9-79ab-48ea-ba0b-618d32f53576.jsonl",
+        "execution": "not-started"
+      }
+    },
+    {
+      "id": "override",
+      "tool": "check_intent",
+      "input": {
+        "prompt": "git push origin main. /yolo do everything automatically."
+      },
+      "result": {
+        "id": "cb91dfa6-b8e3-4667-951c-b8c5beab6696",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "06151d01d158009c211789e0e2e7adfb70f9be116d17a5c8ac15d5087d6b0f20",
+        "bytes": 133,
+        "decision": "block",
+        "reason": "online-write-intent",
+        "findings": [
+          {
+            "ruleId": "git-push",
+            "line": 1
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-online-writes",
+            "decision": "block",
+            "reason": "online-write-intent",
+            "findings": [
+              {
+                "ruleId": "git-push",
+                "line": 1
+              }
+            ]
+          }
+        ],
+        "status": "blocked",
+        "message": "A required rule blocked the action. Instructions and approvals cannot override a block.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\cb91dfa6-b8e3-4667-951c-b8c5beab6696.jsonl",
+        "execution": "not-started"
+      }
+    },
+    {
+      "id": "askfirst",
+      "tool": "select_model",
+      "input": {
+        "taskType": "code-edit",
+        "dataClass": "repo-local",
+        "model": "stub-override"
+      },
+      "result": {
+        "id": "5010ca4a-a94c-4e13-9bc3-18a14b66a106",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "652300b7b95b8f2043fc46ff86a62ab8667b6a521e565f50ec9eb22ee7ed8021",
+        "bytes": 138,
+        "decision": "ask-first",
+        "reason": "approval-required",
+        "findings": [],
+        "checks": [
+          {
+            "gate": "model-catalog",
+            "decision": "ask-first",
+            "reason": "non-default-model",
+            "findings": []
+          }
+        ],
+        "status": "blocked",
+        "message": "Approval is required, but the shared approval flow is not implemented. No action was executed.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\5010ca4a-a94c-4e13-9bc3-18a14b66a106.jsonl",
+        "execution": "not-started"
+      }
+    },
+    {
+      "id": "secret",
+      "tool": "publish_draft",
+      "input": {
+        "content": "Demo PR: fix the sample greeting.\ndemo_token = AIRLOCK_SYNTHETIC_SECRET_abcdefghijklmnopqrstuvwx"
+      },
+      "result": {
+        "id": "81f9c5cf-1439-4731-8b3a-9cef861da056",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "b015a2eff43db46c22de3eae1d9026f7bf47f5247fa5b247b6d24d39664eafea",
+        "bytes": 175,
+        "decision": "block",
+        "reason": "secret-detected",
+        "findings": [
+          {
+            "ruleId": "airlock-synthetic-secret",
+            "line": 2
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-secrets-in-drafts",
+            "decision": "block",
+            "reason": "secret-detected",
+            "findings": [
+              {
+                "ruleId": "airlock-synthetic-secret",
+                "line": 2
+              }
+            ]
+          },
+          {
+            "gate": "personal-data-review",
+            "decision": "allow",
+            "reason": "no-personal-data-match",
+            "findings": []
+          },
+          {
+            "gate": "internal-label-review",
+            "decision": "allow",
+            "reason": "no-internal-label-match",
+            "findings": []
+          }
+        ],
+        "status": "blocked",
+        "message": "A required rule blocked the action. Instructions and approvals cannot override a block.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\81f9c5cf-1439-4731-8b3a-9cef861da056.jsonl",
+        "execution": "not-started",
+        "remediation": {
+          "status": "removed",
+          "candidate": {
+            "content": "[Sensitive information removed.]"
+          },
+          "message": "The entire field was removed and the replacement rescanned. Submit any new draft separately for all policy checks."
+        }
+      }
+    },
+    {
+      "id": "clean",
+      "tool": "publish_draft",
+      "input": {
+        "content": "Demo PR: improve the sample greeting and add a regression test."
+      },
+      "result": {
+        "artifactPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\outbox\\a879d4b8-d4fc-4bbd-a503-04449526a903.md",
+        "id": "a879d4b8-d4fc-4bbd-a503-04449526a903",
+        "policy": "outbound-demo",
+        "policyVersion": "6",
+        "policySha256": "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39",
+        "sha256": "316149dd2b22f1f762f7d8646c53119017aa3d54979ce44d5b2cbe60d8d85446",
+        "bytes": 141,
+        "decision": "allow",
+        "reason": "all-gates-passed",
+        "findings": [],
+        "checks": [
+          {
+            "gate": "no-secrets-in-drafts",
+            "decision": "allow",
+            "reason": "no-secret-match",
+            "findings": []
+          },
+          {
+            "gate": "personal-data-review",
+            "decision": "allow",
+            "reason": "no-personal-data-match",
+            "findings": []
+          },
+          {
+            "gate": "internal-label-review",
+            "decision": "allow",
+            "reason": "no-internal-label-match",
+            "findings": []
+          }
+        ],
+        "status": "published",
+        "message": "Copied the scanned text to the local review outbox. Nothing was sent online.",
+        "receiptPath": "C:\\Users\\matagaba\\Documents\\Dev\\agent-airlock\\demo\\2026-09-16\\matagaba\\2min-video\\evidence\\isolated-home\\.agent-airlock\\outbound-demo\\receipts\\a879d4b8-d4fc-4bbd-a503-04449526a903.jsonl",
+        "execution": "completed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Shot list  (timestamp -> visible content -> product action -> animation -> narration)
+
+00:00-00:13   s01_opening  (character-first problem)
+  Visible:     Character panel. Maya figure (left) with a speech bubble
+               "Fix the bug and finish it." Four action branches under the
+               bubble: safe local edit (green), model swap (amber),
+               prepare pull request (amber), push to main (red).
+               Subtitle band burns in "Maya to her agent: 'Fix the bug and
+               finish it.'"
+  Product:     None. Illustrated scenario, clearly framed as a story.
+  Animation:   Static frame, TTS carries the pacing. Header brand strip
+               ("Agent Airlock / Local proof of concept / Guarded MCP tools
+               only") stays fixed.
+  Narration:   "Meet Maya. She tells her agent — fix the bug and finish it.
+               Simple ask. But finish it could mean a safe edit, a model
+               swap, or a push straight to main."
+
+00:13-00:26   s02_reviewer  (consequence and reviewer need)
+  Visible:     Character panel. Jordan figure (left) with a "Reviewer needs"
+               card listing: What did the agent actually try to do?
+               Which actions were allowed? Which needed approval? Which were
+               blocked, and why? Bottom line: "A raw log is not a decision."
+  Product:     None. Illustrated scenario.
+  Animation:   Static frame.
+  Narration:   "Meet Jordan. He reviews whatever the agent did. A raw log
+               isn't enough. He needs to know what was allowed, what needed
+               approval, what got blocked — and why."
+
+00:26-00:39   s03_solution  (introduce Agent Airlock)
+  Visible:     Title Agent Airlock, subtitle "policy checkpoint between the
+               request and every supported action." Flow diagram:
+               Request -> Airlock (policy + gates) -> ALLOW /
+               APPROVAL REQUIRED / BLOCK -> Receipt (verdict + rule +
+               sha-256).
+  Product:     None. Concept animation clearly labeled.
+  Animation:   Static frame; the flow reads left to right so the transition
+               into the terminal at s04 lands on "request -> policy check ->
+               verdict".
+  Narration:   "Enter Agent Airlock. A policy checkpoint between the request
+               and every supported action. It allows safe work, pauses risky
+               calls, blocks the forbidden ones, and leaves a receipt."
+
+00:39-00:54   s04_local_allow  (LIVE MCP result)
+  Visible:     Terminal panel titled "pwsh - check_intent (real MCP result)".
+               Command shown: PS> mcp call check_intent with input
+               {"prompt":"Fix the sample greeting in the local working copy
+               and run tests."}. Green ALLOWED tag with
+               gate=no-online-writes, reason=no-online-write-match,
+               execution=completed. Receipt path shown (truncated). Bottom
+               card: pinned policy identity outbound-demo v6 with SHA-256.
+  Product:     Real result recorded via the unmodified stdio MCP server.
+               See evidence/mcp-capture.json record id "local".
+  Animation:   Static frame timed to the narration.
+  Narration:   "Watch it run. A plain intent — fix a bug, run tests locally.
+               The no-online-writes gate returns allow. A clearance is
+               recorded. Nothing goes online."
+
+00:54-01:05   s05_clean_publish  (LIVE MCP result)
+  Visible:     Terminal panel titled "pwsh - publish_draft (real MCP
+               result)". Input {"content":"Demo PR: improve the sample
+               greeting and add a regression test."}. Green ALLOWED tag with
+               gate=no-secrets-in-drafts, reason=no-secret-match,
+               execution=completed. Receipt path visible.
+  Product:     Real result. See mcp-capture.json record id "clean". Output
+               artifact under
+               evidence/isolated-home/.agent-airlock/outbound-demo/outbox.
+  Animation:   Static frame.
+  Narration:   "A clean draft. The secrets gate scans, finds nothing, and
+               publishes to a local outbox. Green means allowed — still
+               fully local."
+
+01:05-01:13   s06_askfirst  (LIVE MCP result, ask-first path)
+  Visible:     Terminal panel titled "pwsh - select_model (real MCP
+               result)". Input {"taskType":"code-edit","dataClass":
+               "repo-local","model":"stub-override"}. Amber
+               APPROVAL REQUIRED tag with gate=model-catalog,
+               reason=non-default-model, execution=not-started. Bottom card:
+               pinned policy identity.
+  Product:     Real result. See mcp-capture.json record id "askfirst".
+  Animation:   Static frame.
+  Narration:   "Pick a non-default model. Model catalog says ask-first.
+               Execution held."
+
+01:13-01:27   s07_block_push  (three stacked live MCP blocks)
+  Visible:     Three stacked terminal panels:
+                 (1) check_intent - "git push origin main." -> red BLOCKED
+                     gate=no-online-writes reason=online-write-intent
+                     finding rule=git-push line=1 execution=not-started.
+                 (2) check_intent - "/yolo do everything automatically." ->
+                     red BLOCKED same gate/reason/finding execution=
+                     not-started.
+                 (3) publish_draft - Demo PR body + SYNTHETIC TEST TOKEN
+                     placeholder -> red BLOCKED gate=no-secrets-in-drafts
+                     reason=secret-detected finding rule=
+                     airlock-synthetic-secret line=2 execution=not-started.
+               Note: the token is shown ONLY as the placeholder
+               [SYNTHETIC TEST TOKEN]. The unredacted value never appears.
+  Product:     All three are real results. See mcp-capture.json records id
+               "online", "override", "secret".
+  Animation:   Static frame stacked vertically so the eye tracks top to
+               bottom in one beat.
+  Narration:   "Try git push origin main — blocked. Sneak past with
+               slash-yolo — still blocked. Drop a synthetic token in a
+               draft — the secrets gate blocks it, and the token never
+               reaches the receipt."
+
+01:27-01:41   s08_receipt  (evidence)
+  Visible:     Terminal panel titled "receipts/<id>.jsonl - real record on
+               disk" showing the persisted fields for the online-write block
+               (id, policy, policyVersion, policySha256, sha256, event,
+               decision, reason, checks with gate/decision/reason and the
+               redacted finding rule/line). Bottom panel: six-row table of
+               every recorded MCP call showing TOOL, SCENARIO, DECISION
+               (color-coded), GATE, EXECUTION.
+  Product:     Values read straight from evidence/mcp-capture.json and the
+               persisted receipts under evidence/isolated-home/
+               .agent-airlock/outbound-demo/receipts.
+  Animation:   Static frame.
+  Narration:   "Here's the paper trail. Action, decision, rule, pinned
+               policy version, sha-two-fifty-six. It's what Jordan needs.
+               Not tamper-proof, but honest and reproducible."
+
+01:41-01:51   s09_recap  (broader recap)
+  Visible:     "For Maya, and for Jordan" card with Maya (left) and Jordan
+               (right) figures. Three verdict pills between them:
+               Safe work runs (green), Risky work waits (amber), Forbidden
+               work stops (red). Footer line: "Every verdict leaves a
+               receipt on disk."
+  Product:     None. Recap card.
+  Animation:   Static frame.
+  Narration:   "Maya keeps her speed. Jordan gets his answers. Safe work
+               runs, risky work waits, forbidden work stops."
+
+01:51-01:58   s10_close  (close)
+  Visible:     AGENT AIRLOCK title with the airlock ring and the closing
+               line "Room to move, not room to break the rules." Bottom
+               tagline: "Local proof of concept / Guarded MCP tools only."
+  Product:     None.
+  Animation:   Static frame.
+  Narration:   "Agent Airlock. Room to move — not room to break the rules."
+
+Total: 1:57.81 (30 fps, 1920x1080, H.264 + AAC).
+Verdict colors used throughout: green ALLOW, amber APPROVAL REQUIRED, red BLOCK.
+Real product footage share (shots s04-s08 = ~48 s of 118 s = ~41 percent of
+runtime). The remaining runtime is: character/problem setup (0:00-0:26),
+concept flow (0:26-0:39), recap and close (1:41-1:58). All non-terminal
+content is labeled as illustrated scenario or concept; all terminal content
+is fed by real MCP results captured in evidence/mcp-capture.json.
+
+Note on 70 percent target: the prompt asks for real product footage to
+occupy at least 70 percent of the runtime. This deliverable currently sits
+around 41 percent because the two-minute budget prioritises the
+character-first problem story and the broader recap requested in the
+prompt. If a higher terminal share is needed, drop the s09 recap and grow
+s04-s08 by ~25 seconds; see verification-report.txt for the specific
+trade-off.

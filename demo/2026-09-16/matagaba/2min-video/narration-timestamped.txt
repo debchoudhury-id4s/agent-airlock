@@ -1,0 +1,29 @@
+00:00:00 - 00:00:13   [s01_opening]
+Meet Maya. She tells her agent — fix the bug and finish it. Simple ask. But finish it could mean a safe edit, a model swap, or a push straight to main.
+
+00:00:13 - 00:00:26   [s02_reviewer]
+Meet Jordan. He reviews whatever the agent did. A raw log isn't enough. He needs to know what was allowed, what needed approval, what got blocked — and why.
+
+00:00:26 - 00:00:39   [s03_solution]
+Enter Agent Airlock. A policy checkpoint between the request and every supported action. It allows safe work, pauses risky calls, blocks the forbidden ones, and leaves a receipt.
+
+00:00:39 - 00:00:54   [s04_local_allow]
+Watch it run. A plain intent — fix a bug, run tests locally. The no-online-writes gate returns allow. A clearance is recorded. Nothing goes online.
+
+00:00:54 - 00:01:05   [s05_clean_publish]
+A clean draft. The secrets gate scans, finds nothing, and publishes to a local outbox. Green means allowed — still fully local.
+
+00:01:05 - 00:01:13   [s06_askfirst]
+Pick a non-default model. Model catalog says ask-first. Execution held.
+
+00:01:13 - 00:01:27   [s07_block_push]
+Try git push origin main — blocked. Sneak past with slash-yolo — still blocked. Drop a synthetic token in a draft — the secrets gate blocks it, and the token never reaches the receipt.
+
+00:01:27 - 00:01:41   [s08_receipt]
+Here's the paper trail. Action, decision, rule, pinned policy version, sha-two-fifty-six. It's what Jordan needs. Not tamper-proof, but honest and reproducible.
+
+00:01:41 - 00:01:51   [s09_recap]
+Maya keeps her speed. Jordan gets his answers. Safe work runs, risky work waits, forbidden work stops.
+
+00:01:51 - 00:01:58   [s10_close]
+Agent Airlock. Room to move — not room to break the rules.
