@@ -33,19 +33,21 @@ This creates four common problems:
 3. **Poor approval choices** - Users either approve every small step or give the agent too much freedom.
 4. **Missing explanations** - Activity logs may show what happened without clearly showing why it was allowed or blocked.
 
-```text
- TODAY
+```mermaid
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 8, "wrappingWidth": 180}}}%%
+flowchart LR
+    Request["Request, instructions,<br/>permissions, and safety rules"] -->|1| Prompt["One large prompt"]
+    Prompt -->|2| Agent["AI agent"]
+    Agent -->|3| Systems["Real systems"]
 
- Request + instructions + permissions + safety rules
-                         |
-                         v
-                   ONE LARGE PROMPT
-                         |
-                         v
-                      AI AGENT
-                         |
-                         v
-                    REAL SYSTEMS
+    classDef input fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
+    classDef risk fill:#fff4cc,stroke:#b7791f,color:#3d2b00,stroke-width:1.5px;
+    classDef actor fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
+    classDef system fill:#fde8e7,stroke:#c94c4c,color:#4a1717,stroke-width:1.5px;
+    class Request input;
+    class Prompt risk;
+    class Agent actor;
+    class Systems system;
 ```
 
 Free-form text is a great way to describe a goal. It is a poor place to hide important permissions.
@@ -58,21 +60,27 @@ Free-form text is a great way to describe a goal. It is a poor place to hide imp
 
 The user describes the outcome. The organization keeps its rules separate. Agent Airlock combines them into a clear mission before work begins.
 
-```text
-                        ORGANIZATION RULES
-                                |
-                                v
- USER REQUEST  ----------> [ AGENT AIRLOCK ] ----------> AI AGENT
-                                |
-                 +--------------+--------------+
-                 |              |              |
-                 v              v              v
-              ALLOW          ASK FIRST        BLOCK
-                 \              |              /
-                  +-------------+-------------+
-                                |
-                                v
-                       CLEAR ACTIVITY RECORD
+```mermaid
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+flowchart TB
+    Goal["User goal"] -->|1a| Mission["Airlock mission check<br/>(product target)"]
+    Rules["Versioned organization rules"] -->|1b| Mission
+    Mission -->|2| Agent["AI agent works<br/>inside the approved scope"]
+    Agent -->|3| Check{"Airlock checks<br/>each supported action"}
+    Check -->|"4a. allow"| Allow["Run the registered executor<br/>and record the outcome"]
+    Check -->|"4b. ask first"| Ask["Pause for exact approval<br/>and record the decision"]
+    Check -->|"4c. block or error"| Block["Do not execute<br/>and record the reason"]
+
+    classDef input fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
+    classDef control fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
+    classDef allow fill:#e5f6e8,stroke:#3f8f55,color:#173d22,stroke-width:1.5px;
+    classDef ask fill:#fff4cc,stroke:#b7791f,color:#3d2b00,stroke-width:1.5px;
+    classDef block fill:#fde8e7,stroke:#c94c4c,color:#4a1717,stroke-width:1.5px;
+    class Goal,Rules input;
+    class Mission,Agent,Check control;
+    class Allow allow;
+    class Ask ask;
+    class Block block;
 ```
 
 The agent stays free to solve the problem inside the approved space. It cannot create new permissions for itself along the way.
@@ -111,28 +119,21 @@ This is a future adoption path, not part of the local hackathon build.
 
 The contract, organization rules, examples, and Agent Airlock files can live in GitHub or Azure DevOps.
 
-```text
- +--------------------------------------------------+
- |             GITHUB OR AZURE DEVOPS               |
- +--------------------------------------------------+
- | agent contract                                   |
- | organization rules                              |
- | Agent Airlock tool                               |
- | examples and tests                               |
- +-------------------------+------------------------+
-                           |
-                           v
-                  PULL REQUEST REVIEW
-                           |
-                           v
-                   AUTOMATIC CHECK
-             GitHub Actions or Azure Pipelines
-                           |
-                           v
-                  APPROVED RULES RELEASE
-                           |
-                           v
-                     LOCAL AI AGENT
+```mermaid
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 8, "wrappingWidth": 165}}}%%
+flowchart LR
+    Repo["GitHub or Azure DevOps<br/>Contract, rules, plugin,<br/>examples, and tests"]
+    Repo -->|1| Review["PR review"]
+    Review -->|2| Check["CI policy checks<br/>Actions or Pipelines"]
+    Check -->|3| Release["Approved rules release"]
+    Release -->|4| Agent["Local agent loads<br/>the approved release"]
+
+    classDef source fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
+    classDef process fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
+    classDef release fill:#e5f6e8,stroke:#3f8f55,color:#173d22,stroke-width:1.5px;
+    class Repo source;
+    class Review,Check process;
+    class Release,Agent release;
 ```
 
 A team adds the tool and two small files to its project. Changes go through a pull request. The automatic check shown above can create an approved release through GitHub Releases, GitHub Packages, or Azure Artifacts. The agent loads that release when it starts.
@@ -171,37 +172,40 @@ product vision described above.
 ### Runtime architecture
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "basis", "rankSpacing": 40, "nodeSpacing": 20}}}%%
-flowchart LR
-    User["User"] --> Server["MCP server"]
-    Skill["Demo skill"] --> Server
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+flowchart TB
+    User["User request"] -->|1a| Host["Agency / Copilot host"]
+    Sandbox["Optional host sandbox<br/>Filesystem, network, credentials,<br/>MCP/LSP, and child processes<br/>Independent; supplied profiles allow bypass"] -. "1b. constrains when enabled" .-> Host
 
-    subgraph Tools["Guarded tools"]
-        direction TB
-        T1["publish_draft"]
-        T2["check_intent"]
-        T3["select_model"]
-    end
+    Host -->|2a| Startup{"Airlock plugin startup"}
+    Host -->|2b| Other["Other route<br/>Native shell, another MCP server,<br/>or the host's model traffic"]
 
-    Server --> Tools --> Broker["Broker"]
-    Zod["Zod validation"] --> Broker
-    Broker --> Eval["Policy evaluator"]
+    Startup -->|"3a. current source"| Failure["Startup stops<br/>approvalGate is an object but is called<br/>as a function; no MCP tools register"]
+    Startup -. "3b. runtime path after startup succeeds" .-> Guarded["Guarded route<br/>Direct call or optional demo skill calls<br/>publish_draft, check_intent, or select_model"]
+    Guarded -->|4| Plugin["Airlock plugin<br/>Validate, broker, pinned policy,<br/>and the tool's required gate"]
+    Plugin -->|5| Local["Local-only result<br/>Redacted receipt and,<br/>on allow, one local artifact"]
+    Other -->|3c| Outside["Outside Airlock's<br/>semantic enforcement boundary"]
 
-    subgraph Decision["Decision"]
-        direction TB
-        Allow["Allow: receipt and execute"]
-        Ask["Ask first: no execution"]
-        Block["Block: no execution"]
-    end
-
-    Eval --> Decision
+    classDef actor fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
+    classDef containment fill:#f3f4f6,stroke:#6b7280,color:#20242b,stroke-width:1.5px,stroke-dasharray:5 3;
+    classDef control fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
+    classDef evidence fill:#e5f6e8,stroke:#3f8f55,color:#173d22,stroke-width:1.5px;
+    classDef outside fill:#fff4cc,stroke:#b7791f,color:#3d2b00,stroke-width:1.5px;
+    classDef failure fill:#fde8e7,stroke:#c94c4c,color:#4a1717,stroke-width:1.5px;
+    class User,Host actor;
+    class Sandbox containment;
+    class Startup,Guarded,Plugin control;
+    class Local evidence;
+    class Other,Outside outside;
+    class Failure failure;
 ```
 
 Agency loads [`plugin.json`](./plugins/AirlockPlugin/plugin.json), then
 [`.mcp.json`](./plugins/AirlockPlugin/.mcp.json) launches the Node.js MCP server.
-The caller can choose a registered tool and provide that tool's documented
-arguments. It cannot choose the policy, gate list, executor, artifact path, or
-approval state.
+On a successful startup, the caller can choose a registered tool and provide
+that tool's documented arguments. It cannot choose the policy, gate list,
+executor, artifact path, or approval state. The current startup blocker shown
+above is detailed under [Decision and evidence lifecycle](#decision-and-evidence-lifecycle).
 
 Each tool validates its input before creating a normalized action:
 
@@ -248,27 +252,44 @@ The rules are local, reviewed plugin files:
 ### Decision and evidence lifecycle
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "basis", "rankSpacing": 40, "nodeSpacing": 20}}}%%
-flowchart LR
-    Agency["Agency Copilot"] --> Tool["Guarded tool"] --> Broker["Broker"]
-    Valid["Validate"] --> Broker
-    Broker --> Out
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 8, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
+sequenceDiagram
+    participant Caller as Agency / Copilot
+    participant Tool as Registered tool
+    participant Broker
+    participant Rules as Policy + gates
+    participant Files as Local files
 
-    subgraph Gates["Required gates"]
-        direction TB
-        G1["secrets"]
-        G2["online-writes"]
-        G3["model-catalog"]
-    end
-
-    Broker --> Gates
-    Gates --> Out
-
-    subgraph Out["Decision"]
-        direction TB
-        Allow["Allow: receipt, execute, complete"]
-        Ask["Ask first: approval-required"]
-        Block["Block: denied"]
+    Caller->>Tool: 1. MCP call with documented arguments
+    Tool->>Tool: 2. Strict schema and content validation
+    alt Invalid input
+        Tool-->>Caller: 3a. Blocked - no broker, receipt, or execution
+    else Valid input
+        Tool->>Broker: 3b. Fixed action and fixed executor
+        Broker->>Broker: 4. Assign ID, deep-freeze, and fingerprint
+        Broker->>Rules: 5. Evaluate the exact action snapshot
+        Rules->>Rules: 6. Run every gate and compose the result
+        Note over Rules: Precedence: block, error, ask-first, allow
+        Rules-->>Broker: 7. Validated decision and redacted findings
+        Broker->>Files: 8. Persist the redacted decision receipt
+        alt Receipt write fails
+            Files-->>Broker: 9a. Write failed
+            Broker-->>Caller: 10a. Error - receipt-failed, no execution
+        else Block or error
+            Files-->>Broker: 9b. Receipt saved
+            Broker-->>Caller: 10b. Blocked or error - no execution
+        else Ask first
+            Files-->>Broker: 9c. Receipt saved
+            Broker-->>Caller: 10c. Blocked - approval-required, no execution today
+        else Allow
+            Files-->>Broker: 9d. Receipt saved
+            Broker->>Tool: 10d. Run the fixed executor once with the frozen action
+            Tool->>Files: 11d. Write one local artifact
+            Files-->>Tool: 12d. Artifact saved or explicit failure
+            Tool-->>Broker: 13d. Artifact metadata or explicit failure
+            Broker->>Files: 14d. Append the execution outcome
+            Broker-->>Caller: 15d. Local artifact on success, otherwise an error
+        end
     end
 ```
 
