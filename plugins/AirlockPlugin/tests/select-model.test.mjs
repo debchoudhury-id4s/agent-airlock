@@ -10,6 +10,7 @@ import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
 import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
 import { createSecretsGate } from "../gates/secrets/index.mjs";
+import { approvalGate } from "../gates/approval/index.mjs";
 import { pluginRoot } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
@@ -20,6 +21,7 @@ function createSelection({ root, catalog } = {}) {
       createSecretsGate({ scanner: async () => [] }),
       createNoOnlineWritesGate(),
       createModelCatalogGate({ catalog }),
+      approvalGate,
     ],
   });
   return createSelectModel({ root, evaluate });

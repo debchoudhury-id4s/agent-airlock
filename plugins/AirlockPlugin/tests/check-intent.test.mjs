@@ -10,12 +10,13 @@ import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
 import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
 import { createSecretsGate } from "../gates/secrets/index.mjs";
+import { approvalGate } from "../gates/approval/index.mjs";
 import { pluginRoot } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
 function createIntent({ root, rules } = {}) {
   const evaluate = createPolicyEvaluator({
-    policy, gates: [createSecretsGate({ scanner: async () => [] }), createNoOnlineWritesGate({ rules }), createModelCatalogGate()],
+    policy, gates: [createSecretsGate({ scanner: async () => [] }), createNoOnlineWritesGate({ rules }), createModelCatalogGate(), approvalGate],
   });
   return createCheckIntent({ root, evaluate });
 }

@@ -50,6 +50,48 @@ To keep it available across Agency sessions:
 agency plugin install "local:C:\Git\agent-airlock\plugins\AirlockPlugin" --engine copilot
 ```
 
+### Automatic mission preflight
+
+The plugin evaluates every submitted prompt before the agent starts its turn.
+See [Airlock prompt lifecycle](hooks.md) for the concise invocation matrix.
+The prompt hook records a redacted mission decision for the Copilot session and
+displays one of these transient status messages:
+
+```text
+Airlock cleared the mission
+Airlock blocked the mission: online-write-intent
+```
+
+The `preToolUse` hook enforces that decision. A blocked mission cannot use
+tools. A cleared mission may use local tools subject to the host's normal
+permissions, but shell commands are checked again and known direct online-write
+tools are denied. For example, a locally scoped prompt can read and edit files,
+while a later `git push origin main` attempt is denied.
+
+Prompt hooks cannot cancel a model turn, so a blocked prompt may still receive a
+text-only response. Tool execution is the enforcement boundary. High-risk
+operations should continue to use Airlock's brokered MCP tools so their decision
+receipt exists before execution.
+
+Mission state contains no prompt text and is removed when the session ends. A
+missing, invalid, or blocked mission state denies tool use. Hook timeouts are a
+host-level fail-open behavior, so policy-critical actions must not expose an
+unguarded executor as an alternative to the Airlock MCP tool.
+
+#### Hook request lifecycle
+
+| Order | File | Responsibility |
+|---|---|---|
+| 1 | `hooks\hooks.json` | Registers the three Copilot lifecycle events and launches their Node adapters. `${PLUGIN_ROOT}` is expanded by the host to the installed plugin directory. |
+| 2 | `hooks\input.mjs` | Safely reads the JSON event from stdin with a size limit and emits host-compatible progress JSON. |
+| 3 | `hooks\user-prompt-submitted.mjs` | Validates the prompt event, immediately replaces stale state with a deny-safe `preflight-in-progress` state, evaluates `check_intent`, persists the redacted result, and shows the status message. |
+| 4 | `runtime\airlock.mjs` | Builds the shared policy evaluator and `checkIntent` function used by both hooks and MCP tools. |
+| 5 | `runtime\session-state.mjs` | Stores one schema-validated decision per session using a hashed filename and atomic replacement; it never stores prompt text. |
+| 6 | `hooks\pre-tool-use.mjs` | Loads the current mission decision for every proposed tool call and converts enforcement results into Copilot's allow/ask/deny protocol. |
+| 7 | `runtime\hook-enforcement.mjs` | Denies tools for missing or non-allowed missions, rechecks shell commands, blocks recognizable direct online mutations, and otherwise leaves the host's normal permissions intact. |
+| 8 | `hooks\session-end.mjs` | Deletes transient mission state when the session ends without deleting permanent Airlock receipts. |
+| Test | `tests\hooks.test.mjs` | Verifies atomic replacement and cleanup, fail-closed missing/blocked state, local-tool fallthrough, shell rechecks, and direct online-write denial. |
+
 Then ask:
 
 > Run the airlock-demo skill. Show the clean draft, the secret block, and the
@@ -101,9 +143,17 @@ plugins\AirlockPlugin\
   .mcp.json                            Plugin-relative MCP startup declaration
   agency.json                          Optional Agency metadata
   server.mjs                           Composition and MCP tool registration
+  hooks\
+    hooks.json                         Prompt, tool, and session lifecycle registration
+    user-prompt-submitted.mjs          Automatic mission preflight
+    pre-tool-use.mjs                   Fail-closed tool enforcement adapter
+    session-end.mjs                    Mission-state cleanup
   runtime\
+    airlock.mjs                        Shared policy composition for hooks and MCP tools
+    hook-enforcement.mjs               Prompt-state and proposed-tool decisions
     policies.mjs                       Validated gate contracts and decision composition
     broker.mjs                         Check -> receipt -> execute -> outcome
+    session-state.mjs                  Redacted per-session mission decisions
   policies\
     default.json                       Versioned tool-to-gate bindings
   gates\
@@ -131,6 +181,7 @@ plugins\AirlockPlugin\
     broker.test.mjs                     Zero-execution and receipt-order tests
     publish-draft.test.mjs              Secrets and actual MCP transport regression tests
     check-intent.test.mjs               Intent, yolo, and MCP transport tests
+    hooks.test.mjs                      Mission-state and tool-enforcement tests
     select-model.test.mjs               Catalog, ask-first, and MCP transport tests
   setup.mjs                            Checksum-verified scanner installation
 ```
