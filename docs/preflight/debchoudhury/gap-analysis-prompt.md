@@ -1,127 +1,190 @@
-# gap-analysis-prompt
+Perform an evidence-based implementation gap analysis, architecture conformance review, and requirements-to-implementation traceability audit of this repository.
 
-Perform a deep implementation gap analysis and architecture conformance review of this repository.
+Compare the capabilities claimed by non-excluded documentation with the source code, configuration, tests, and locally observable behavior. Create a `gaps-and-opportunities.md` document at the repository root containing the findings and recommendations. Do not implement any fixes.
 
-Your goal is to compare what the repository claims, designs, and promises against what the source code actually implements, then create a practical `gaps-and-opportunities.md` document at the repository root.
+## Strict exclusions
 
-## Review scope
+Exclude these repository-root directories and everything beneath them from the entire review:
 
-Treat the source code and executable behavior as the ground truth. Review at minimum:
+- `demo/`
+- `docs/preflight/`
+- `poc/`
 
-- Root `README.md`
-- `docs/preflight/prd.md`
-- Other architecture, design, demo, setup, and runbook documentation
-- Plugin manifests and configuration
-- Policies, gates, tools, skills, runtime/broker code, executors, and receipts
-- Tests and fixtures
-- Setup scripts and dependency manifests
-- Sandbox or host-containment configuration, if present
+Do not read, search, enumerate, summarize, execute, cite, or use files from these directories as evidence. Do not follow links or references into them. Do not infer requirements from their names or contents. Configure every file-discovery and content-search operation to exclude them before running it. Do not traverse symlinks or alternate paths into excluded content.
 
-Trace important claims from documentation through configuration, implementation, tests, and observable output. Do not merely summarize files. Probe whether each documented workflow can actually run end to end.
+If a non-excluded file references an excluded path, you may note that the reference exists only when materially relevant. Cite only the referring location in the non-excluded file; do not inspect or evaluate the excluded target. Do not report capabilities contained solely in excluded directories as missing or broken.
 
-## Questions to answer
+These exclusions override every other instruction. This is not a review of requirements that exist only in the excluded directories.
 
-1. Which critical README and PRD capabilities are fully implemented, partially implemented, absent, broken, misleading, or untested?
-2. Do documented commands, prompts, diagrams, tool names, paths, expected results, and setup instructions match the current code?
-3. Can every registered plugin, MCP server, gate, policy binding, tool, executor, and demo skill load and operate as described?
-4. Are enforcement decisions fail-closed, consistently composed, and applied before side effects?
-5. Can users or agents bypass controls through caller-controlled inputs, alternate tools, shell commands, stale configuration, incomplete routing, or mismatched policy bindings?
-6. Are approval, blocking, receipt, redaction, error, and completion semantics internally consistent?
-7. Do tests prove the real integration path, including startup, MCP transport, policy evaluation, zero execution after denial, artifact creation, and receipt contents?
-8. Which documented product claims exceed the actual enforcement boundary?
-9. What makes the demo fragile, confusing, difficult to reproduce, or likely to fail during a hackathon presentation?
-10. What useful capabilities can be added locally without external permissioning, organizational allowlisting, cloud provisioning, administrator access, or new hosted services?
+## Evidence model
 
-## Constraints
+Use two distinct sources of truth:
 
-- Focus only on actionable findings.
-- Do not recommend work that depends on external permissioning, allowlisting, enterprise onboarding, tenant configuration, administrator approval, production credentials, or access to unavailable services.
-- Prefer hackathon-appropriate local substitutes where they preserve the intended behavior, for example:
-  - deterministic or hardcoded local responses instead of standing up a backend;
-  - SQLite or local JSONL instead of Azure Storage, Cosmos DB, or another cloud database;
-  - single-machine or repository-level analysis instead of account-, tenant-, or organization-level analysis;
-  - local fixtures instead of live external APIs;
-  - simulated writes instead of real publication;
-  - local approval tokens or files instead of an enterprise approval service;
-  - checked-in policy snapshots instead of a remote policy distribution system.
-- Distinguish clearly between a safe hackathon shortcut and a production-ready design.
-- Do not propose cosmetic documentation changes unless they correct a behavioral mismatch or materially improve demo reproducibility.
-- Do not modify existing implementation files. The only requested change is creating `gaps-and-opportunities.md`.
-- Do not perform online writes, create issues, push commits, call hosted services, or alter remote resources.
+- Non-excluded documentation defines the current product, behavior, setup, and architecture claims to assess.
+- Source code, configuration, tests, and locally observed execution establish what is currently implemented.
 
-## Verification approach
+Distinguish current-behavior claims from explicitly labeled future goals, examples, aspirations, and out-of-scope items. Do not classify a future goal as a current gap unless another non-excluded source presents it as currently available.
 
-Use repository search and direct source inspection to build a claim-to-code map. Run the smallest relevant local tests and startup checks needed to verify important claims. Exercise failure paths as well as successful paths. Do not treat the presence of a file, test name, comment, or README statement as proof of behavior.
+A file, symbol, test name, comment, or documentation statement proves intent, not working behavior. Verify important claims through the actual integration path whenever local execution is possible.
 
-For every finding, cite:
+## Analysis requirements
 
-- the documented claim or intended behavior;
-- the relevant source/configuration/test files and line numbers;
-- the observed implementation or missing behavior;
-- why the gap matters;
-- a concrete local fix;
-- how to verify that fix.
+Review all relevant non-excluded surfaces, including:
 
-Avoid speculation. Label anything that could not be verified.
+- root `README.md`;
+- architecture, design, setup, and runbook documentation outside excluded directories;
+- plugin and MCP manifests;
+- package and dependency manifests;
+- server startup and tool registration;
+- policies and policy loading;
+- gate registration, evaluation, and decision composition;
+- tool input validation and normalization;
+- broker and executor behavior;
+- skills and their documented prompts;
+- receipt, artifact, redaction, and error handling;
+- tests and fixtures outside excluded directories;
+- setup and local utility scripts;
+- sandbox or host-containment configuration, if present.
 
-## Required document structure
+Trace each material current claim through the complete path where applicable:
 
-Create `gaps-and-opportunities.md` with these sections:
+```text
+Documented claim
+  -> manifest and configuration
+  -> startup and tool registration
+  -> input validation and normalization
+  -> policy binding
+  -> gate evaluation
+  -> composed decision
+  -> side effect or prevented side effect
+  -> receipt and artifact
+  -> test coverage
+```
 
-# Gaps and Opportunities
+Do not merely inventory or summarize files. Identify root causes rather than listing duplicate symptoms.
 
-## Executive summary
-A concise assessment of how closely the implementation matches the README and PRD, the most serious demo risks, and the highest-value local improvements.
+## Questions the analysis must answer
 
-## Review method and evidence
-List the documents, implementation surfaces, commands, and tests inspected or executed. Record any verification limitations.
+1. Which current capabilities claimed by non-excluded documentation are fully implemented, partially implemented, missing, broken, misleading, untested, or unable to be verified?
+2. Do documented commands, paths, tool names, prompts, arguments, expected results, diagrams, prerequisites, and setup instructions match the implementation?
+3. Can every registered plugin, MCP server, gate, policy binding, guarded tool, skill, and executor load and operate as described?
+4. Are startup and registration failures surfaced clearly, or can the system appear available while required components are unusable?
+5. Are all tool inputs strictly validated and normalized before policy evaluation?
+6. Can unknown fields, malformed values, oversized payloads, unsupported targets, or type mismatches reach a gate or executor?
+7. Can caller-controlled inputs select, replace, weaken, or bypass policies, gates, approval state, executors, destinations, output paths, or artifact identities?
+8. Does every guarded action use the exact same immutable or equivalent action snapshot for evaluation and execution?
+9. Are all policy-bound gates evaluated, and is decision precedence deterministic and fail-closed?
+10. Are `allow`, `ask-first`, `block`, `error`, completion, and receipt semantics internally consistent across tools and gates?
+11. Do blocked, failed, malformed, and ask-first decisions guarantee zero protected execution?
+12. Can a successful gate, retry, fallback, error handler, or alternate internal path override or conceal another gate's block?
+13. Are gate failures treated as failures rather than successful or allow-shaped fallbacks?
+14. Can a receipt-writing failure permit execution without trustworthy evidence?
+15. Can an executor failure be mistaken for successful completion?
+16. Do receipts accurately distinguish permission, attempted execution, completed execution, denied execution, and uncertain execution?
+17. Do receipts and returned results avoid exposing raw prompts, drafts, matched secrets, sensitive values, unnecessary payloads, or internal exception details?
+18. Are action fingerprints, policy identities, rule identities, timestamps, and artifact references sufficient to understand what was evaluated without recording sensitive content?
+19. Can policies, rules, or gate implementations change after startup without the recorded policy identity reflecting the effective behavior?
+20. Are local artifacts written only after an allow decision and only to fixed, expected locations?
+21. Can path traversal, caller-selected paths, symlinks, collisions, stale files, or predictable identifiers alter artifact behavior?
+22. Do tests exercise actual server startup and MCP transport, or only isolated functions?
+23. Do tests cover successful, blocked, ask-first, malformed-input, unknown-field, gate-failure, receipt-failure, executor-failure, and completion-receipt paths?
+24. Do tests prove zero execution after every non-allow result?
+25. Do tests verify both returned results and persisted evidence?
+26. Do documented prompts and skills invoke the real guarded tools with the exact expected arguments?
+27. Can a skill silently substitute a shell command, another MCP tool, a hosted API, or another publisher after a guarded action is blocked?
+28. Which current documentation claims exceed the actual enforcement boundary?
+29. Are limitations stated clearly enough that users will not mistake a tool-specific gate for workstation-wide, shell-wide, model-wide, or network-wide protection?
+30. Which failures would prevent or materially disrupt a local hackathon presentation?
+31. Is there a deterministic, offline way to start, verify, exercise, inspect, and reset each current workflow?
+32. Which setup steps are fragile, stale, environment-specific, network-dependent, or inconsistent with the repository's declared prerequisites?
+33. Which current workflows lack a simple local health check, startup self-check, reset path, or end-to-end verification command?
+34. Which actionable improvements can be completed entirely on one machine without external permissions, allowlisting, tenant configuration, administrator access, production credentials, cloud provisioning, or hosted services?
+35. Which improvements are appropriate hackathon shortcuts, and which are production-shaped local improvements that remain useful after the hackathon?
+36. What is the smallest dependency-aware set of fixes required for every current documented workflow to start, run, fail safely, and produce trustworthy local evidence?
 
-## Claim-to-implementation matrix
-Use a table with:
+Analyze shell-command or alternate-tool bypasses only when they contradict a current non-excluded claim or materially undermine a documented workflow. Do not report the absence of workstation-wide enforcement as a defect when non-excluded documentation clearly states that limitation.
 
-| Capability or claim | Source of claim | Implementation evidence | Status | Gap or drawback |
+## Recommendation requirements
 
-Use only these statuses: `Implemented`, `Partial`, `Missing`, `Broken`, `Misleading`, `Untested`.
+Include only findings that have a concrete, locally executable response.
 
-## Prioritized gaps
-Use a table with:
+Do not recommend work that depends on:
 
-| Priority | Gap | Evidence | User/demo impact | Actionable local fix | Verification |
+- external permissioning or allowlisting;
+- enterprise, account, tenant, or organization onboarding;
+- administrator approval;
+- production credentials;
+- cloud provisioning;
+- hosted databases or storage;
+- live external APIs;
+- organization- or account-wide access;
+- unavailable proprietary services.
 
-Rank findings as:
+Prefer narrowly scoped local substitutes when supported by evidence, such as:
 
-- `P0` — prevents startup, corrupts evidence, permits a prohibited action, or breaks the primary demo;
-- `P1` — materially weakens enforcement or makes a core scenario unreliable;
-- `P2` — meaningful limitation with a feasible local improvement;
-- `P3` — useful refinement, not required for the demo.
+- deterministic or hardcoded local responses instead of a backend;
+- SQLite or JSONL instead of Azure Storage, Cosmos DB, or another hosted database;
+- repository- or single-machine analysis instead of account-, tenant-, or organization-level analysis;
+- checked-in fixtures instead of live APIs;
+- simulated writes instead of real publication;
+- exact-action, single-use local approval tokens or files instead of an enterprise approval service;
+- checked-in policy snapshots instead of remote policy distribution;
+- local startup checks, reset scripts, and scenario runners instead of an operations service.
 
-## Hackathon quick wins
-For each quick win include:
+For every recommended change:
 
-- exact scope;
-- files likely to change;
-- estimated effort: `<1 hour`, `half day`, `1 day`, or `2–3 days`;
-- local substitute being used;
-- expected demo improvement;
-- focused verification steps.
+- identify the verified gap or root cause it addresses;
+- cite relevant non-excluded files and exact line ranges;
+- explain the user, enforcement, evidence, or hackathon impact;
+- identify the likely files or components affected;
+- propose the smallest complete local change;
+- distinguish a deliberate hackathon shortcut from a production-shaped local improvement;
+- estimate the effort using `<1 hour`, `half day`, `1 day`, or `2–3 days`;
+- state dependencies on other fixes;
+- define focused verification that proves the gap is resolved.
 
-Prefer small, additive, independently demonstrable changes.
+Rank findings by impact:
 
-## Short-term local architecture opportunities
-Describe improvements that can be completed without external dependencies. Explicitly consider local SQLite state, deterministic fixtures, single-use local approvals, policy snapshots, replayable receipts, local stop controls, demo reset scripts, startup self-checks, and end-to-end scenario runners—but recommend only those justified by repository evidence.
+- `P0`: prevents startup, corrupts or invalidates evidence, permits a prohibited action, or breaks a primary documented workflow;
+- `P1`: materially weakens enforcement or makes a core workflow unreliable;
+- `P2`: a meaningful limitation with a feasible local improvement;
+- `P3`: a useful refinement not required for the minimum hackathon workflow.
 
-## Deferred production concerns
-Briefly record important production limitations that should not be solved during the hackathon. Do not turn these into current recommendations.
+Do not recommend cosmetic documentation changes unless they correct a behavioral mismatch or materially improve reproducibility. Do not give generic advice such as “improve security,” “add more tests,” “improve error handling,” or “use the cloud.” State the exact behavior to change and how to verify it.
 
-## Recommended execution order
-Provide a dependency-aware sequence that starts with broken startup paths and core enforcement, then demo reliability, then optional improvements. End with a minimal “demo-ready” cutoff.
+## Verification constraints
 
-## Quality bar
+- Perform no online writes.
+- Do not push, commit, create issues or pull requests, publish artifacts, or modify remote resources.
+- Do not fetch Git remotes or call hosted APIs or services.
+- Do not install dependencies, download tools, or run setup commands that may access a network.
+- Run tests only when required dependencies are already available locally and the command can run offline.
+- If a dependency is unavailable, mark the relevant behavior as unable to be verified; do not install it.
+- Record the initial Git status and preserve all pre-existing changes.
+- Do not modify tracked implementation, configuration, tests, documentation, manifests, or lock files.
+- The only persistent repository change may be `gaps-and-opportunities.md`.
+- Temporary artifacts may be created only when required for safe local verification.
+- Remove only temporary artifacts created by this analysis. Do not perform broad or destructive cleanup.
+- Do not claim a check passed unless its relevant command completed successfully.
+- At the end, confirm that the repository diff contains no changes created by this analysis other than `gaps-and-opportunities.md`.
 
-- Be direct about drawbacks; do not soften broken or misleading behavior.
-- Consolidate duplicate symptoms under their root cause.
-- Prefer precise fixes over broad redesigns.
-- Separate verified facts from inferred risks.
-- Include no generic advice such as “improve security,” “add more tests,” or “use the cloud.”
-- Every recommendation must be executable locally by a contributor with repository access and standard developer tooling.
-- The final document should help the team decide what to fix next, not merely describe the repository.
+## Evidence requirements
+
+For every finding:
+
+- cite a current claim from a non-excluded document when applicable;
+- otherwise cite the relevant code, configuration contract, or testable invariant;
+- use root-relative paths and exact line ranges;
+- separate verified facts from inferred risks;
+- state which local commands or observations support the conclusion;
+- state any verification limitations;
+- never cite or use evidence from `demo/`, `docs/preflight/`, or `poc/`.
+
+The resulting `gaps-and-opportunities.md` should organize the analysis in whatever structure best communicates the evidence, priorities, dependencies, quick fixes, local opportunities, and minimum hackathon-ready cutoff. Do not follow a predetermined report template if another structure communicates the findings more clearly.
+
+After creating the document, report only:
+
+- the path created;
+- the number of P0, P1, P2, and P3 findings;
+- the minimum hackathon-ready cutoff;
+- which checks, if any, could not be run.
