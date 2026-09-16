@@ -4,9 +4,9 @@ The shared plugin lives in `plugins\AirlockPlugin` at the repository root.
 Any teammate can contribute here. Personal `poc\` folders remain available for
 experiments; independent future plugins belong beside this one in `plugins\`.
 
-**Implemented today:** three demo skills, `publish_draft` with a secrets gate,
+**Implemented today:** four demo skills, `publish_draft` with a secrets gate,
 `check_intent` with a no-online-writes gate, and `select_model` with a model-catalog
-gate.
+gate, plus `review_dependency_change` with a dated dependency-risk snapshot.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
 This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely)
@@ -93,6 +93,23 @@ return `approval-required` because shared approval is not implemented. Nothing
 calls a remote model. Arguments are `taskType`, `dataClass`, and optional
 `model` / `endpoint`.
 
+To review a proposed MISE dependency version, ask:
+
+> Run the airlock-dependency-demo skill. Show the approved baseline, synthetic
+> blocked version, unknown-version pause, and explicit synthetic bypass.
+
+Expected results: **approved, blocked, blocked, approved**. The fixture uses
+`Microsoft.Identity.Client`, whose version is centralized by MISE. The blocked
+`4.88.0-airlock-demo` value and `AIRLOCK-DEMO-001` are synthetic team-policy
+data, not a real package advisory. The bypass is intentionally narrow: it works
+only for a snapshot entry whose advisory ID begins `AIRLOCK-DEMO-` and whose
+trusted configuration enables it. It cannot bypass stale evidence, unknown
+packages, real advisories, or another gate.
+
+The tool records approved plans under `~\.agent-airlock\outbound-demo\dependency-reviews`.
+It does not edit MISE, contact NuGet, or run restore. A real dependency-edit
+workflow must invoke it before changing the manifest.
+
 ## Structure
 
 ```text
@@ -118,20 +135,27 @@ plugins\AirlockPlugin\
     model-catalog\
       index.mjs                        Read-only model/endpoint catalog decision
       catalog.json                     Team defaults, allowed stubs, and blocked choices
+    dependency-risk\
+      index.mjs                        Dated package/version decision
+      snapshot.json                    Trusted MISE demo baseline and synthetic rule
+      README.md                         Fixture semantics and enforcement boundary
   tools\
     publish-draft.mjs                   Input validation and fixed local outbox executor
     check-intent.mjs                    Intent validation and local clearance executor
     select-model.mjs                    Catalog validation and local selection executor
+    review-dependency-change.mjs        Proposed-version validation and local plan executor
   skills\
     airlock-demo\SKILL.md               Three-call presentation, not enforcement
     airlock-intent-demo\SKILL.md        /yolo cannot authorize online writes
     airlock-model-demo\SKILL.md         Team default vs blocked/non-default models
+    airlock-dependency-demo\SKILL.md    Allow/block/ask-first/synthetic-bypass demo
   tests\
     policies.test.mjs                   Composition and configuration tests
     broker.test.mjs                     Zero-execution and receipt-order tests
     publish-draft.test.mjs              Secrets and actual MCP transport regression tests
     check-intent.test.mjs               Intent, yolo, and MCP transport tests
     select-model.test.mjs               Catalog, ask-first, and MCP transport tests
+    dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
   setup.mjs                            Checksum-verified scanner installation
 ```
 
@@ -266,7 +290,7 @@ Create new modules only when implementing them; there are no allow-all placehold
 | 3. Share safely | `gates\secrets\`, additional gates and `tools\` | Personal-data/label rules, forbidden destinations, other payload sources; secrets draft demo exists |
 | 4. Explain a run | Shared broker receipts | Run context, approval receipts, export, replay; per-action receipts exist |
 | 5. Budget/tools (optional) | `select_model`, `gates\model-catalog\` | Script/version checks, budgets and atomic reservations; stub catalog default/ask-first/block exists |
-| 6. Security review (optional) | Additional `gates\` and dated local fixtures | Standards/dependency checks and shared review flow |
+| 6. Security review (optional) | `review_dependency_change`, `gates\dependency-risk\`, and dated local fixtures | Transitive graph review, real advisory ingestion, standards checks, and shared review flow; direct-version demo exists |
 | 7. Research reuse (optional) | New local research-store module and guarded `tools\` | Provenance, freshness, access checks and conflict retention |
 
 Prefer separate module/test changes per contributor. Coordinate edits to
@@ -300,6 +324,13 @@ blocked as `approval-required`). Unknown models, blocked models, forbidden
 endpoints, and task/data pairs outside the catalog are blocked. No remote model
 is called.
 
+`review_dependency_change` checks a direct NuGet package/version proposal against
+the trusted dated snapshot. Approved versions produce a local review plan;
+synthetic blocked versions cannot execute unless the snapshot explicitly allows
+the documented bypass. Unknown packages or versions and expired evidence are
+`ask-first` (currently blocked as `approval-required`). The receipt records
+`synthetic-bypass-used`, but never the caller's bypass reason or package value.
+
 The plugin uses the legacy Copilot manifest with `.mcp.json` for compatibility
 with the installed Agency/Copilot host. All runtime files live here; it does not
 depend on source or packages at the repository root.
@@ -312,6 +343,11 @@ depend on source or packages at the repository root.
   another MCP publisher, or data sent to the agent's model.
 - `check_intent` is a keyword/regex intent check, not a sandbox around `git` or `gh`.
 - `select_model` does not change Copilot's model picker or call a model API.
+- `review_dependency_change` does not intercept arbitrary prompts, edit manifests,
+  resolve transitive dependencies, query advisories, or run restore. Workflows
+  must call it before performing a dependency change.
+- The dependency snapshot is a deterministic demo fixture, not proof that an
+  approved version is secure or that a blocked version is vulnerable.
 - Pattern scanning is not comprehensive DLP. Clean means no configured detector
   matched, not proof that text has no sensitive information.
 - The local operator and installed plugin files are trusted. This is not a

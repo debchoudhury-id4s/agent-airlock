@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { createPublishDraft, draftSchema } from "./tools/publish-draft.mjs";
 import { createCheckIntent, intentSchema } from "./tools/check-intent.mjs";
 import { createSelectModel, modelSelectionSchema } from "./tools/select-model.mjs";
+import { createReviewDependencyChange, dependencyChangeSchema } from "./tools/review-dependency-change.mjs";
 import { createPolicyEvaluator } from "./runtime/policies.mjs";
 import { gates } from "./gates/index.mjs";
 import policy from "./policies/default.json" with { type: "json" };
@@ -45,6 +46,19 @@ server.registerTool("select_model", {
     content: [{ type: "text", text: JSON.stringify(result) }],
     structuredContent: result,
     isError: result.status !== "selected",
+  };
+});
+const reviewDependencyChange = createReviewDependencyChange({ evaluate: createPolicyEvaluator({ policy, gates }) });
+server.registerTool("review_dependency_change", {
+  description: "Review a proposed direct NuGet version against a dated local snapshot before any edit or restore. Records an approved local plan only. Supports an explicit bypass solely for the synthetic AIRLOCK-DEMO rule; the receipt records its use.",
+  inputSchema: dependencyChangeSchema,
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+}, async input => {
+  const result = await reviewDependencyChange(input);
+  return {
+    content: [{ type: "text", text: JSON.stringify(result) }],
+    structuredContent: result,
+    isError: result.status !== "approved",
   };
 });
 

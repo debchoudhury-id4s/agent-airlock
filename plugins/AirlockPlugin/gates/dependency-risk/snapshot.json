@@ -1,0 +1,19 @@
+{
+  "id": "mise-dependency-demo",
+  "version": "2026-09-15",
+  "observedAt": "2026-09-15T00:00:00Z",
+  "expiresAt": "2027-09-15T00:00:00Z",
+  "packages": {
+    "Microsoft.Identity.Client": {
+      "approvedVersions": [
+        "4.87.0"
+      ],
+      "blockedVersions": [
+        "4.88.0-airlock-demo"
+      ],
+      "advisoryId": "AIRLOCK-DEMO-001",
+      "reason": "team-baseline-not-approved",
+      "allowSyntheticBypass": true
+    }
+  }
+}

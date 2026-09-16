@@ -15,7 +15,8 @@ import policy from "../policies/default.json" with { type: "json" };
 
 function createIntent({ root, rules } = {}) {
   const evaluate = createPolicyEvaluator({
-    policy, gates: [createSecretsGate({ scanner: async () => [] }), createNoOnlineWritesGate({ rules }), createModelCatalogGate()],
+    policy: { ...policy, tools: { check_intent: policy.tools.check_intent } },
+    gates: [createNoOnlineWritesGate({ rules })],
   });
   return createCheckIntent({ root, evaluate });
 }
@@ -134,7 +135,7 @@ test("MCP exposes check_intent and yolo cannot authorize an online write", async
   });
   await client.connect(transport);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "select_model"]);
+  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "review_dependency_change", "select_model"]);
   const accepted = await client.callTool({ name: "check_intent", arguments: { prompt: local } });
   assert.equal(accepted.isError, false);
   assert.equal(accepted.structuredContent.status, "cleared");

@@ -15,12 +15,8 @@ import policy from "../policies/default.json" with { type: "json" };
 
 function createSelection({ root, catalog } = {}) {
   const evaluate = createPolicyEvaluator({
-    policy,
-    gates: [
-      createSecretsGate({ scanner: async () => [] }),
-      createNoOnlineWritesGate(),
-      createModelCatalogGate({ catalog }),
-    ],
+    policy: { ...policy, tools: { select_model: policy.tools.select_model } },
+    gates: [createModelCatalogGate({ catalog })],
   });
   return createSelectModel({ root, evaluate });
 }
@@ -136,7 +132,7 @@ test("MCP exposes select_model and does not call a remote model", async t => {
   });
   await client.connect(transport);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "select_model"]);
+  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "review_dependency_change", "select_model"]);
   const accepted = await client.callTool({ name: "select_model", arguments: allowed });
   assert.equal(accepted.isError, false);
   assert.equal(accepted.structuredContent.status, "selected");

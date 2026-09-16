@@ -1,7 +1,7 @@
 {
   "name": "airlock-outbound",
   "version": "0.1.0",
-  "description": "Demo one enforced rule: secret-bearing drafts cannot reach the local review outbox.",
+  "description": "Demonstrate local Airlock gates for secrets, intent, models, approvals, and dependency risk.",
   "author": { "name": "Agent Airlock contributors" },
   "skills": "./skills",
   "mcpServers": "./.mcp.json"
