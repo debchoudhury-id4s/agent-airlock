@@ -56,7 +56,7 @@ server.registerTool("select_model", {
 });
 const reviewDependencyChange = createReviewDependencyChange({ evaluate: createPolicyEvaluator({ policy, gates }) });
 server.registerTool("review_dependency_change", {
-  description: "Review a proposed direct NuGet version against a dated local snapshot before any edit or restore. Records an approved local plan only. Supports an explicit bypass solely for the synthetic AIRLOCK-DEMO rule; the receipt records its use.",
+  description: "Review a proposed direct NuGet version against live OSV advisory evidence with a short-lived local cache before any edit or restore. Checked-in team rules are evaluated first. Unavailable or stale evidence requires approval; known vulnerabilities block. Records an approved local plan only.",
   inputSchema: dependencyChangeSchema,
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
 }, async input => {

@@ -5,9 +5,11 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { createOsvAdvisoryProvider } from "../gates/dependency-risk/advisory-client.mjs";
 import { createDependencyRiskGate } from "../gates/dependency-risk/index.mjs";
 import { pluginRoot } from "../gates/secrets/scanner.mjs";
 import { createPolicyEvaluator } from "../runtime/policies.mjs";
+import { checkNugetAdvisory } from "../scripts/check-nuget-advisory.mjs";
 import { createReviewDependencyChange } from "../tools/review-dependency-change.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
@@ -24,14 +26,35 @@ async function scratch(t) {
   return root;
 }
 
-function createReview({ root, gate = createDependencyRiskGate() } = {}) {
-  const evaluate = createPolicyEvaluator({ policy: dependencyPolicy, gates: [gate] });
-  return createReviewDependencyChange({ root, evaluate });
+function cleanEvidence() {
+  const observedAt = new Date();
+  return {
+    status: "checked", source: "osv", advisoryIds: [],
+    observedAt: observedAt.toISOString(),
+    expiresAt: new Date(observedAt.getTime() + 60_000).toISOString(),
+    cached: false,
+  };
 }
 
-test("approved, blocked, unknown, and synthetic bypass proposals stay distinct", async t => {
+function createReview({
+  root,
+  gate = createDependencyRiskGate(),
+  resolveAdvisoryEvidence = async () => cleanEvidence(),
+} = {}) {
+  const evaluate = createPolicyEvaluator({ policy: dependencyPolicy, gates: [gate] });
+  return createReviewDependencyChange({ root, evaluate, resolveAdvisoryEvidence });
+}
+
+test("live-clean, blocked, and synthetic bypass proposals stay distinct", async t => {
   const root = await scratch(t);
-  const review = createReview({ root });
+  let checks = 0;
+  const review = createReview({
+    root,
+    resolveAdvisoryEvidence: async () => {
+      checks += 1;
+      return cleanEvidence();
+    },
+  });
   const accepted = await review(approved);
   assert.equal(accepted.status, "approved");
   assert.equal(accepted.execution, "completed");
@@ -45,9 +68,8 @@ test("approved, blocked, unknown, and synthetic bypass proposals stay distinct",
   assert.deepEqual(denied.findings, [{ ruleId: "AIRLOCK-DEMO-001", line: 1 }]);
 
   const unknown = await review({ ...approved, version: "4.88.0" });
-  assert.equal(unknown.status, "blocked");
-  assert.equal(unknown.reason, "approval-required");
-  assert.equal(unknown.checks[0].reason, "dependency-version-unknown");
+  assert.equal(unknown.status, "approved");
+  assert.equal(unknown.reason, "no-known-vulnerability");
 
   const bypassed = await review({
     ...blocked, bypass: true, bypassReason: "demo-owner-approved",
@@ -60,7 +82,8 @@ test("approved, blocked, unknown, and synthetic bypass proposals stay distinct",
   const receipt = await readFile(bypassed.receiptPath, "utf8");
   assert.match(receipt, /synthetic-bypass-used/);
   assert.doesNotMatch(receipt, /demo-owner-approved|Microsoft\.Identity\.Client|4\.88\.0/);
-  assert.equal((await readdir(join(root, "dependency-reviews"))).length, 3);
+  assert.equal((await readdir(join(root, "dependency-reviews"))).length, 4);
+  assert.equal(checks, 3);
 });
 
 test("bypass is limited to an explicitly enabled synthetic blocked rule", async t => {
@@ -92,7 +115,43 @@ test("bypass is limited to an explicitly enabled synthetic blocked rule", async 
   assert.equal(real.reason, "dependency-version-blocked");
 });
 
-test("stale evidence and unknown packages ask first; malformed evidence fails closed", async t => {
+test("known vulnerabilities block and unavailable evidence asks first", async t => {
+  const root = await scratch(t);
+  const vulnerable = await createReview({
+    root,
+    resolveAdvisoryEvidence: async () => ({
+      ...cleanEvidence(),
+      advisoryIds: ["GHSA-1234-5678-9012", "CVE-2026-1234"],
+    }),
+  })({ packageName: "Any.Package", version: "1.2.3" });
+  assert.equal(vulnerable.status, "blocked");
+  assert.equal(vulnerable.reason, "known-vulnerability");
+  assert.deepEqual(vulnerable.findings, [
+    { ruleId: "GHSA-1234-5678-9012", line: 1 },
+    { ruleId: "CVE-2026-1234", line: 1 },
+  ]);
+
+  const unavailable = await createReview({
+    root,
+    resolveAdvisoryEvidence: async () => ({
+      status: "unavailable", reason: "advisory-source-unavailable",
+    }),
+  })({ packageName: "Any.Package", version: "1.2.3" });
+  assert.equal(unavailable.status, "blocked");
+  assert.equal(unavailable.reason, "approval-required");
+  assert.equal(unavailable.checks[0].reason, "advisory-source-unavailable");
+
+  const failed = await createReview({
+    root,
+    resolveAdvisoryEvidence: async () => { throw new Error("provider details must not escape"); },
+  })({ packageName: "Any.Package", version: "1.2.3" });
+  assert.equal(failed.status, "blocked");
+  assert.equal(failed.reason, "approval-required");
+  assert.equal(failed.checks[0].reason, "advisory-check-failed");
+  assert.doesNotMatch(JSON.stringify(failed), /provider details/);
+});
+
+test("stale team policy and malformed evidence fail closed", async t => {
   const root = await scratch(t);
   const staleGate = createDependencyRiskGate({ now: () => new Date("2027-09-15T00:00:00Z") });
   const stale = await createReview({ root, gate: staleGate })(approved);
@@ -100,11 +159,14 @@ test("stale evidence and unknown packages ask first; malformed evidence fails cl
   assert.equal(stale.reason, "approval-required");
   assert.equal(stale.checks[0].reason, "dependency-snapshot-expired");
 
-  const unknownPackage = await createReview({ root })({
+  const malformed = await createReview({
+    root,
+    resolveAdvisoryEvidence: async () => ({ status: "checked", advisoryIds: [] }),
+  })({
     packageName: "Unknown.Package", version: "1.2.3",
   });
-  assert.equal(unknownPackage.reason, "approval-required");
-  assert.equal(unknownPackage.checks[0].reason, "dependency-package-unknown");
+  assert.equal(malformed.reason, "approval-required");
+  assert.equal(malformed.checks[0].reason, "dependency-advisory-unavailable");
 
   assert.throws(() => createDependencyRiskGate({
     snapshot: {
@@ -128,7 +190,80 @@ test("invalid proposals cannot reach policy evaluation", async t => {
   assert.deepEqual(await readdir(root), []);
 });
 
-test("MCP exposes dependency review and executes only allowed plans", async t => {
+test("OSV provider queries once, caches clean evidence, and exposes the same script behavior", async t => {
+  const root = await scratch(t);
+  const requested = [];
+  const fetchImpl = async (url, options) => {
+    requested.push({ url, options });
+    return new Response(JSON.stringify({ vulns: [] }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+  const now = () => new Date("2026-09-16T17:00:00Z");
+  const provider = createOsvAdvisoryProvider({ root, fetchImpl, now });
+  const first = await provider(approved);
+  const second = await provider({ ...approved, packageName: "microsoft.identity.client" });
+  assert.equal(first.status, "checked");
+  assert.equal(first.cached, false);
+  assert.equal(second.status, "checked");
+  assert.equal(second.cached, true);
+  assert.equal(requested.length, 1);
+  assert.equal(requested[0].url, "https://api.osv.dev/v1/query");
+  assert.deepEqual(JSON.parse(requested[0].options.body), {
+    package: { ecosystem: "NuGet", name: "Microsoft.Identity.Client" },
+    version: "4.87.0",
+  });
+  assert.equal((await readdir(join(root, "dependency-advisories"))).length, 1);
+
+  const scripted = await checkNugetAdvisory({ ...approved, root, fetchImpl, now });
+  assert.equal(scripted.cached, true);
+  assert.equal(requested.length, 1);
+});
+
+test("OSV provider reports advisories and fails closed on source or cache errors", async t => {
+  const root = await scratch(t);
+  const vulnerable = await createOsvAdvisoryProvider({
+    root,
+    fetchImpl: async () => new Response(JSON.stringify({
+      vulns: [{ id: "GHSA-1234-5678-9012" }, { id: "GHSA-1234-5678-9012" }],
+    }), { status: 200 }),
+  })(approved);
+  assert.deepEqual(vulnerable.advisoryIds, ["GHSA-1234-5678-9012"]);
+
+  const unavailable = await createOsvAdvisoryProvider({
+    root: await scratch(t),
+    fetchImpl: async () => { throw new Error("network details must not escape"); },
+  })(approved);
+  assert.deepEqual(unavailable, {
+    status: "unavailable", reason: "advisory-source-unavailable",
+  });
+});
+
+test("expired advisory evidence is refreshed instead of trusted", async t => {
+  const root = await scratch(t);
+  let checkedAt = new Date("2026-09-16T17:00:00Z");
+  let requests = 0;
+  const provider = createOsvAdvisoryProvider({
+    root,
+    now: () => checkedAt,
+    ttlMs: 1_000,
+    fetchImpl: async () => {
+      requests += 1;
+      return new Response(JSON.stringify({
+        vulns: requests === 1 ? [] : [{ id: "CVE-2026-5678" }],
+      }), { status: 200 });
+    },
+  });
+  assert.deepEqual((await provider(approved)).advisoryIds, []);
+  checkedAt = new Date("2026-09-16T17:00:02Z");
+  const refreshed = await provider(approved);
+  assert.deepEqual(refreshed.advisoryIds, ["CVE-2026-5678"]);
+  assert.equal(refreshed.cached, false);
+  assert.equal(requests, 2);
+});
+
+test("MCP exposes dependency review and blocks the offline fixture without repository edits", async t => {
   const client = new Client({ name: "airlock-dependency-test", version: "0.1.0" });
   t.after(() => client.close());
   const home = await scratch(t);
@@ -150,9 +285,6 @@ test("MCP exposes dependency review and executes only allowed plans", async t =>
   assert.deepEqual(tools.map(tool => tool.name).sort(), [
     "check_intent", "publish_draft", "review_dependency_change", "select_model", "trending_cost",
   ]);
-  const accepted = await client.callTool({ name: "review_dependency_change", arguments: approved });
-  assert.equal(accepted.isError, false);
-  assert.equal(accepted.structuredContent.status, "approved");
   const denied = await client.callTool({ name: "review_dependency_change", arguments: blocked });
   assert.equal(denied.isError, true);
   assert.equal(denied.structuredContent.execution, "not-started");

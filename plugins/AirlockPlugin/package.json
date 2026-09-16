@@ -6,7 +6,8 @@
   "engines": { "node": ">=24 <25" },
   "scripts": {
     "setup": "node setup.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "check:nuget": "node scripts/check-nuget-advisory.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",

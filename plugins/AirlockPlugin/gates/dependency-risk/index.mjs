@@ -28,6 +28,22 @@ const snapshotSchema = z.object({
     && observedAt < expiresAt && normalizedPackages.length > 0
     && new Set(normalizedPackages).size === normalizedPackages.length;
 });
+const checkedEvidenceSchema = z.object({
+  status: z.literal("checked"),
+  source: z.literal("osv"),
+  advisoryIds: z.array(identifier).max(100),
+  observedAt: z.string(),
+  expiresAt: z.string(),
+  cached: z.boolean(),
+}).strict();
+const unavailableEvidenceSchema = z.object({
+  status: z.literal("unavailable"),
+  reason: identifier,
+}).strict();
+const evidenceSchema = z.discriminatedUnion("status", [
+  checkedEvidenceSchema,
+  unavailableEvidenceSchema,
+]);
 
 function decision(kind, reason, ruleId) {
   const findings = ruleId ? findingsSchema.parse([{ ruleId, line: 1 }]) : [];
@@ -61,8 +77,7 @@ export function createDependencyRiskGate({ snapshot = defaultSnapshot, now = () 
         return decision("ask-first", "dependency-snapshot-expired", "snapshot-expired");
       }
       const entry = packages.get(requestedPackage.toLowerCase());
-      if (!entry) return decision("ask-first", "dependency-package-unknown", "package-not-in-snapshot");
-      if (entry.blockedVersions.includes(requestedVersion)) {
+      if (entry?.blockedVersions.includes(requestedVersion)) {
         if (bypass === true && bypassReason && entry.allowSyntheticBypass
           && entry.advisoryId.startsWith("AIRLOCK-DEMO-")) {
           return decision("allow", "synthetic-bypass-used");
@@ -70,10 +85,33 @@ export function createDependencyRiskGate({ snapshot = defaultSnapshot, now = () 
         return decision("block", "dependency-version-blocked", entry.advisoryId);
       }
       if (bypass === true) return decision("block", "dependency-bypass-not-applicable", "invalid-bypass");
-      if (entry.approvedVersions.includes(requestedVersion)) {
-        return decision("allow", "dependency-version-approved");
+      const parsedEvidence = evidenceSchema.safeParse(action.input.advisoryEvidence);
+      if (!parsedEvidence.success) {
+        return decision("ask-first", "dependency-advisory-unavailable", "advisory-check-unavailable");
       }
-      return decision("ask-first", "dependency-version-unknown", "version-not-in-snapshot");
+      const advisoryEvidence = parsedEvidence.data;
+      if (advisoryEvidence.status === "unavailable") {
+        return decision("ask-first", advisoryEvidence.reason, "advisory-check-unavailable");
+      }
+      const observedAt = Date.parse(advisoryEvidence.observedAt);
+      const evidenceExpiresAt = Date.parse(advisoryEvidence.expiresAt);
+      if (!Number.isFinite(observedAt) || !Number.isFinite(evidenceExpiresAt)
+        || observedAt > checkedAt.getTime() || checkedAt.getTime() >= evidenceExpiresAt) {
+        return decision("ask-first", "dependency-advisory-stale", "advisory-check-stale");
+      }
+      if (advisoryEvidence.advisoryIds.length > 0) {
+        return {
+          decision: "block",
+          reason: "known-vulnerability",
+          findings: findingsSchema.parse(advisoryEvidence.advisoryIds.map(ruleId => ({ ruleId, line: 1 }))),
+        };
+      }
+      return decision(
+        "allow",
+        entry?.approvedVersions.includes(requestedVersion)
+          ? "dependency-version-approved"
+          : "no-known-vulnerability",
+      );
     },
   });
 }

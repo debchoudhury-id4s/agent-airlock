@@ -2,6 +2,8 @@ import { mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { z } from "zod";
 import { createBroker, dataRoot, write } from "../runtime/broker.mjs";
+import defaultSnapshot from "../gates/dependency-risk/snapshot.json" with { type: "json" };
+import { createOsvAdvisoryProvider } from "../gates/dependency-risk/advisory-client.mjs";
 
 const packageName = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/);
 const version = z.string().regex(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/);
@@ -17,7 +19,18 @@ export const dependencyChangeSchema = z.object({
 { message: "A bypass requires one safe reason code." });
 
 /** Review and record a dependency plan; repository edits and restores remain outside this demo. */
-export function createReviewDependencyChange({ root = dataRoot, evaluate }) {
+export function createReviewDependencyChange({
+  root = dataRoot,
+  evaluate,
+  resolveAdvisoryEvidence = createOsvAdvisoryProvider({ root }),
+  snapshot = defaultSnapshot,
+  now = () => new Date(),
+}) {
+  if (typeof resolveAdvisoryEvidence !== "function") {
+    throw new Error("Airlock requires an advisory evidence provider.");
+  }
+  const blocked = new Map(Object.entries(snapshot.packages)
+    .map(([name, entry]) => [name.toLowerCase(), new Set(entry.blockedVersions)]));
   const run = createBroker({ root, evaluate });
   const reviews = join(resolve(root), "dependency-reviews");
   return async function reviewDependencyChange(input) {
@@ -28,8 +41,25 @@ export function createReviewDependencyChange({ root = dataRoot, evaluate }) {
         message: "Provide packageName and a semantic version. A bypass also requires bypassReason. Snapshot, policy, paths, and approval flags are not accepted.",
       };
     }
+    let advisoryEvidence;
+    try {
+      const checkedAt = now();
+      const snapshotExpired = !(checkedAt instanceof Date) || !Number.isFinite(checkedAt.getTime())
+        || checkedAt.getTime() >= Date.parse(snapshot.expiresAt);
+      const explicitlyBlocked = blocked.get(parsed.data.packageName.toLowerCase())?.has(parsed.data.version) === true;
+      advisoryEvidence = !snapshotExpired && explicitlyBlocked
+        ? undefined
+        : await resolveAdvisoryEvidence(parsed.data);
+    } catch {
+      advisoryEvidence = { status: "unavailable", reason: "advisory-check-failed" };
+    }
     const result = await run({
-      tool: "review_dependency_change", target: "local-dependency-plan", input: parsed.data,
+      tool: "review_dependency_change",
+      target: "local-dependency-plan",
+      input: {
+        ...parsed.data,
+        ...(advisoryEvidence === undefined ? {} : { advisoryEvidence }),
+      },
     }, async (action, id) => {
       await mkdir(reviews, { recursive: true, mode: 0o700 });
       const artifact = {
@@ -49,7 +79,7 @@ export function createReviewDependencyChange({ root = dataRoot, evaluate }) {
         ...result, status: "approved",
         message: result.reason === "synthetic-bypass-used"
           ? "The synthetic demo rule was explicitly bypassed and recorded. No repository file was changed and no restore ran."
-          : "The local dependency baseline approved this plan. No repository file was changed and no restore ran.",
+          : "Current advisory evidence found no known vulnerability for this package version. No repository file was changed and no restore ran.",
       };
     }
     if (result.reason === "execution-failed") return { ...result, reason: "dependency-review-record-failed" };

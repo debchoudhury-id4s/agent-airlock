@@ -6,7 +6,7 @@ experiments; independent future plugins belong beside this one in `plugins\`.
 
 **Implemented today:** five demo skills, `publish_draft` with a secrets gate,
 `check_intent` with a no-online-writes gate, `select_model` with a model-catalog
-gate, `review_dependency_change` with a dated dependency-risk snapshot, and the
+gate, `review_dependency_change` with live OSV evidence and a short-lived local cache, and the
 automatic advisory `trending-cost` prompt hook.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
@@ -103,9 +103,19 @@ Expected result: the `4.88.0-airlock-demo` proposal is **blocked** under
 performed. The version and rule are synthetic team-policy data, not a real
 package advisory.
 
-The tool records approved plans under `~\.agent-airlock\outbound-demo\dependency-reviews`.
-It does not edit MISE, contact NuGet, or run restore. A real dependency-edit
-workflow must invoke it before changing the manifest.
+The tool records approved plans under `~\.agent-airlock\outbound-demo\dependency-reviews`
+and caches package-version-specific OSV results for 24 hours under
+`~\.agent-airlock\outbound-demo\dependency-advisories`. It does not edit MISE,
+download packages, or run restore. Missing or stale evidence is checked live;
+known advisories block, and unavailable evidence requires approval. A real
+dependency-edit workflow must invoke it before changing the manifest.
+
+To run the same package/version advisory check directly:
+
+```powershell
+Set-Location C:\Git\agent-airlock\plugins\AirlockPlugin
+npm run check:nuget -- Microsoft.Identity.Client 4.87.0
+```
 
 The `trending-cost` gate needs no demo prompt: while the plugin is loaded, its
 `userPromptSubmitted` hook prints local month-to-date estimated cost, today's
@@ -151,6 +161,7 @@ plugins\AirlockPlugin\
       catalog.json                     Team defaults, allowed stubs, and blocked choices
     dependency-risk\
       index.mjs                        Dated package/version decision
+      advisory-client.mjs              Live OSV lookup and 24-hour local cache
       snapshot.json                    Trusted MISE demo baseline and synthetic rule
       README.md                         Fixture semantics and enforcement boundary
     trending-cost\
@@ -178,6 +189,8 @@ plugins\AirlockPlugin\
     dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
     trending-cost.test.mjs              Reader, hook, threshold, and MCP tests
   setup.mjs                            Checksum-verified scanner installation
+  scripts\
+    check-nuget-advisory.mjs            Reusable live OSV check and cache refresh
 ```
 
 A **rule** describes a specific constraint or detector. A **gate** evaluates an

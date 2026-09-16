@@ -1,6 +1,6 @@
 {
   "id": "outbound-demo",
-  "version": "4",
+  "version": "5",
   "tools": {
     "publish_draft": ["no-secrets-in-drafts"],
     "check_intent": ["no-online-writes"],
