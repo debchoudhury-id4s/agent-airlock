@@ -34,12 +34,16 @@ This creates four common problems:
 4. **Missing explanations** - Activity logs may show what happened without clearly showing why it was allowed or blocked.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 8, "wrappingWidth": 180}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 0, "wrappingWidth": 180}}}%%
 flowchart LR
-    Request["Request, instructions,<br/>permissions, and safety rules"] -->|1| Prompt["One large prompt"]
-    Prompt -->|2| Agent["AI agent"]
-    Agent -->|3| Systems["Real systems"]
+    subgraph WhiteBackground1[" "]
+        direction LR
+        Request["Request, instructions,<br/>permissions, and safety rules"] -->|1| Prompt["One large prompt"]
+        Prompt -->|2| Agent["AI agent"]
+        Agent -->|3| Systems["Real systems"]
+    end
 
+    style WhiteBackground1 fill:#ffffff,stroke:#ffffff,color:#ffffff;
     classDef input fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
     classDef risk fill:#fff4cc,stroke:#b7791f,color:#3d2b00,stroke-width:1.5px;
     classDef actor fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
@@ -61,16 +65,20 @@ Free-form text is a great way to describe a goal. It is a poor place to hide imp
 The user describes the outcome. The organization keeps its rules separate. Agent Airlock combines them into a clear mission before work begins.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 0, "wrappingWidth": 200}}}%%
 flowchart TB
-    Goal["User goal"] -->|1a| Mission["Airlock mission check<br/>(product target)"]
-    Rules["Versioned organization rules"] -->|1b| Mission
-    Mission -->|2| Agent["AI agent works<br/>inside the approved scope"]
-    Agent -->|3| Check{"Airlock checks<br/>each supported action"}
-    Check -->|"4a. allow"| Allow["Run the registered executor<br/>and record the outcome"]
-    Check -->|"4b. ask first"| Ask["Pause for exact approval<br/>and record the decision"]
-    Check -->|"4c. block or error"| Block["Do not execute<br/>and record the reason"]
+    subgraph WhiteBackground2[" "]
+        direction TB
+        Goal["User goal"] -->|1a| Mission["Airlock mission check<br/>(product target)"]
+        Rules["Versioned organization rules"] -->|1b| Mission
+        Mission -->|2| Agent["AI agent works<br/>inside the approved scope"]
+        Agent -->|3| Check{"Airlock checks<br/>each supported action"}
+        Check -->|"4a. allow"| Allow["Run the registered executor<br/>and record the outcome"]
+        Check -->|"4b. ask first"| Ask["Pause for exact approval<br/>and record the decision"]
+        Check -->|"4c. block or error"| Block["Do not execute<br/>and record the reason"]
+    end
 
+    style WhiteBackground2 fill:#ffffff,stroke:#ffffff,color:#ffffff;
     classDef input fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
     classDef control fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
     classDef allow fill:#e5f6e8,stroke:#3f8f55,color:#173d22,stroke-width:1.5px;
@@ -120,14 +128,18 @@ This is a future adoption path, not part of the local hackathon build.
 The contract, organization rules, examples, and Agent Airlock files can live in GitHub or Azure DevOps.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 8, "wrappingWidth": 165}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 0, "wrappingWidth": 165}}}%%
 flowchart LR
-    Repo["GitHub or Azure DevOps<br/>Contract, rules, plugin,<br/>examples, and tests"]
-    Repo -->|1| Review["PR review"]
-    Review -->|2| Check["CI policy checks<br/>Actions or Pipelines"]
-    Check -->|3| Release["Approved rules release"]
-    Release -->|4| Agent["Local agent loads<br/>the approved release"]
+    subgraph WhiteBackground3[" "]
+        direction LR
+        Repo["GitHub or Azure DevOps<br/>Contract, rules, plugin,<br/>examples, and tests"]
+        Repo -->|1| Review["PR review"]
+        Review -->|2| Check["CI policy checks<br/>Actions or Pipelines"]
+        Check -->|3| Release["Approved rules release"]
+        Release -->|4| Agent["Local agent loads<br/>the approved release"]
+    end
 
+    style WhiteBackground3 fill:#ffffff,stroke:#ffffff,color:#ffffff;
     classDef source fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
     classDef process fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
     classDef release fill:#e5f6e8,stroke:#3f8f55,color:#173d22,stroke-width:1.5px;
@@ -172,20 +184,24 @@ product vision described above.
 ### Runtime architecture
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 0, "wrappingWidth": 200}}}%%
 flowchart TB
-    User["User request"] -->|1a| Host["Agency / Copilot host"]
-    Sandbox["Optional host sandbox<br/>Filesystem, network, credentials,<br/>MCP/LSP, and child processes<br/>Independent; supplied profiles allow bypass"] -. "1b. constrains when enabled" .-> Host
+    subgraph WhiteBackground4[" "]
+        direction TB
+        User["User request"] -->|1a| Host["Agency / Copilot host"]
+        Sandbox["Optional host sandbox<br/>Filesystem, network, credentials,<br/>MCP/LSP, and child processes<br/>Independent; supplied profiles allow bypass"] -. "1b. constrains when enabled" .-> Host
 
-    Host -->|2a| Startup{"Airlock plugin startup"}
-    Host -->|2b| Other["Other route<br/>Native shell, another MCP server,<br/>or the host's model traffic"]
+        Host -->|2a| Startup{"Airlock plugin startup"}
+        Host -->|2b| Other["Other route<br/>Native shell, another MCP server,<br/>or the host's model traffic"]
 
-    Startup -->|"3a. current source"| Failure["Startup stops<br/>approvalGate is an object but is called<br/>as a function; no MCP tools register"]
-    Startup -. "3b. runtime path after startup succeeds" .-> Guarded["Guarded route<br/>Direct call or optional demo skill calls<br/>publish_draft, check_intent, or select_model"]
-    Guarded -->|4| Plugin["Airlock plugin<br/>Validate, broker, pinned policy,<br/>and the tool's required gate"]
-    Plugin -->|5| Local["Local-only result<br/>Redacted receipt and,<br/>on allow, one local artifact"]
-    Other -->|3c| Outside["Outside Airlock's<br/>semantic enforcement boundary"]
+        Startup -->|"3a. current source"| Failure["Startup stops<br/>approvalGate is an object but is called<br/>as a function; no MCP tools register"]
+        Startup -. "3b. runtime path after startup succeeds" .-> Guarded["Guarded route<br/>Direct call or optional demo skill calls<br/>publish_draft, check_intent, or select_model"]
+        Guarded -->|4| Plugin["Airlock plugin<br/>Validate, broker, pinned policy,<br/>and the tool's required gate"]
+        Plugin -->|5| Local["Local-only result<br/>Redacted receipt and,<br/>on allow, one local artifact"]
+        Other -->|3c| Outside["Outside Airlock's<br/>semantic enforcement boundary"]
+    end
 
+    style WhiteBackground4 fill:#ffffff,stroke:#ffffff,color:#ffffff;
     classDef actor fill:#eaf2ff,stroke:#4472c4,color:#172b4d,stroke-width:1.5px;
     classDef containment fill:#f3f4f6,stroke:#6b7280,color:#20242b,stroke-width:1.5px,stroke-dasharray:5 3;
     classDef control fill:#f1eaff,stroke:#7656a5,color:#2f2147,stroke-width:1.5px;
@@ -252,14 +268,17 @@ The rules are local, reviewed plugin files:
 ### Decision and evidence lifecycle
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 8, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 0, "diagramMarginY": 0, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
 sequenceDiagram
+    box rgb(255, 255, 255)
     participant Caller as Agency / Copilot
     participant Tool as Registered tool
     participant Broker
     participant Rules as Policy + gates
     participant Files as Local files
+    end
 
+    rect rgb(255, 255, 255)
     Caller->>Tool: 1. MCP call with documented arguments
     Tool->>Tool: 2. Strict schema and content validation
     alt Invalid input
@@ -290,6 +309,7 @@ sequenceDiagram
             Broker->>Files: 14d. Append the execution outcome
             Broker-->>Caller: 15d. Local artifact on success, otherwise an error
         end
+    end
     end
 ```
 
