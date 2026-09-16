@@ -1,0 +1,60 @@
+name: Scope check
+
+# Enforces that PRs opened by the Copilot cloud agent only modify files
+# under demo/2026-09-16/matagaba/2min-video/. If Copilot writes anywhere
+# else, this check fails and Copilot must revert the out-of-scope change
+# before the PR can merge.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  scope-check:
+    # Only enforce for branches Copilot creates. Copilot's cloud agent uses
+    # the "copilot/" prefix by default. Extend as needed.
+    if: >
+      startsWith(github.head_ref, 'copilot/') ||
+      github.event.pull_request.user.login == 'Copilot' ||
+      github.event.pull_request.user.login == 'copilot-swe-agent[bot]' ||
+      github.event.pull_request.user.login == 'app/copilot-swe-agent'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: List changed files
+        id: changed
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          base=$(git merge-base origin/${{ github.base_ref }} HEAD)
+          files=$(git diff --name-only "$base" HEAD)
+          echo "Base: $base"
+          echo "Changed files:"
+          echo "$files"
+          {
+            echo "files<<EOF"
+            echo "$files"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Enforce scope
+        env:
+          ALLOWED_PREFIX: demo/2026-09-16/matagaba/2min-video/
+          FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          set -euo pipefail
+          bad=$(printf '%s\n' "$FILES" | awk -v p="$ALLOWED_PREFIX" 'NF && index($0, p) != 1 { print }')
+          if [ -n "$bad" ]; then
+            echo "::error::Files outside allowed scope ($ALLOWED_PREFIX):"
+            printf '%s\n' "$bad" | sed 's/^/::error::  /'
+            exit 1
+          fi
+          echo "All changed files are inside $ALLOWED_PREFIX"
