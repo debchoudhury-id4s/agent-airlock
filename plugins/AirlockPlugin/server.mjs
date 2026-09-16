@@ -17,7 +17,7 @@ const trendingCost = createTrendingCost({
 });
 const server = new McpServer({ name: "airlock-outbound", version: "0.2.0" });
 server.registerTool("publish_draft", {
-  description: "Scan a plain-text draft and copy it to a local review outbox only if no secret detector matches. No online publication. A block cannot be overridden. Returns redacted decision and receipt paths, never raw content.",
+  description: "Check supplied draft/log/display text for secrets, bounded PII patterns and INTERNAL-ONLY labels. Secrets block; PII/labels require unimplemented approval, so neither executes. Only all-allow copies exact text to a local outbox, never online. Returns safe findings, receipts and optional separate rescanned replacement; never the flagged text. No override.",
   inputSchema: draftSchema,
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
 }, async input => {

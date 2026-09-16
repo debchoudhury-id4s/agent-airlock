@@ -8,13 +8,14 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { createPublishDraft } from "../tools/publish-draft.mjs";
 import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createSecretsGate } from "../gates/secrets/index.mjs";
+import { createSensitiveInformationGates } from "../gates/sensitive-information/index.mjs";
 import { pluginRoot, scan } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
 function createGate({ root, scanner } = {}) {
   const evaluate = createPolicyEvaluator({
     policy: { ...policy, tools: { publish_draft: policy.tools.publish_draft } },
-    gates: [createSecretsGate({ scanner })],
+    gates: createSensitiveInformationGates({ scanner }),
   });
   return createPublishDraft({ root, evaluate });
 }
@@ -158,6 +159,16 @@ test("MCP exposes only the guarded tool and works outside this repository", asyn
   assert.equal(denied.isError, true);
   assert.equal(denied.structuredContent.reason, "secret-detected");
   assert.doesNotMatch(JSON.stringify(denied), /AIRLOCK_SYNTHETIC_SECRET_/);
+  for (const content of ["airlock.fixture@example.test", "INTERNAL-ONLY: synthetic protected body"]) {
+    const reviewed = await client.callTool({ name: "publish_draft", arguments: { content } });
+    assert.equal(reviewed.isError, true);
+    assert.equal(reviewed.structuredContent.decision, "ask-first");
+    assert.equal(reviewed.structuredContent.reason, "approval-required");
+    assert.equal(reviewed.structuredContent.execution, "not-started");
+    assert.ok(!JSON.stringify(reviewed).includes(content));
+    assert.ok(!(await readFile(reviewed.structuredContent.receiptPath, "utf8")).includes(content));
+  }
+  assert.equal((await readdir(join(home, ".agent-airlock", "outbound-demo", "outbox"))).length, 1);
   const invalid = await client.callTool({ name: "publish_draft", arguments: { content: clean, approved: true } });
   assert.equal(invalid.isError, true);
   const unknown = await client.callTool({ name: "approve", arguments: {} });

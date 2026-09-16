@@ -1,11 +1,11 @@
 {
   "id": "outbound-demo",
-  "version": "5",
+  "version": "6",
   "tools": {
-    "publish_draft": ["no-secrets-in-drafts"],
+    "publish_draft": ["no-secrets-in-drafts", "personal-data-review", "internal-label-review"],
     "check_intent": ["no-online-writes"],
     "select_model": ["model-catalog"],
-    "publish_approved_draft": ["no-secrets-in-drafts", "local-approval-required"],
+    "publish_approved_draft": ["no-secrets-in-drafts", "personal-data-review", "internal-label-review", "local-approval-required"],
     "review_dependency_change": ["dependency-risk"]
   }
 }

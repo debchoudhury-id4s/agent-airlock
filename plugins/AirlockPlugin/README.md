@@ -4,7 +4,8 @@ The shared plugin lives in `plugins\AirlockPlugin` at the repository root.
 Any teammate can contribute here. Personal `poc\` folders remain available for
 experiments; independent future plugins belong beside this one in `plugins\`.
 
-**Implemented today:** five demo skills, `publish_draft` with a secrets gate,
+**Implemented today:** five demo skills, `publish_draft` with composed Sensitive
+Information Protection (secrets, bounded PII, and explicit INTERNAL-ONLY labels),
 `check_intent` with a no-online-writes gate, `select_model` with a model-catalog
 gate, `review_dependency_change` with live OSV evidence and a short-lived local cache, and the
 automatic advisory `trending-cost` prompt hook.
@@ -53,14 +54,16 @@ agency plugin install "local:C:\Git\agent-airlock\plugins\AirlockPlugin" --engin
 
 Then ask:
 
-> Run the airlock-demo skill. Show the clean draft, the secret block, and the
-> attempt to override the rule.
+> Run the airlock-demo skill. Show the clean draft, secret and override blocks,
+> PII and internal-only review pauses, and a token in supplied log text.
 
 If you previously loaded `poc\neha-bhargava`, restart with the new path. Reinstall
 any persistent local installation from the new path rather than keeping a stale copy.
 The plugin ID, MCP server name, and demo skill name are unchanged.
 
-Expected results: **published, blocked, blocked**. The secret is a deliberately
+Expected results: **published, blocked, blocked, blocked, blocked, blocked**.
+PII and label checks return `approval-required`; approval is not implemented,
+so they never execute. The secret is a deliberately
 nonfunctional demo marker, not a real credential. No repository files need to be
 read or edited. Grant the host permission to call the plugin's tool if prompted;
 that host permission does not bypass the rule inside the tool.
@@ -74,6 +77,15 @@ The publishing tool presents successful execution as `published`.
 For your own synthetic draft, ask the agent to pass its text to this plugin's
 `publish_draft` tool. The only argument is `content`; there is no policy override,
 approval tool, destination URL, or arbitrary output path.
+
+The same argument accepts supplied log or display text. Credentials detected by
+Gitleaks always block; bounded email, phone, Luhn-valid payment-card and US SSN
+patterns plus the explicit label ask-first. No arbitrary console/log interception
+is installed. See [exact categories and limits](gates/sensitive-information/README.md).
+Gates remain read-only. Optional `remediation` removes an entire flagged field and
+rescans a separate replacement candidate; labelled bodies are withheld, not
+declassified. No replacement executes automatically. Broker receipts remain
+metadata-only, and unrelated gates do not depend on the secret scanner.
 
 To show that `/yolo` cannot authorize an online write, ask:
 
@@ -141,6 +153,8 @@ plugins\AirlockPlugin\
   runtime\
     policies.mjs                       Validated gate contracts and decision composition
     broker.mjs                         Check -> receipt -> execute -> outcome
+    plain-text.mjs                     Shared 64 KiB valid-text boundary
+    sanitize-record-text.mjs           Explicit whole-field sanitizer with candidate rescan
   policies\
     default.json                       Versioned tool-to-gate bindings
     trending-cost.json                 Advisory/enforce prompt-cost policy
@@ -153,6 +167,12 @@ plugins\AirlockPlugin\
       index.mjs                        Read-only secrets decision
       scanner.mjs                      Pinned, isolated local scanner adapter
       gitleaks.toml                    Detector rules, including the synthetic marker
+    sensitive-information\
+      index.mjs                        Secrets + independent PII/label review gates
+      personal-data.mjs                 Bounded pure personal-data patterns
+      internal-label.mjs                Explicit whole-field classification marker
+      findings.mjs                      Safe line-only findings and text bounds
+      README.md                         Categories, remediation and scope limits
     no-online-writes\
       index.mjs                        Read-only online-write intent decision
       rules.json                       Team-specified online-write patterns
@@ -175,7 +195,7 @@ plugins\AirlockPlugin\
     review-dependency-change.mjs        Proposed-version validation and local plan executor
     trending-cost.mjs                   Structured local usage report
   skills\
-    airlock-demo\SKILL.md               Three-call presentation, not enforcement
+    airlock-demo\SKILL.md               Six-call presentation, not enforcement
     airlock-intent-demo\SKILL.md        /yolo cannot authorize online writes
     airlock-model-demo\SKILL.md         Team default vs blocked/non-default models
     airlock-dependency-demo\SKILL.md    Single blocked dependency demo
@@ -184,6 +204,7 @@ plugins\AirlockPlugin\
     policies.test.mjs                   Composition and configuration tests
     broker.test.mjs                     Zero-execution and receipt-order tests
     publish-draft.test.mjs              Secrets and actual MCP transport regression tests
+    sensitive-information.test.mjs      Categories, safe remediation and rescan tests
     check-intent.test.mjs               Intent, yolo, and MCP transport tests
     select-model.test.mjs               Catalog, ask-first, and MCP transport tests
     dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
@@ -217,8 +238,9 @@ second scanner or change the skill to enforce it.
 4. Bump `version` in `policies\default.json`, run `npm test`, review the change,
    and restart the plugin session. Never use real credentials as fixtures.
 
-Use a separate gate for different semantics, such as destination restrictions,
-personal-data handling, budget checks, or dependency review.
+Use separate gates for different semantics. Sensitive Information Protection
+already composes secrets blocking with personal-data and internal-label review;
+do not replace the pinned scanner with a generic pattern scanner.
 
 ## Add another gate
 
@@ -245,8 +267,9 @@ Gate contract:
 | `findings` | Array of `{ ruleId, line }`; `line` is a positive integer; never include matched values |
 | `failureReason` | Optional static, safe identifier; thrown errors otherwise become `gate-failed` |
 
-For example, this **illustrative, not installed** gate forbids drafts carrying
-an internal-only label:
+For example, this **illustrative, not installed** stricter gate forbids drafts
+carrying an internal-only label. Unlike the installed `internal-label-review`
+gate's ask-first decision, this example demonstrates an unconditional block:
 
 ```javascript
 export const internalOnlyGate = Object.freeze({
@@ -264,15 +287,16 @@ export const internalOnlyGate = Object.freeze({
 });
 ```
 
-Register the exported gate in `gates\index.mjs` alongside `createSecretsGate()`.
-Then bind **both** IDs in `policies\default.json`, preserving existing required gates:
+To install the stricter example, register it alongside
+`...createSensitiveInformationGates()` in `gates\index.mjs`. Extend the default
+bindings without removing required gates (excerpt only; retain other tools):
 
 ```json
 {
   "id": "outbound-demo",
-  "version": "2",
+  "version": "7",
   "tools": {
-    "publish_draft": ["no-secrets-in-drafts", "no-internal-labels"]
+    "publish_draft": ["no-secrets-in-drafts", "personal-data-review", "internal-label-review", "no-internal-labels"]
   }
 }
 ```
@@ -321,7 +345,7 @@ Create new modules only when implementing them; there are no allow-all placehold
 |---|---|---|
 | 1. Safe mission | `runtime\`, `policies\`, `check_intent`, `gates\no-online-writes\` | Mission confirmation, contract narrowing, complete rule snapshots, dry run, helpers; `/yolo` cannot authorize online-write intent |
 | 2. Approve or stop | Shared `runtime\broker.mjs` before execution | Exact-action single-use approvals, expiry/recheck, protected targets, local stop |
-| 3. Share safely | `gates\secrets\`, additional gates and `tools\` | Personal-data/label rules, forbidden destinations, other payload sources; secrets draft demo exists |
+| 3. Share safely | `gates\sensitive-information\`, `gates\secrets\`, `runtime\sanitize-record-text.mjs`, `tools\` | Forbidden destinations and other payload sources; secrets, bounded PII/labels and separate rescanned whole-field replacements exist |
 | 4. Explain a run | Shared broker receipts | Run context, approval receipts, export, replay; per-action receipts exist |
 | 5. Budget/tools (optional) | `select_model`, `gates\model-catalog\`, `trending_cost`, `gates\trending-cost\` | Script/version checks, planned budgets, and atomic reservations; model catalog plus automatic local usage reporting exist |
 | 6. Security review (optional) | `review_dependency_change`, `gates\dependency-risk\`, and dated local fixtures | Transitive graph review, real advisory ingestion, standards checks, and shared review flow; direct-version demo exists |
@@ -341,8 +365,10 @@ demo's scanner configuration. Installed plugin files remain trusted.
 
 ## What is enforced
 
-Gitleaks built-in detectors plus the explicit synthetic-marker detector run
-before the local copy. Unknown arguments, oversized/non-text input, scanner
+Gitleaks built-in detectors plus the explicit synthetic-marker and contextual
+token detectors block credential matches before the local copy. Independent
+bounded PII and explicit INTERNAL-ONLY label gates require review and do not
+execute. Unknown arguments, oversized/non-text input, scanner/detector
 failures, and decision-receipt failures cannot publish. Repository instructions,
 personal instructions, and text inside the draft do not participate in this
 decision.
@@ -393,6 +419,13 @@ depend on source or packages at the repository root.
   guarantee.
 - Pattern scanning is not comprehensive DLP. Clean means no configured detector
   matched, not proof that text has no sensitive information.
+- Sensitive-information checks cover only text explicitly supplied to
+  `publish_draft`, not arbitrary logs/console output. No names, addresses,
+  comprehensive global IDs, attachments or encoded-content decoding. See the
+  [bounded rules and false positives](gates/sensitive-information/README.md).
+- The reusable record/display sanitizer handles an entire supplied field, not
+  arbitrary nested objects. Never split a confidentiality label from its body.
+  It returns candidates, not execution permission; all new drafts are checked again.
 - The local operator and installed plugin files are trusted. This is not a
   sandbox against another process running as that user.
 - Use synthetic content only. Clean artifacts contain the submitted text.
