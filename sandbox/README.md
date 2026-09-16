@@ -62,9 +62,10 @@ node C:\path\to\agent-airlock\sandbox\scripts\configure.mjs `
 ```
 
 The tool asks for confirmation, preserves unrelated existing settings, validates
-all JSON inputs, and replaces the destination atomically. Use `--yes` with
-`--apply` only in reviewed automation where an interactive prompt is not
-possible.
+the supported Airlock sandbox fragment and all JSON inputs, and replaces the
+destination atomically. Existing unrelated settings are preserved without being
+reinterpreted. Use `--yes` with `--apply` only in reviewed automation where an
+interactive prompt is not possible.
 
 Available scopes are:
 

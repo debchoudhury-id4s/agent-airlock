@@ -154,6 +154,27 @@ test("advisory mode reports an overage; enforce mode blocks at or above the thre
   })).decision, "allow");
 });
 
+test("displayed cents and threshold enforcement use the same precision", async t => {
+  const home = await scratch(t);
+  const now = new Date(2026, 8, 15, 22, 0, 0);
+  const dbPath = await createStore(home, [
+    event(new Date(now.getTime() - 60_000).toISOString(), 79_999_999_900_000, 1, 1),
+  ]);
+  const report = readTrendingCost({ dbPath, now, usdPerAiu: 0.01 });
+  const policyConfig = configured({ mode: "enforce" });
+  const chunks = [];
+  const result = await runTrendingCostHook({
+    policyConfig,
+    readUsage: async () => report,
+    write: text => chunks.push(text),
+  });
+  const lines = chunks.join("").trim().split(/\r?\n/).map(JSON.parse);
+
+  assert.match(lines[0].message, /MTD 2026-09-01-now: \$800\.00/);
+  assert.equal(result.result.decision, "block");
+  assert.equal(result.output.decision, "block");
+});
+
 test("unavailable usage follows the reviewed allow-or-block setting", async () => {
   const report = {
     available: false,

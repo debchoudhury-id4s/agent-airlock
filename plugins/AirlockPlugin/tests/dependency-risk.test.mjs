@@ -180,6 +180,7 @@ test("invalid proposals cannot reach policy evaluation", async t => {
   const review = createReview({ root });
   for (const input of [
     {}, { ...approved, approved: true }, { ...approved, version: "latest" },
+    { ...approved, version: "4.87.0-." }, { ...approved, version: "4.87.0+." },
     { ...blocked, bypass: true }, { ...blocked, bypassReason: "demo-owner-approved" },
     { ...blocked, bypass: true, bypassReason: "free form reason" },
   ]) {
