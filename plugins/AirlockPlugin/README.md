@@ -96,16 +96,12 @@ calls a remote model. Arguments are `taskType`, `dataClass`, and optional
 
 To review a proposed MISE dependency version, ask:
 
-> Run the airlock-dependency-demo skill. Show the approved baseline, synthetic
-> blocked version, unknown-version pause, and explicit synthetic bypass.
+> Run the airlock-dependency-demo skill.
 
-Expected results: **approved, blocked, blocked, approved**. The fixture uses
-`Microsoft.Identity.Client`, whose version is centralized by MISE. The blocked
-`4.88.0-airlock-demo` value and `AIRLOCK-DEMO-001` are synthetic team-policy
-data, not a real package advisory. The bypass is intentionally narrow: it works
-only for a snapshot entry whose advisory ID begins `AIRLOCK-DEMO-` and whose
-trusted configuration enables it. It cannot bypass stale evidence, unknown
-packages, real advisories, or another gate.
+Expected result: the `4.88.0-airlock-demo` proposal is **blocked** under
+`AIRLOCK-DEMO-001`, and the skill reports only that the upgrade was not
+performed. The version and rule are synthetic team-policy data, not a real
+package advisory.
 
 The tool records approved plans under `~\.agent-airlock\outbound-demo\dependency-reviews`.
 It does not edit MISE, contact NuGet, or run restore. A real dependency-edit
@@ -171,7 +167,7 @@ plugins\AirlockPlugin\
     airlock-demo\SKILL.md               Three-call presentation, not enforcement
     airlock-intent-demo\SKILL.md        /yolo cannot authorize online writes
     airlock-model-demo\SKILL.md         Team default vs blocked/non-default models
-    airlock-dependency-demo\SKILL.md    Allow/block/ask-first/synthetic-bypass demo
+    airlock-dependency-demo\SKILL.md    Single blocked dependency demo
     trending-cost\SKILL.md              Structured cost-report presentation
   tests\
     policies.test.mjs                   Composition and configuration tests
