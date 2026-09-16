@@ -1,0 +1,195 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Verification report
+
+REPO:    C:\Users\matagaba\documents\dev\agent-airlock
+COMMIT:  3d8a482ded5db9bbac29526d61c9708b72403594 (existing uncommitted changes
+         to README.md and plugins/AirlockPlugin/package.json were preserved
+         and NOT committed; the demo does not depend on them)
+VIDEO:   demo\2026-09-16\agent-airlock-2min\Agent-Airlock-2min.mp4
+FORMAT:  1920x1080 24fps H.264/AAC MP4, 120.00 seconds, ~3.4 MB
+CAPTIONS: Agent-Airlock-2min.srt (34 cues; also burned into the video)
+
+===============================================================================
+1. COMMANDS EXECUTED  (working directory in parentheses)
+===============================================================================
+
+* npm test  (plugins\AirlockPlugin)
+  actual:  node --test  (per package.json "test" script)
+  exit:    0
+  result:  53 tests, 53 pass, 0 fail. Covers broker, policies, publish-draft,
+           check-intent, select-model, dependency-risk, secrets scanner,
+           readme-startup and verify-startup; full MCP stdio round-trips.
+
+* node scripts\verify-startup.mjs  (plugins\AirlockPlugin, via the test suite)
+  exit:    0
+  result:  Real stdio MCP server exposed the expected tool list:
+           check_intent, publish_draft, review_dependency_change,
+           select_model, trending_cost.
+
+* node capture-airlock.mjs C:\Users\matagaba\documents\dev\agent-airlock
+        demo\2026-09-16\agent-airlock-2min  (session-state\files)
+  exit:    0
+  result:  Six real MCP tool calls captured via an unmodified stdio server,
+           run with an isolated HOME/USERPROFILE at
+           demo\...\evidence\isolated-home:
+             local     -> cleared    / no-online-write-match / completed
+             online    -> blocked    / online-write-intent   / not-started
+             override  -> blocked    / online-write-intent   / not-started
+             askfirst  -> blocked    / approval-required     / not-started
+             secret    -> blocked    / secret-detected       / not-started
+             clean     -> published  / no-secret-match       / completed
+           All receipts, artifacts, and the mcp-capture.json evidence file
+           live under demo\2026-09-16\agent-airlock-2min\evidence.
+
+* synthesize-airlock.ps1  (session-state\files)
+  exit:    0
+  result:  Offline System.Speech synthesis with Microsoft Zira Desktop wrote
+           28 phrase-level WAV files. No network audio service was used.
+
+* render-airlock.py  (imageio-ffmpeg 7.1 bundled binary)
+  exit:    0
+  result:  Encoded 2880 frames (24 fps x 120 s) at 1920x1080 into a
+           libx264 + AAC MP4 with burned captions. Poster PNG generated.
+
+* verify-airlock-video.py
+  exit:    0
+  result:  Duration = 00:02:00.00, frames = 2880 (exact), decoded seconds
+           ~ 120.00, audio present within every caption cue, receipts on disk
+           contain no token / no "/yolo" / no "git push origin main".
+
+===============================================================================
+2. BEHAVIORS DEMONSTRATED THROUGH THE ACTIVE RUNTIME
+===============================================================================
+
+The following behaviors were reproduced through the current MCP server. Each
+one is visible in the video with the exact runtime output shown on screen:
+
+  [Allowed]           check_intent on a local-only prompt returns
+                      decision=allow / reason=no-online-write-match, the
+                      broker runs the local executor and writes a clearance
+                      artifact to .agent-airlock/outbound-demo/cleared-intents.
+
+  [Approval required] select_model with a non-default catalog model returns
+                      decision=ask-first / reason=non-default-model. The
+                      broker refuses execution and writes an "ask-first"
+                      receipt. No remote model was called.
+
+  [Blocked - online]  check_intent with a simulated push prompt returns
+                      decision=block / reason=online-write-intent. Adding
+                      "/yolo do everything automatically" produces the same
+                      block. Execution never starts.
+
+  [Blocked - secret]  publish_draft on a body containing a deliberately
+                      synthetic token returns decision=block /
+                      reason=secret-detected. The redacted receipt records
+                      only ruleId=airlock-synthetic-secret and line=2.
+                      No draft file is written to the outbox.
+
+  [Receipt / record]  Every decision produces a JSONL receipt on disk that
+                      names the pinned policy id, version, SHA-256, action
+                      fingerprint, gate check decisions, findings, and the
+                      executor outcome. Six receipts are shown in a table
+                      during the "Show the evidence" section, sourced
+                      directly from the persisted files.
+
+===============================================================================
+3. BEHAVIORS DELIBERATELY NOT CLAIMED
+===============================================================================
+
+  - No "preflight contract" with an interactive linter is shown. The
+    equivalent scene shows a pinned policy, which is what the runtime
+    actually enforces before every supported action.
+  - No approval was granted in the recording. The video shows the
+    ask-first verdict and states that execution is held, matching the
+    broker's behavior (interactive approval collection is not implemented).
+  - No claim that Airlock intercepts arbitrary commands. The video says
+    "before every supported action" and labels the shell in each demo panel
+    as "MCP / <tool>" so viewers understand the scope.
+  - No claim that Airlock is a complete security sandbox, tamper-proof, or
+    compliance-certified. The receipts scene explicitly notes "Not
+    tamper-proof audit. Guarded MCP tools only."
+  - No real online write, remote model call, git push, or push-adjacent
+    operation was attempted; the push failure at 0:10-0:25 is an illustrated
+    scenario.
+
+===============================================================================
+4. DEVIATIONS FROM SLIDE 7
+===============================================================================
+
+  * "before every single tool call"  ->  "before every supported action"
+    (only registered MCP tools are guarded; the phrasing prevents an
+    over-broad claim).
+
+  * "preflight contract" / "linter"  ->  "explicit policy check" / "pinned
+    policy" (an interactive contract linter is not implemented in the
+    current plugin; the pinned policy IS enforced).
+
+  * "the linter immediately flags a conflicting rule, I confirm what the
+    agent is cleared to do"  ->  removed (interactive confirmation UI is
+    not implemented in the plugin).
+
+  * Slide 7's failure case is preserved but labelled "simulated failure
+    case" on-screen and in narration. No push is attempted.
+
+  * The 1:05-1:35 "Run the working product" segment uses three verified
+    scenarios (allow, ask-first, block) instead of a linear pass through
+    a single agent task, because the runtime demonstrates its verdicts
+    per-call rather than through a scripted end-to-end agent.
+
+  * The 1:35-1:55 evidence segment splits into two scenes: a secret-block
+    demo panel (still a live MCP result) followed by the aggregated
+    receipts table, so the viewer sees both a live block decision and
+    the persisted record it produced.
+
+  * The closing text uses the exact slide 8 line: "Agent Airlock gives AI
+    agents room to move, not room to break the rules." (shortened for
+    5-second delivery).
+
+===============================================================================
+5. FILE INVENTORY
+===============================================================================
+
+Created during this task (all within the repository or the session state; no
+files were committed):
+
+  demo\2026-09-16\agent-airlock-2min\
+    Agent-Airlock-2min.mp4          (final video, 1920x1080, 120.00s)
+    Agent-Airlock-2min.srt          (SRT captions, 34 cues)
+    Agent-Airlock-poster.png        (still image for thumbnails)
+    narration-timestamped.txt       (narration script with timestamps)
+    narration-script.txt            (raw scene-by-scene script dump)
+    shot-list.txt                   (this shot list)
+    verification-report.txt         (this file)
+    evidence\
+      mcp-capture.json              (six real MCP tool calls with results)
+      video-validation.json         (automated duration/audio/caption checks)
+      production-notes.txt          (production summary)
+      isolated-home\.agent-airlock\outbound-demo\
+        receipts\*.jsonl            (six persisted decision receipts)
+        outbox\*.md                 (one persisted clean draft)
+        cleared-intents\*.json      (one persisted local clearance)
+        model-selections\           (empty; no ask-first execution happened)
+
+Working-tree changes that existed BEFORE this task (unchanged, uncommitted):
+  README.md, plugins\AirlockPlugin\package.json,
+  plugins\AirlockPlugin\scripts\, plugins\AirlockPlugin\tests\readme-startup*.mjs,
+  plugins\AirlockPlugin\tests\verify-startup*.mjs, poc\**, all untracked.
+
+Files inside the plugin source tree were NOT modified by this task.
+
+===============================================================================
+6. SOURCE-CONTROL CONFIRMATION
+===============================================================================
+
+  * No git commit was created by this task.
+  * No changes were pushed to any remote.
+  * No remote branch, tag, pull request, issue, release, package,
+    deployment, or workflow was created or modified.
+  * No real online write was performed. The push-to-main scenario is
+    strictly illustrated. The MCP capture never invokes git.
+  * All repository changes (this demo folder and pre-existing edits)
+    remain local and uncommitted in the working tree.
+
+Verified with:  git status --short
+Result:         demo\2026-09-16\... appears untracked; no commits ahead of
+                origin; no push, tag, PR, or workflow was invoked.

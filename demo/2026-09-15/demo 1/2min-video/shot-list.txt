@@ -1,0 +1,111 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Shot list  (narration -> visible screen -> product action -> callout)
+
+00:00-00:10  Intro
+  Narration:   "Agent Airlock checks what an agent is allowed to do before
+               work begins, and applies the rules again before every
+               supported action executes."
+  Screen:      Title card "Agent Airlock checks before it acts."
+               Rotating airlock ring; two pills BEFORE WORK / BEFORE ACTION.
+  Product:     None. Framing card only.
+  Callout:     LOCAL PROOF OF CONCEPT / Guarded MCP tools only
+
+00:10-00:25  Unsafe assumption
+  Narration:   "Here's the unsafe assumption. 'Fix the bug and finish it'
+               states an outcome, not permission to push code. In a simulated
+               failure case, the agent finishes by pushing to main.
+               No approval. No record."
+  Screen:      Illustrated timeline: Fix the bug DONE, Run tests DONE,
+               Push straight to main NO APPROVAL (highlighted red).
+  Product:     None executed. Explicit "SIMULATED FAILURE CASE" chrome label.
+  Callout:     ILLUSTRATED SCENARIO / Not a recorded incident
+
+00:25-00:45  Establish the limits
+  Narration:   "Airlock replaces that assumption with an explicit policy check.
+               A pinned policy names the tool, the local target, the required
+               gate, and the rule that decides the verdict."
+  Screen:      Pinned policy card - outbound-demo v4: tool publish_draft,
+               target local-review-outbox, required gate no-secrets-in-drafts,
+               deciding rule airlock-synthetic-secret.
+  Product:     Reflects the real policy loaded from
+               plugins/AirlockPlugin/policies/default.json and the SHA-256
+               shown on every receipt.
+  Callout:     VERIFIED / policy identity, version, and SHA-256 appear on
+               every receipt
+
+00:45-01:05  Preview the decisions
+  Narration:   "There are three verdicts the runtime returns: allowed for
+               safe local work, approval required for actions that need a
+               local reviewer, and blocked for anything a rule forbids.
+               Each verdict carries the rule that decided it."
+  Screen:      Three verdict cards - ALLOWED / APPROVAL REQUIRED / BLOCKED
+               with the exact receipt fields each verdict produces.
+  Product:     Verdict shape reflects runtime/policies.mjs evaluationSchema:
+               decision, reason, findings.
+  Callout:     VERDICT SHAPE / Every check returns decision, reason, findings
+
+01:05-01:15  Live MCP result: check_intent (local)
+  Narration:   "Watch it run. First, a safe local intent. The runtime allows
+               it and writes a local clearance."
+  Screen:      Terminal panel showing the actual MCP request and result
+               (gate=no-online-writes, decision=allow,
+               reason=no-online-write-match, execution=completed).
+  Product:     Actual result recorded via the unmodified stdio MCP server.
+               See evidence/mcp-capture.json record id "local".
+  Callout:     LIVE MCP RESULT / Recorded from the unmodified plugin runtime
+
+01:15-01:25  Live MCP result: select_model (approval required)
+  Narration:   "Next, a non-default catalog model. The gate marks it approval
+               required. Execution is held."
+  Screen:      Terminal panel with the select_model input
+               (taskType=code-edit, dataClass=repo-local, model=stub-override)
+               and the returned fields: gate=model-catalog, decision=ask-first,
+               reason=non-default-model, execution=not-started.
+  Product:     Real ask-first path via runtime/policies.mjs;
+               broker holds execution and writes the ask-first receipt.
+  Callout:     LIVE MCP RESULT / Recorded from the unmodified plugin runtime
+
+01:25-01:35  Live MCP result: check_intent (blocked online write)
+  Narration:   "Now add a simulated push to main. The no-online-writes rule
+               blocks it. YOLO does not override this."
+  Screen:      Terminal panel - prompt "Fix the bug and git push origin main.",
+               gate=no-online-writes, decision=block, reason=online-write-intent,
+               execution=not-started. Side note: /yolo variant blocks the same.
+  Product:     Real block; broker never invokes the executor. Captured for
+               both the plain push prompt and the "/yolo" override attempt.
+  Callout:     LIVE MCP RESULT / Recorded from the unmodified plugin runtime
+
+01:35-01:45  Live MCP result: publish_draft (blocked publication)
+  Narration:   "A draft carrying a synthetic test token. The secrets gate
+               blocks publication. The receipt records rule and line,
+               never the token."
+  Screen:      Terminal panel showing the redacted body [SYNTHETIC TEST TOKEN]
+               and gate=no-secrets-in-drafts, decision=block,
+               reason=secret-detected, execution=not-started.
+  Product:     Real gitleaks-based secrets gate; the token is deliberately
+               synthetic and never printed. Receipt on disk contains only
+               ruleId and line.
+  Callout:     LIVE MCP RESULT / Recorded from the unmodified plugin runtime
+
+01:45-01:55  Show the evidence: receipts table
+  Narration:   "Every decision leaves a receipt on disk: action, target,
+               decision, rule, and executor outcome."
+  Screen:      Six-row table of every recorded MCP call showing ACTION,
+               DECISION, EXECUTION, GATE. Right column shows pinned policy
+               identity (outbound-demo v4, sha256 prefix) and the redacted
+               finding rule and line for the secret block.
+  Product:     Rows come straight from the persisted receipt files under
+               isolated-home/.agent-airlock/outbound-demo/receipts.
+  Callout:     LOCAL PROOF OF CONCEPT / Not tamper-proof audit.
+               Guarded MCP tools only.
+
+01:55-02:00  Close
+  Narration:   "Agent Airlock. Room to move, not room to break the rules."
+  Screen:      Title card AGENT AIRLOCK with the rotating airlock ring and
+               closing line, matching slide 8 wording.
+  Product:     None.
+  Callout:     LOCAL PROOF OF CONCEPT / policy check + verdicts +
+               decision receipts
+
+Total: 120.00 s, 34 caption cues, three visually distinct verdicts
+(green ALLOW, gold ASK-FIRST, red BLOCK).

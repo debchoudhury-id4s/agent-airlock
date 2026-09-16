@@ -1,0 +1,19 @@
+{
+  "durationSeconds": 120,
+  "resolution": "1920x1080",
+  "fps": 24,
+  "decodedFrames": 2880,
+  "videoCodec": "H.264",
+  "audioCodec": "AAC",
+  "voice": "en-US-AvaNeural (Microsoft Neural TTS, rate=-2%)",
+  "captions": 28,
+  "narrationAlignment": "Revised from slide 7 per prompt corrections: 'before every supported action', 'simulated failure case', policy check instead of preflight linter, no unverified approval claims.",
+  "realRecordedMcpCalls": 6,
+  "verdictsShown": [
+    "allow",
+    "ask-first",
+    "block"
+  ],
+  "audioPresentForEveryCaption": true,
+  "fileBytes": 3642201
+}

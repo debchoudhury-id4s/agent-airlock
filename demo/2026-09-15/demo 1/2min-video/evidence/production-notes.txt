@@ -1,0 +1,47 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Produced September 16, 2026.
+
+Source presentation:
+https://microsoft-my.sharepoint.com/:p:/p/matagaba/cQpivHeqAGvDQLhjarcOleT-EgUCUSgXIiffAEOGOoPAp9yYnQ
+
+Slide 7's speaker notes were the narration baseline. The current prompt
+required accuracy corrections: "before every supported action" instead of
+"before every single tool call"; policy check instead of "preflight
+contract" / "linter"; the push failure explicitly labelled as simulated.
+See verification-report.txt for the full deviation list.
+
+00:00-00:10  What Agent Airlock is (framing card only).
+00:10-00:25  Unsafe assumption: simulated failure case.
+00:25-00:45  Establish the limits: the pinned policy.
+00:45-01:05  Preview the three verdicts (allowed / approval required / blocked).
+01:05-01:35  Run the working product: three live MCP results.
+01:35-01:55  Show the evidence: one live block plus the receipts table.
+01:55-02:00  Close.
+
+Every "Live MCP result" panel is fed by an actual tool call captured against
+the unmodified plugin runtime with an isolated HOME/USERPROFILE. Result
+statuses, reasons, execution outcomes, gates, and finding fields shown in
+the video come from evidence\mcp-capture.json and the receipts on disk.
+The synthetic test token is abbreviated on screen as [SYNTHETIC TEST TOKEN];
+its unredacted form never appears in the video, the SRT captions, or the
+receipts.
+
+Runtime scope demonstrated: local intent clearance, approval-required hold
+via the policy evaluator (ask-first path), online-write block, secret
+block, secret gate's redacted findings, and persistent per-decision
+receipts with pinned policy identity, version, and SHA-256.
+
+Product vision NOT demonstrated: interactive preflight linter with a
+conflict-resolution UI; interactive approval collection and receipt
+signing; blocking arbitrary shell commands; tamper-proof audit.
+
+Audio: Microsoft Zira Desktop, generated locally via System.Speech.
+Captions: burned into the video, and also supplied as an SRT.
+Video: 1920x1080, 24 fps, H.264/AAC MP4, 120.00 seconds.
+
+Source-control status at completion:
+  * HEAD 3d8a482 (unchanged)
+  * main is level with origin/main (no ahead-behind)
+  * demo/2026-09-16/ folder is untracked
+  * No real online write occurred
+

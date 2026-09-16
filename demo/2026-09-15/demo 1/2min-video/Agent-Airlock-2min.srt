@@ -1,0 +1,111 @@
+1
+00:00:00,436 --> 00:00:05,056
+Agent Airlock checks what an agent is allowed to do before work begins,
+
+2
+00:00:05,196 --> 00:00:09,544
+and applies the rules again before every supported action executes.
+
+3
+00:00:10,275 --> 00:00:12,106
+Here's the unsafe assumption.
+
+4
+00:00:12,246 --> 00:00:15,251
+"Fix the bug and finish it" states an outcome,
+
+5
+00:00:15,391 --> 00:00:17,134
+not permission to push code.
+
+6
+00:00:17,534 --> 00:00:22,372
+In a simulated failure case, the agent finishes by pushing to main.
+
+7
+00:00:22,512 --> 00:00:24,673
+No approval. No record.
+
+8
+00:00:29,227 --> 00:00:33,254
+Airlock replaces that assumption with an explicit policy check.
+
+9
+00:00:33,394 --> 00:00:36,844
+A pinned policy names the tool, the local target,
+
+10
+00:00:36,984 --> 00:00:40,735
+the required gate, and the rule that decides the verdict.
+
+11
+00:00:47,514 --> 00:00:50,342
+There are three verdicts the runtime returns:
+
+12
+00:00:50,482 --> 00:00:52,641
+allowed for safe local work,
+
+13
+00:00:52,781 --> 00:00:56,541
+approval required for actions that need a local reviewer,
+
+14
+00:00:56,681 --> 00:00:59,397
+and blocked for anything a rule forbids.
+
+15
+00:00:59,537 --> 00:01:02,423
+Each verdict carries the rule that decided it.
+
+16
+00:01:06,136 --> 00:01:10,089
+Watch it run. First, a safe local intent.
+
+17
+00:01:10,229 --> 00:01:13,852
+The runtime allows it and writes a local clearance.
+
+18
+00:01:16,447 --> 00:01:19,286
+Next, a non-default catalog model.
+
+19
+00:01:19,426 --> 00:01:23,539
+The gate marks it approval required. Execution is held.
+
+20
+00:01:26,466 --> 00:01:28,769
+Now add a simulated push to main.
+
+21
+00:01:28,909 --> 00:01:31,320
+The no-online-writes rule blocks it.
+
+22
+00:01:31,460 --> 00:01:33,507
+YOLO does not override this.
+
+23
+00:01:35,275 --> 00:01:38,174
+A draft carrying a synthetic test token.
+
+24
+00:01:38,314 --> 00:01:40,814
+The secrets gate blocks publication.
+
+25
+00:01:40,954 --> 00:01:44,708
+The receipt records rule and line, never the token.
+
+26
+00:01:46,097 --> 00:01:48,980
+Every decision leaves a receipt on disk:
+
+27
+00:01:49,120 --> 00:01:53,884
+action, target, decision, rule, and executor outcome.
+
+28
+00:01:55,275 --> 00:01:59,719
+Agent Airlock. Room to move, not room to break the rules.

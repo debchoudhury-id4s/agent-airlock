@@ -1,0 +1,55 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Timestamped narration script  (16:9, 1080p, 120.00s, H.264/AAC MP4)
+File: Agent-Airlock-2min.mp4
+Voice: Microsoft Zira Desktop (offline System.Speech synthesis)
+
+00:00-00:10  WHAT AGENT AIRLOCK IS
+  Agent Airlock checks what an agent is allowed to do before work begins,
+  and applies the rules again before every supported action executes.
+
+00:10-00:25  UNSAFE ASSUMPTION
+  Here's the unsafe assumption.
+  "Fix the bug and finish it" states an outcome,
+  not permission to push code.
+  In a simulated failure case, the agent finishes by pushing to main.
+  No approval. No record.
+
+00:25-00:45  ESTABLISH THE LIMITS
+  Airlock replaces that assumption with an explicit policy check.
+  A pinned policy names the tool, the local target,
+  the required gate, and the rule that decides the verdict.
+
+00:45-01:05  PREVIEW THE DECISIONS
+  There are three verdicts the runtime returns:
+  allowed for safe local work,
+  approval required for actions that need a local reviewer,
+  and blocked for anything a rule forbids.
+  Each verdict carries the rule that decided it.
+
+01:05-01:15  RUN THE PRODUCT / ALLOWED
+  Watch it run. First, a safe local intent.
+  The runtime allows it and writes a local clearance.
+
+01:15-01:25  RUN THE PRODUCT / APPROVAL REQUIRED
+  Next, a non-default catalog model.
+  The gate marks it approval required. Execution is held.
+
+01:25-01:35  RUN THE PRODUCT / BLOCKED
+  Now add a simulated push to main.
+  The no-online-writes rule blocks it.
+  YOLO does not override this.
+
+01:35-01:45  SHOW THE EVIDENCE / SECRET GATE
+  A draft carrying a synthetic test token.
+  The secrets gate blocks publication.
+  The receipt records rule and line, never the token.
+
+01:45-01:55  SHOW THE EVIDENCE / RECEIPTS
+  Every decision leaves a receipt on disk:
+  action, target, decision, rule, and executor outcome.
+
+01:55-02:00  CLOSE
+  Agent Airlock. Room to move, not room to break the rules.
+
+Word count: 236 words. Slide 7 speaker-notes wording preserved where it
+matches verified behavior; revised elsewhere per prompt corrections.

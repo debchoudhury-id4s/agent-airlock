@@ -1,0 +1,29 @@
+000-010 seconds [intro]
+Agent Airlock checks what an agent is allowed to do before work begins, and applies the rules again before every supported action executes.
+
+010-025 seconds [problem]
+Here's the unsafe assumption. "Fix the bug and finish it" states an outcome, not permission to push code. In a simulated failure case, the agent finishes by pushing to main. No approval. No record.
+
+025-045 seconds [preflight]
+Airlock replaces that assumption with an explicit policy check. A pinned policy names the tool, the local target, the required gate, and the rule that decides the verdict.
+
+045-065 seconds [transition]
+There are three verdicts the runtime returns: allowed for safe local work, approval required for actions that need a local reviewer, and blocked for anything a rule forbids. Each verdict carries the rule that decided it.
+
+065-075 seconds [local]
+Watch it run. First, a safe local intent. The runtime allows it and writes a local clearance.
+
+075-085 seconds [askfirst]
+Next, a non-default catalog model. The gate marks it approval required. Execution is held.
+
+085-095 seconds [online]
+Now add a simulated push to main. The no-online-writes rule blocks it. YOLO does not override this.
+
+095-105 seconds [secret]
+A draft carrying a synthetic test token. The secrets gate blocks publication. The receipt records rule and line, never the token.
+
+105-115 seconds [receipts]
+Every decision leaves a receipt on disk: action, target, decision, rule, and executor outcome.
+
+115-120 seconds [close]
+Agent Airlock. Room to move, not room to break the rules.
