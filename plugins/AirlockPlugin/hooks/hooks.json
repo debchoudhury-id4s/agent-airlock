@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "hooks": {
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "command": "node \"${PLUGIN_ROOT}/hooks/user-prompt-submitted.mjs\"",
+        "timeoutSec": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": ".*",
+        "command": "node \"${PLUGIN_ROOT}/hooks/pre-tool-use.mjs\"",
+        "timeoutSec": 10
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "node \"${PLUGIN_ROOT}/hooks/session-end.mjs\"",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

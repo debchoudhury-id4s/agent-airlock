@@ -5,6 +5,6 @@
     "publish_draft": ["no-secrets-in-drafts"],
     "check_intent": ["no-online-writes"],
     "select_model": ["model-catalog"],
-"publish_approved_draft": [ "no-secrets-in-drafts", "local-approval-required" ]
+    "publish_approved_draft": ["no-secrets-in-drafts", "local-approval-required"]
   }
 }

@@ -4,5 +4,6 @@
   "description": "Demo one enforced rule: secret-bearing drafts cannot reach the local review outbox.",
   "author": { "name": "Agent Airlock contributors" },
   "skills": "./skills",
+  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }

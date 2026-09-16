@@ -10,11 +10,12 @@ import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createSecretsGate } from "../gates/secrets/index.mjs";
 import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
 import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
+import { approvalGate } from "../gates/approval/index.mjs";
 import { pluginRoot, scan } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
 function createGate({ root, scanner } = {}) {
-  const evaluate = createPolicyEvaluator({ policy, gates: [createSecretsGate({ scanner }), createNoOnlineWritesGate(), createModelCatalogGate()] });
+  const evaluate = createPolicyEvaluator({ policy, gates: [createSecretsGate({ scanner }), createNoOnlineWritesGate(), createModelCatalogGate(), approvalGate] });
   return createPublishDraft({ root, evaluate });
 }
 
