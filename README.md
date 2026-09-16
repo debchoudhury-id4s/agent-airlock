@@ -34,7 +34,7 @@ This creates four common problems:
 4. **Missing explanations** - Activity logs may show what happened without clearly showing why it was allowed or blocked.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 8, "wrappingWidth": 180}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 8, "wrappingWidth": 180}}}%%
 flowchart LR
     Request["Request, instructions,<br/>permissions, and safety rules"] -->|1| Prompt["One large prompt"]
     Prompt -->|2| Agent["AI agent"]
@@ -61,7 +61,7 @@ Free-form text is a great way to describe a goal. It is a poor place to hide imp
 The user describes the outcome. The organization keeps its rules separate. Agent Airlock combines them into a clear mission before work begins.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
 flowchart TB
     Goal["User goal"] -->|1a| Mission["Airlock mission check<br/>(product target)"]
     Rules["Versioned organization rules"] -->|1b| Mission
@@ -120,7 +120,7 @@ This is a future adoption path, not part of the local hackathon build.
 The contract, organization rules, examples, and Agent Airlock files can live in GitHub or Azure DevOps.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 8, "wrappingWidth": 165}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 8, "wrappingWidth": 165}}}%%
 flowchart LR
     Repo["GitHub or Azure DevOps<br/>Contract, rules, plugin,<br/>examples, and tests"]
     Repo -->|1| Review["PR review"]
@@ -172,7 +172,7 @@ product vision described above.
 ### Runtime architecture
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 8, "wrappingWidth": 200}}}%%
 flowchart TB
     User["User request"] -->|1a| Host["Agency / Copilot host"]
     Sandbox["Optional host sandbox<br/>Filesystem, network, credentials,<br/>MCP/LSP, and child processes<br/>Independent; supplied profiles allow bypass"] -. "1b. constrains when enabled" .-> Host
@@ -252,7 +252,7 @@ The rules are local, reviewed plugin files:
 ### Decision and evidence lifecycle
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 8, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 8, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
 sequenceDiagram
     participant Caller as Agency / Copilot
     participant Tool as Registered tool
