@@ -130,7 +130,7 @@ test("MCP exposes check_intent and yolo cannot authorize an online write", async
   const declaration = config.mcpServers["airlock-outbound"];
   const transport = new StdioClientTransport({
     command: process.execPath,
-    args: declaration.args.map(arg => arg.replaceAll("${COPILOT_PLUGIN_ROOT}", pluginRoot)),
+    args: declaration.args.map(arg => arg.replaceAll("${PLUGIN_ROOT}", pluginRoot)),
     cwd: workspace, env, stderr: "pipe",
   });
   await client.connect(transport);

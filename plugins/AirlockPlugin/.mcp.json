@@ -3,7 +3,7 @@
     "airlock-outbound": {
       "type": "stdio",
       "command": "node",
-      "args": ["${COPILOT_PLUGIN_ROOT}/server.mjs"],
+      "args": ["${PLUGIN_ROOT}/server.mjs"],
       "tools": ["*"]
     }
   }
