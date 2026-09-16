@@ -522,6 +522,227 @@ def render_receipt(shot: Shot, capture):
     draw_footer_captions(d, shot.caption_lines)
     return img
 
+# ---- animated terminal (real MCP call captured as a live CLI session) ----
+def _term_body_for(rec):
+    """Return (typed_prompt, [(text, font, fill, indent), ...], tag_text, tag_color)
+    describing the animated content for a single-panel terminal shot."""
+    result = rec["result"]
+    typed = f"PS> node scripts/mcp-call.mjs {rec['tool']}"
+    body = []
+    body.append(("> airlock-outbound MCP stdio server ready", FONT_TERM_SMALL, DIM, 0))
+    body.append(("> request:", FONT_TERM_SMALL, DIM, 0))
+    for jl in json.dumps(rec["input"], indent=2).splitlines():
+        body.append((jl, FONT_TERM_SMALL, FG, 30))
+    body.append(("> response:", FONT_TERM_SMALL, DIM, 0))
+    body.append(("{", FONT_TERM_SMALL, FG, 30))
+    for k in ("status", "decision", "reason", "execution"):
+        v = result.get(k, "")
+        body.append((f'  "{k}": "{v}",', FONT_TERM_SMALL, FG, 30))
+    gate = result.get("checks", [{}])[0].get("gate", "")
+    body.append((f'  "gate": "{gate}"', FONT_TERM_SMALL, FG, 30))
+    body.append(("}", FONT_TERM_SMALL, FG, 30))
+    decision = result.get("decision", "")
+    tag_text, tag_color = {
+        "allow": ("ALLOWED", ALLOW),
+        "ask-first": ("APPROVAL REQUIRED", ASK),
+        "block": ("BLOCKED", BLOCK),
+    }.get(decision, (decision.upper(), DIM))
+    body.append(("", FONT_TERM_SMALL, FG, 0))
+    body.append((
+        f"policy: {result.get('policy','')} v{result.get('policyVersion','')}   "
+        f"policySha256: {result.get('policySha256','')[:16]}\u2026",
+        FONT_TERM_SMALL, DIM, 0,
+    ))
+    rp = result.get("receiptPath", "")
+    if rp:
+        body.append(("> receipt: \u2026" + rp[-58:], FONT_TERM_SMALL, DIM, 0))
+    return typed, body, tag_text, tag_color
+
+
+def _blink_on(t: float, hz: float = 3.0) -> bool:
+    return int(t * hz * 2) % 2 == 0
+
+
+def render_terminal_at(shot: Shot, capture, t: float):
+    """Render a single frame of the animated terminal shot at time fraction t in [0,1]."""
+    img, d = new_frame()
+    draw_header(d)
+    record_key = shot.extra["record"]
+    if record_key in ("local", "clean", "askfirst"):
+        rec = next(r for r in capture["records"] if r["id"] == record_key)
+        panel_title = f"pwsh \u2014 {rec['tool']} (real MCP call, captured from unmodified server)"
+        draw_terminal_panel(d, 60, 120, 1800, 810, title=panel_title)
+        typed, body, tag_text, tag_color = _term_body_for(rec)
+        typing_frac = 0.25
+        reveal_end = 0.90
+        tag_appear = 0.75
+        y_typed = 195
+        if t <= typing_frac and typing_frac > 0:
+            chars = int(round(len(typed) * (t / typing_frac)))
+            visible = typed[:chars]
+            text_left(d, (90, y_typed), visible, FONT_TERM, fill=ALLOW)
+            cur_x = 90 + d.textbbox((0, 0), visible, font=FONT_TERM)[2] + 2
+            if _blink_on(t):
+                text_left(d, (cur_x, y_typed), "\u2588", FONT_TERM, fill=ALLOW)
+        else:
+            text_left(d, (90, y_typed), typed, FONT_TERM, fill=ALLOW)
+            if t < reveal_end:
+                progress = (t - typing_frac) / max(0.001, reveal_end - typing_frac)
+            else:
+                progress = 1.0
+            n_visible = max(0, min(len(body), int(round(progress * len(body)))))
+            cur_y = 250
+            for i in range(n_visible):
+                text, font, fill, indent = body[i]
+                text_left(d, (90 + indent, cur_y), text, font, fill=fill)
+                cur_y += 34
+            if n_visible < len(body) and _blink_on(t):
+                text_left(d, (90, cur_y), "\u2588", FONT_TERM_SMALL, fill=DIM)
+        if t >= tag_appear:
+            draw_tag(d, (60, 780), tag_text, tag_color)
+    elif record_key == "online+override+secret":
+        recs = {r["id"]: r for r in capture["records"]}
+        panels = [
+            ("online", "check_intent \u2014 \u201cgit push origin main\u201d"),
+            ("override", "check_intent \u2014 \u201c/yolo\u201d attempt"),
+            ("secret", "publish_draft \u2014 synthetic token"),
+        ]
+        y0 = 120
+        for pi, (pid, title) in enumerate(panels):
+            r = recs[pid]
+            draw_terminal_panel(d, 60, y0, 1800, 260, title=title)
+            panel_start = pi / 3.0
+            panel_end = (pi + 1) / 3.0
+            if t < panel_start:
+                y0 += 285
+                continue
+            lt = min(1.0, (t - panel_start) / max(0.001, panel_end - panel_start))
+            cmd = f"$ mcp call {r['tool']}"
+            typing_frac = 0.28
+            if lt <= typing_frac and typing_frac > 0:
+                chars = int(round(len(cmd) * (lt / typing_frac)))
+                visible = cmd[:chars]
+                text_left(d, (90, y0 + 70), visible, FONT_TERM, fill=ALLOW)
+                cur_x = 90 + d.textbbox((0, 0), visible, font=FONT_TERM)[2] + 2
+                if _blink_on(t):
+                    text_left(d, (cur_x, y0 + 70), "\u2588", FONT_TERM, fill=ALLOW)
+            else:
+                text_left(d, (90, y0 + 70), cmd, FONT_TERM, fill=ALLOW)
+                if lt >= typing_frac + 0.03:
+                    if pid == "secret":
+                        inp_show = ("content = \"Demo PR: fix the sample greeting.\\n"
+                                    "demo_token = [SYNTHETIC TEST TOKEN]\"")
+                    else:
+                        inp_show = "prompt = " + json.dumps(r["input"].get("prompt", ""))
+                    text_left(d, (90, y0 + 110), inp_show, FONT_TERM_SMALL, fill=FG)
+                if lt >= 0.60:
+                    res = r["result"]
+                    decision = res.get("decision", "")
+                    color = BLOCK if decision == "block" else (ASK if decision == "ask-first" else ALLOW)
+                    label = "BLOCKED" if decision == "block" else ("APPROVAL REQUIRED" if decision == "ask-first" else "ALLOWED")
+                    nx = draw_tag(d, (90, y0 + 160), label, color)
+                    gate = res.get("checks", [{}])[0].get("gate", "")
+                    reason = res.get("reason", "")
+                    findings = res.get("findings", [])
+                    findings_str = ""
+                    if findings:
+                        f0 = findings[0]
+                        findings_str = f"   finding: rule={f0.get('ruleId','')} line={f0.get('line','')}"
+                    text_left(d, (nx, y0 + 164), f"gate: {gate}   reason: {reason}{findings_str}", FONT_TERM_SMALL, fill=FG)
+                if lt >= 0.85:
+                    res = r["result"]
+                    text_left(d, (90, y0 + 210), f"execution: {res.get('execution','')}   status: {res.get('status','')}", FONT_TERM_SMALL, fill=DIM)
+            y0 += 285
+    draw_footer_captions(d, shot.caption_lines)
+    return img
+
+
+def render_receipt_at(shot: Shot, capture, t: float):
+    """Animated receipt shot: type Get-Content command, stream JSON fields, then build the aggregate table row-by-row."""
+    img, d = new_frame()
+    draw_header(d)
+    rec = next(r for r in capture["records"] if r["id"] == "online")
+    text_center(d, (W / 2, 110), "One decision, one receipt", FONT_H, fill=ACCENT)
+    draw_terminal_panel(d, 60, 160, 1800, 470, title="Get-Content receipts/<id>.jsonl (real record on disk)")
+    typed = "PS> Get-Content evidence\\isolated-home\\\u2026\\receipts\\<id>.jsonl -Raw"
+    typing_frac = 0.15
+    fields_end = 0.55
+    table_start = 0.55
+    table_end = 0.95
+    y_typed = 210
+    if t <= typing_frac and typing_frac > 0:
+        chars = int(round(len(typed) * (t / typing_frac)))
+        visible = typed[:chars]
+        text_left(d, (90, y_typed), visible, FONT_TERM_SMALL, fill=ALLOW)
+        cur_x = 90 + d.textbbox((0, 0), visible, font=FONT_TERM_SMALL)[2] + 2
+        if _blink_on(t):
+            text_left(d, (cur_x, y_typed), "\u2588", FONT_TERM_SMALL, fill=ALLOW)
+        draw_footer_captions(d, shot.caption_lines)
+        return img
+    text_left(d, (90, y_typed), typed, FONT_TERM_SMALL, fill=ALLOW)
+    receipt_line = {
+        "id": rec["result"]["id"],
+        "policy": rec["result"]["policy"],
+        "policyVersion": rec["result"]["policyVersion"],
+        "policySha256": rec["result"]["policySha256"][:32] + "\u2026",
+        "sha256": rec["result"]["sha256"][:32] + "\u2026",
+        "event": "blocked",
+        "decision": rec["result"]["decision"],
+        "reason": rec["result"]["reason"],
+    }
+    field_order = ["id", "policy", "policyVersion", "policySha256", "sha256",
+                   "event", "decision", "reason"]
+    total_slots = len(field_order) + 1
+    if t >= fields_end:
+        n_visible = total_slots
+    else:
+        prog = (t - typing_frac) / max(0.001, fields_end - typing_frac)
+        n_visible = max(0, min(total_slots, int(round(prog * total_slots))))
+    fy = 254
+    for k in field_order[:min(n_visible, len(field_order))]:
+        v = receipt_line[k]
+        text_left(d, (90, fy), f"{k:<14} : ", FONT_TERM_SMALL, fill=DIM)
+        text_left(d, (330, fy), str(v), FONT_TERM_SMALL, fill=FG)
+        fy += 36
+    if n_visible >= total_slots:
+        text_left(d, (90, fy), "checks         : ", FONT_TERM_SMALL, fill=DIM)
+        for c in rec["result"]["checks"]:
+            text_left(d, (330, fy), f"gate={c['gate']}  decision={c['decision']}  reason={c['reason']}", FONT_TERM_SMALL, fill=FG)
+            fy += 36
+            for f in c.get("findings", []):
+                text_left(d, (360, fy), f"finding: rule={f.get('ruleId','')} line={f.get('line','')}", FONT_TERM_SMALL, fill=BLOCK)
+                fy += 32
+    if n_visible < total_slots and _blink_on(t):
+        text_left(d, (90, fy), "\u2588", FONT_TERM_SMALL, fill=DIM)
+    rounded_rect(d, [60, 660, 1860, 920], 14, fill=BG_PANEL, outline=BORDER, width=2)
+    text_left(d, (90, 675), "All six recorded MCP calls in this run", FONT_LABEL, fill=ACCENT)
+    ty = 722
+    headers = ["TOOL", "SCENARIO", "DECISION", "GATE", "EXECUTION"]
+    xs = [90, 480, 850, 1160, 1500]
+    for x, ht in zip(xs, headers):
+        text_left(d, (x, ty), ht, FONT_TERM_SMALL, fill=DIM)
+    ty += 32
+    records = capture["records"]
+    if t >= table_end:
+        n_rows = len(records)
+    elif t <= table_start:
+        n_rows = 0
+    else:
+        prog = (t - table_start) / max(0.001, table_end - table_start)
+        n_rows = max(0, min(len(records), int(round(prog * len(records)))))
+    for r in records[:n_rows]:
+        res = r["result"]
+        dec = res.get("decision", "")
+        color = ALLOW if dec == "allow" else (ASK if dec == "ask-first" else BLOCK)
+        row = [r["tool"], r["id"], dec, res.get("checks", [{}])[0].get("gate", ""), res.get("execution", "")]
+        for i, (x, val) in enumerate(zip(xs, row)):
+            fill = color if i == 2 else FG
+            text_left(d, (x, ty), str(val), FONT_TERM_SMALL, fill=fill)
+        ty += 27
+    draw_footer_captions(d, shot.caption_lines)
+    return img
+
+
 # ---- recap and close ----
 def render_recap(shot: Shot):
     img, d = new_frame()
@@ -609,6 +830,41 @@ def make_shot_video(shot: Shot, target_duration: float) -> Path:
     ])
     return out
 
+
+def make_shot_video_animated(shot: Shot, capture, target_duration: float) -> Path:
+    """Render a frame-by-frame animated shot (terminal or receipt) and mux audio."""
+    audio = AUDIO_DIR / f"{shot.key}.mp3"
+    out = BUILD / f"{shot.key}.mp4"
+    if out.exists():
+        out.unlink()
+    seq_dir = FRAMES_DIR / "anim" / shot.key
+    if seq_dir.exists():
+        shutil.rmtree(seq_dir)
+    seq_dir.mkdir(parents=True, exist_ok=True)
+    num_frames = max(1, int(round(target_duration * FPS)))
+    for i in range(num_frames):
+        t = i / max(1, num_frames - 1)
+        if shot.kind == "terminal":
+            img = render_terminal_at(shot, capture, t)
+        elif shot.kind == "receipt":
+            img = render_receipt_at(shot, capture, t)
+        else:
+            raise RuntimeError(shot.kind)
+        img.save(seq_dir / f"{i:04d}.png")
+    subprocess.check_call([
+        FFMPEG, "-y", "-loglevel", "error",
+        "-framerate", str(FPS), "-i", str(seq_dir / "%04d.png"),
+        "-i", str(audio),
+        "-filter_complex", "[1:a]apad=pad_dur=1[a]",
+        "-map", "0:v:0", "-map", "[a]",
+        "-t", f"{target_duration:.3f}",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", str(FPS),
+        "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+        "-shortest",
+        str(out),
+    ])
+    return out
+
 # ----------------------------------------------------------------------------
 # 4) SRT
 # ----------------------------------------------------------------------------
@@ -684,7 +940,10 @@ def main():
     timings = []
     running = 0.0
     for shot, dur in per_shot:
-        p = make_shot_video(shot, dur)
+        if shot.kind in ("terminal", "receipt"):
+            p = make_shot_video_animated(shot, capture, dur)
+        else:
+            p = make_shot_video(shot, dur)
         parts.append(p)
         timings.append((shot, running, running + dur))
         running += dur
