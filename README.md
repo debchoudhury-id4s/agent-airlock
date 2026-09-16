@@ -34,7 +34,7 @@ This creates four common problems:
 4. **Missing explanations** - Activity logs may show what happened without clearly showing why it was allowed or blocked.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 0, "wrappingWidth": 180}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "edgeLabelBackground": "#ffffff", "textColor": "#000000", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 36, "rankSpacing": 115, "padding": 14, "diagramPadding": 0, "wrappingWidth": 180}}}%%
 flowchart LR
     subgraph WhiteBackground1[" "]
         direction LR
@@ -65,7 +65,7 @@ Free-form text is a great way to describe a goal. It is a poor place to hide imp
 The user describes the outcome. The organization keeps its rules separate. Agent Airlock combines them into a clear mission before work begins.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 160, "rankSpacing": 50, "padding": 14, "diagramPadding": 0, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "edgeLabelBackground": "#ffffff", "textColor": "#000000", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 48, "rankSpacing": 36, "padding": 14, "diagramPadding": 0, "wrappingWidth": 190}}}%%
 flowchart TB
     subgraph WhiteBackground2[" "]
         direction TB
@@ -97,10 +97,10 @@ The agent stays free to solve the problem inside the approved space. It cannot c
 
 ## Focused use cases
 
-The PRD defines four core use cases and three optional extensions. The current
-repository implements narrower local slices: secret scanning, online-write
-intent checks, model-catalog checks, and per-action receipts. Mission contracts,
-interactive approval, and complete run summaries remain product targets.
+The PRD defines four core use cases and three optional extensions. This
+repository currently implements local secret, online-write-intent, and
+model-catalog gates with per-action receipts. Mission contracts, interactive
+approval, and complete run summaries remain future work.
 
 ### Core
 
@@ -115,20 +115,19 @@ interactive approval, and complete run summaries remain product targets.
 6. **Review a security change.** A sign-in or dependency change is checked against a small local standards checklist and dated advisory fixture. Failed or unclear checks stop simulated review until resolved or explicitly approved where the rules permit.
 7. **Reuse research across sessions.** A later or overlapping local session reuses evidence-backed findings instead of repeating repository research. Stale or conflicting claims stay visible and must be verified.
 
-The POC uses a sample repository, local rules and records, a terminal interface, stub models, and simulated online writes. It needs no cloud deployment, administrator role, cross-team permission, or real online write. See the [full product requirements](./docs/preflight/prd.md).
+See the [full product requirements](./docs/prd.md) for acceptance
+criteria and scope.
 
 ---
 
 ## Easy to share and adopt
 
-Agent Airlock can be shared the same way teams already share code. The first version does not need a new central service.
-
-This is a future adoption path, not part of the local hackathon build.
-
-The contract, organization rules, examples, and Agent Airlock files can live in GitHub or Azure DevOps.
+Future adoption can keep contracts, organization rules, plugin code, examples,
+and tests in GitHub or Azure DevOps, with reviewed changes published as
+versioned releases. This is not part of the local hackathon build.
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 0, "wrappingWidth": 165}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "edgeLabelBackground": "#ffffff", "textColor": "#000000", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 30, "rankSpacing": 34, "padding": 14, "diagramPadding": 0, "wrappingWidth": 165}}}%%
 flowchart LR
     subgraph WhiteBackground3[" "]
         direction LR
@@ -148,9 +147,9 @@ flowchart LR
     class Release,Agent release;
 ```
 
-A team adds the tool and two small files to its project. Changes go through a pull request. The automatic check shown above can create an approved release through GitHub Releases, GitHub Packages, or Azure Artifacts. The agent loads that release when it starts.
-
-The same check can run on a developer's computer or in the repository. Teams can see who changed each rule, review it before use, and return to an earlier version if needed.
+A repository workflow can validate each change, publish through GitHub Releases,
+GitHub Packages, or Azure Artifacts, and let local agents load the reviewed
+version. Teams retain change history and rollback.
 
 ---
 
@@ -162,8 +161,6 @@ The same check can run on a developer's computer or in the repository. Teams can
 | **Developers** | They stop hiding the same safety rules in every prompt |
 | **Security and IT teams** | They can set clear limits and see them applied |
 | **Reviewers and auditors** | They can see what was requested, approved, blocked, completed, and why |
-
-The business value is simple: organizations can adopt useful agents faster, reduce repeated safety work, avoid risky actions, and make approvals less frustrating.
 
 ---
 
@@ -184,7 +181,7 @@ product vision described above.
 ### Runtime architecture
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 0, "wrappingWidth": 200}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "edgeLabelBackground": "#ffffff", "textColor": "#000000", "fontSize": "11pt"}, "flowchart": {"useMaxWidth": true, "htmlLabels": true, "curve": "linear", "nodeSpacing": 54, "rankSpacing": 52, "padding": 14, "diagramPadding": 0, "wrappingWidth": 200}}}%%
 flowchart TB
     subgraph WhiteBackground4[" "]
         direction TB
@@ -219,37 +216,18 @@ flowchart TB
 Agency loads [`plugin.json`](./plugins/AirlockPlugin/plugin.json), then
 [`.mcp.json`](./plugins/AirlockPlugin/.mcp.json) launches the Node.js MCP server.
 On a successful startup, the caller can choose a registered tool and provide
-that tool's documented arguments. It cannot choose the policy, gate list,
-executor, artifact path, or approval state. The current startup blocker shown
-above is detailed under [Decision and evidence lifecycle](#decision-and-evidence-lifecycle).
+that tool's documented arguments. The policy, gate list, target, executor,
+artifact path, and approval state remain controlled by the plugin.
 
-Each tool validates its input before creating a normalized action:
-
-```json
-{
-  "tool": "check_intent",
-  "target": "local-mission-review",
-  "input": {
-    "prompt": "Fix the local test."
-  }
-}
-```
-
-The broker deep-freezes that action, hashes it, and sends the same snapshot to
-the policy evaluator and, only after an allow decision, the fixed executor. The
-evaluator runs every gate bound to the tool. Decision precedence is:
-
-```text
-block > error > ask-first > allow
-```
-
-An action executes only when every required gate returns `allow`. `ask-first`
-does not currently open an approval prompt; the broker returns
-`approval-required` and performs zero execution.
+Each tool validates its input and creates a fixed action. The broker freezes and
+fingerprints that action, runs every policy-bound gate, saves the decision
+receipt, and executes only when every gate allows. Precedence is `block > error
+> ask-first > allow`; `ask-first` returns `approval-required` with zero
+execution.
 
 ### Current tool and gate map
 
-| MCP tool | Required gate | Current result and local artifact |
+| Registered tool or policy-only action | Required gate(s) | Configured behavior |
 |---|---|---|
 | `publish_draft(content)` | `no-secrets-in-drafts` | Clean text is copied to `~/.agent-airlock/outbound-demo/outbox/<id>.md`; detected secrets block execution |
 | `check_intent(prompt)` | `no-online-writes` | Local-only intent writes `cleared-intents/<id>.json`; configured online-write patterns block even when the prompt contains `/yolo` |
@@ -265,10 +243,10 @@ The rules are local, reviewed plugin files:
 - Model defaults and boundaries:
   [`gates/model-catalog/catalog.json`](./plugins/AirlockPlugin/gates/model-catalog/catalog.json)
 
-### Decision and evidence lifecycle
+### Sequence diagram
 
 ```mermaid
-%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#172b4d", "signalColor": "#3d4b66", "signalTextColor": "#172b4d", "labelBoxBkgColor": "#f1eaff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#2f2147", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 0, "diagramMarginY": 0, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
+%%{init: {"fontFamily": "Calibri Light, Calibri, Arial, sans-serif", "themeVariables": {"background": "#ffffff", "fontSize": "11pt", "actorBkg": "#eaf2ff", "actorBorder": "#4472c4", "actorTextColor": "#000000", "signalColor": "#3d4b66", "signalTextColor": "#000000", "labelBoxBkgColor": "#ffffff", "labelBoxBorderColor": "#7656a5", "labelTextColor": "#000000", "loopTextColor": "#000000", "noteBkgColor": "#fff4cc", "noteBorderColor": "#b7791f", "noteTextColor": "#3d2b00"}, "sequence": {"useMaxWidth": true, "diagramMarginX": 0, "diagramMarginY": 0, "actorMargin": 32, "width": 150, "height": 48, "boxMargin": 8, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 28, "mirrorActors": false, "wrap": true, "wrapPadding": 8}}}%%
 sequenceDiagram
     box rgb(255, 255, 255)
     participant Caller as Agency / Copilot
@@ -313,36 +291,12 @@ sequenceDiagram
     end
 ```
 
-Receipts are JSON Lines files under
-`~/.agent-airlock/outbound-demo/receipts`. They contain the policy identity,
-action hash and size, gate decisions, rule IDs, line numbers, timestamps, and
-execution state. They do not contain the raw prompt, draft, matched secret, or
-model payload.
-
-> [!WARNING]
-> The current gate registry has an incomplete approval integration.
-> [`gates/approval/index.mjs`](./plugins/AirlockPlugin/gates/approval/index.mjs)
-> exports `approvalGate` as an object, while
-> [`gates/index.mjs`](./plugins/AirlockPlugin/gates/index.mjs) invokes it as
-> `approvalGate()`. Node.js therefore raises `TypeError: approvalGate is not a
-> function` while loading the registry, before the MCP server starts. In
-> addition, `publish_approved_draft` is bound in the policy but is not exposed
-> by `server.mjs`. The current repository does not yet provide a working
-> approval flow.
-
-### Enforcement boundary
-
-Airlock enforces only calls routed through its registered MCP tools. It does not
-intercept native shell commands, another MCP server, Agency's own model traffic,
-or arbitrary processes running as the same user. All implemented executors write
-only local demo artifacts; they do not push Git branches, create pull requests,
-publish packages, deploy infrastructure, or call a hosted model.
-
 ## How to use
 
-These steps load the Airlock plugin into Agency Copilot and exercise the three
-gates that exist today. All writes stay on this computer. No GitHub push, pull
-request, or hosted-model call is part of the demo.
+These steps describe the intended local demo. The current source stops before
+tool registration with `TypeError: approvalGate is not a function`; fix that
+registry issue before running the prompts. All demo writes stay on this
+computer; no GitHub push, pull request, or hosted-model call is included.
 
 ### 1. Prerequisites
 
@@ -396,12 +350,6 @@ them. That host permission does **not** bypass the gates.
 Confirm these tools are listed: `publish_draft`, `check_intent`, `select_model`.
 If they are missing, restart with `agency copilot --plugin "local:$plugin"`.
 
-> [!NOTE]
-> If the MCP server fails to start with `TypeError: approvalGate is not a
-> function`, that is the known registry issue described under
-> [Decision and evidence lifecycle](#decision-and-evidence-lifecycle). The
-> prompts below only work after the server loads.
-
 ### 4. Prompts that show the gates
 
 Paste each prompt as a new Agency message. Do not rewrite blocked cases into
@@ -414,9 +362,7 @@ Run the airlock-demo skill. Show the clean draft, the secret block, and the
 attempt to override the rule.
 ```
 
-Expected: **published, blocked, blocked**.
-
-Without the skill, call `publish_draft` with only `content`:
+The skill should produce the same results as these direct calls:
 
 | # | `content` | Expected |
 |---|---|---|
@@ -431,9 +377,7 @@ Run the airlock-intent-demo skill. Show the local clearance, the online-write
 block, and the yolo override attempt.
 ```
 
-Expected: **cleared, blocked, blocked**. `/yolo` does not authorize the write.
-
-Without the skill, call `check_intent` with only `prompt`:
+The skill should produce the same results as these direct calls:
 
 | # | `prompt` | Expected |
 |---|---|---|
@@ -448,11 +392,7 @@ Run the airlock-model-demo skill. Show the default selection, the non-default
 approval pause, and the blocked model.
 ```
 
-Expected: **selected, blocked, blocked**. The non-default case is
-`approval-required` because shared approval is not implemented. No remote model
-is called.
-
-Without the skill, call `select_model` with these arguments:
+The skill should produce the same results as these direct calls:
 
 | # | Arguments | Expected |
 |---|---|---|
@@ -460,35 +400,15 @@ Without the skill, call `select_model` with these arguments:
 | 2 | `{ "taskType": "code-edit", "dataClass": "repo-local", "model": "stub-override" }` | `blocked` / `approval-required` |
 | 3 | `{ "taskType": "code-edit", "dataClass": "repo-local", "model": "stub-public" }` | `blocked` / `blocked-model` |
 
-### 5. Confirm local artifacts
-
-```powershell
-Get-ChildItem $HOME\.agent-airlock\outbound-demo\outbox
-Get-ChildItem $HOME\.agent-airlock\outbound-demo\cleared-intents
-Get-ChildItem $HOME\.agent-airlock\outbound-demo\model-selections
-Get-ChildItem $HOME\.agent-airlock\outbound-demo\receipts
-```
-
-Allowed calls create one artifact. Blocked and ask-first calls write receipts
-only. Receipts include rule IDs and line numbers, never the raw prompt, secret,
-or model payload.
-
-Longer runbooks:
-
-- [`no-online-writes` demo](./plugins/AirlockPlugin/gates/no-online-writes/README.md)
-- [`model-catalog` demo](./plugins/AirlockPlugin/gates/model-catalog/README.md)
-- [`secrets` and plugin setup](./plugins/AirlockPlugin/README.md)
-
 ---
 
 ## Follow-up / Out of scope for this hackathon
 
-The first prototype proves one local coding example. The following ideas are valuable, but they are not promises for the initial demo:
+The local prototype demonstrates three guarded actions. The following ideas are
+valuable, but they are not part of the current demo:
 
 - **More agent platforms** - Use the same contract with Microsoft Agent Framework, Copilot Studio, Microsoft Foundry, and other agent tools.
-- **Live Microsoft connections** - Connect with Agent 365, Entra, Defender, Purview, and company approval systems. These may require licenses and administrator setup.
-- **Real online actions** - Use controlled test repositories, cloud resources, messages, and production systems with proper credentials and safeguards.
-- **Live business scenarios** - Connect operations, company search, external messages, financial work, and helper agents to real systems. The POC uses local fixtures and simulated helpers.
+- **Live integrations and actions** - Connect Agent 365, Entra, Defender, Purview, controlled repositories, cloud resources, messages, and business systems with the required licenses, credentials, and safeguards.
 - **Central control and reporting** - Add a live dashboard, a remote company-wide stop, update tracking, and removal of old rules. The POC may include one local stop control.
 - **Production optimization** - Measure real prompt caching, token costs, repeated work, and model choices. The POC may compare local or simulated counts.
 - **Multi-step safety** - Check whether a series of individually allowed actions becomes risky when combined.
@@ -498,16 +418,9 @@ The first prototype proves one local coding example. The following ideas are val
 
 ## The end state
 
-The long-term goal is for every important AI task to carry a short mission and an approved set of rules.
-
-Routine work can continue. Sensitive steps can pause. Forbidden steps can stop before reaching a real system. Every important choice can leave a clear reason.
-
-Teams can update a shared rule instead of searching through many prompts, and anyone reviewing an action can quickly understand why it happened.
-
-Agents stay useful.
-
-People stay informed.
-
-Organizations stay in control.
+The long-term goal is for every important AI task to carry a short mission and
+approved rules. Routine work continues, sensitive steps pause, forbidden steps
+stop, and important decisions remain explainable. Teams update shared rules
+instead of duplicating controls across prompts.
 
 > **The prompt describes the destination. Agent Airlock clears the safe path.**
