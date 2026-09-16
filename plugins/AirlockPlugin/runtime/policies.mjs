@@ -5,6 +5,7 @@ const identifier = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/);
 const policySchema = z.object({
   id: identifier,
   version: identifier,
+  settings: z.record(identifier, z.json()).optional(),
   tools: z.record(identifier, z.array(identifier).min(1).refine(ids => new Set(ids).size === ids.length)),
 }).strict().refine(policy => Object.keys(policy.tools).length > 0);
 const actionSchema = z.object({

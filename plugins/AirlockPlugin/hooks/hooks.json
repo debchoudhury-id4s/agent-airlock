@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "powershell": "node \"$env:COPILOT_PLUGIN_ROOT\\hooks\\trending-cost.mjs\"",
+        "bash": "node \"$COPILOT_PLUGIN_ROOT/hooks/trending-cost.mjs\"",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "airlock-outbound",
-  "version": "0.1.0",
-  "description": "Demonstrate local Airlock gates for secrets, intent, models, approvals, and dependency risk.",
+  "version": "0.2.0",
+  "description": "Demonstrate local Airlock gates for secrets, intent, models, approvals, dependency risk, and automatic advisory AI-usage cost.",
   "author": { "name": "Agent Airlock contributors" },
   "skills": "./skills",
   "mcpServers": "./.mcp.json"

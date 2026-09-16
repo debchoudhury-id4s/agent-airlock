@@ -8,8 +8,6 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { createSelectModel } from "../tools/select-model.mjs";
 import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
-import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
-import { createSecretsGate } from "../gates/secrets/index.mjs";
 import { pluginRoot } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
@@ -132,7 +130,9 @@ test("MCP exposes select_model and does not call a remote model", async t => {
   });
   await client.connect(transport);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "review_dependency_change", "select_model"]);
+  assert.deepEqual(tools.map(tool => tool.name).sort(), [
+    "check_intent", "publish_draft", "review_dependency_change", "select_model", "trending_cost",
+  ]);
   const accepted = await client.callTool({ name: "select_model", arguments: allowed });
   assert.equal(accepted.isError, false);
   assert.equal(accepted.structuredContent.status, "selected");

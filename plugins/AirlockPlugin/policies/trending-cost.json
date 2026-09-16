@@ -1,0 +1,13 @@
+{
+  "id": "trending-cost",
+  "version": "1",
+  "settings": {
+    "mode": "advisory",
+    "monthToDateLimitUsd": 800,
+    "unavailableBehavior": "allow",
+    "usdPerAiu": 0.01
+  },
+  "tools": {
+    "trending_cost": ["trending-cost"]
+  }
+}

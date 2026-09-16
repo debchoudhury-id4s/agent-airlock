@@ -8,8 +8,6 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { createCheckIntent } from "../tools/check-intent.mjs";
 import { createPolicyEvaluator } from "../runtime/policies.mjs";
 import { createNoOnlineWritesGate } from "../gates/no-online-writes/index.mjs";
-import { createModelCatalogGate } from "../gates/model-catalog/index.mjs";
-import { createSecretsGate } from "../gates/secrets/index.mjs";
 import { pluginRoot } from "../gates/secrets/scanner.mjs";
 import policy from "../policies/default.json" with { type: "json" };
 
@@ -135,7 +133,9 @@ test("MCP exposes check_intent and yolo cannot authorize an online write", async
   });
   await client.connect(transport);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(tool => tool.name).sort(), ["check_intent", "publish_draft", "review_dependency_change", "select_model"]);
+  assert.deepEqual(tools.map(tool => tool.name).sort(), [
+    "check_intent", "publish_draft", "review_dependency_change", "select_model", "trending_cost",
+  ]);
   const accepted = await client.callTool({ name: "check_intent", arguments: { prompt: local } });
   assert.equal(accepted.isError, false);
   assert.equal(accepted.structuredContent.status, "cleared");

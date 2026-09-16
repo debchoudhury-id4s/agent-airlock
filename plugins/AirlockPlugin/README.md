@@ -4,9 +4,10 @@ The shared plugin lives in `plugins\AirlockPlugin` at the repository root.
 Any teammate can contribute here. Personal `poc\` folders remain available for
 experiments; independent future plugins belong beside this one in `plugins\`.
 
-**Implemented today:** four demo skills, `publish_draft` with a secrets gate,
-`check_intent` with a no-online-writes gate, and `select_model` with a model-catalog
-gate, plus `review_dependency_change` with a dated dependency-risk snapshot.
+**Implemented today:** five demo skills, `publish_draft` with a secrets gate,
+`check_intent` with a no-online-writes gate, `select_model` with a model-catalog
+gate, `review_dependency_change` with a dated dependency-risk snapshot, and the
+automatic advisory `trending-cost` prompt hook.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
 This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely)
@@ -110,6 +111,19 @@ The tool records approved plans under `~\.agent-airlock\outbound-demo\dependency
 It does not edit MISE, contact NuGet, or run restore. A real dependency-edit
 workflow must invoke it before changing the manifest.
 
+The `trending-cost` gate needs no demo prompt: while the plugin is loaded, its
+`userPromptSubmitted` hook prints local month-to-date estimated cost, today's
+estimated cost, and today's token usage before every submitted prompt. To show
+the structured result, ask:
+
+> Run the trending-cost skill and show the structured local usage report.
+
+The hook reads `~\.copilot\session-store.db` read-only and makes no network
+request. Its reviewed policy is advisory by default. See
+[`gates\trending-cost\README.md`](./gates/trending-cost/README.md) for the full
+demo and the exact `mode: "enforce"` change that blocks prompts at a configured
+month-to-date threshold.
+
 ## Structure
 
 ```text
@@ -123,6 +137,10 @@ plugins\AirlockPlugin\
     broker.mjs                         Check -> receipt -> execute -> outcome
   policies\
     default.json                       Versioned tool-to-gate bindings
+    trending-cost.json                 Advisory/enforce prompt-cost policy
+  hooks\
+    hooks.json                         Every-prompt hook registration
+    trending-cost.mjs                  CLI progress/block adapter
   gates\
     index.mjs                          Explicit, trusted gate registrations
     secrets\
@@ -139,16 +157,22 @@ plugins\AirlockPlugin\
       index.mjs                        Dated package/version decision
       snapshot.json                    Trusted MISE demo baseline and synthetic rule
       README.md                         Fixture semantics and enforcement boundary
+    trending-cost\
+      index.mjs                        Advisory/enforce threshold decision
+      usage.mjs                        Read-only local usage aggregation
+      README.md                        End-to-end demo and enforcement switch
   tools\
     publish-draft.mjs                   Input validation and fixed local outbox executor
     check-intent.mjs                    Intent validation and local clearance executor
     select-model.mjs                    Catalog validation and local selection executor
     review-dependency-change.mjs        Proposed-version validation and local plan executor
+    trending-cost.mjs                   Structured local usage report
   skills\
     airlock-demo\SKILL.md               Three-call presentation, not enforcement
     airlock-intent-demo\SKILL.md        /yolo cannot authorize online writes
     airlock-model-demo\SKILL.md         Team default vs blocked/non-default models
     airlock-dependency-demo\SKILL.md    Allow/block/ask-first/synthetic-bypass demo
+    trending-cost\SKILL.md              Structured cost-report presentation
   tests\
     policies.test.mjs                   Composition and configuration tests
     broker.test.mjs                     Zero-execution and receipt-order tests
@@ -156,6 +180,7 @@ plugins\AirlockPlugin\
     check-intent.test.mjs               Intent, yolo, and MCP transport tests
     select-model.test.mjs               Catalog, ask-first, and MCP transport tests
     dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
+    trending-cost.test.mjs              Reader, hook, threshold, and MCP tests
   setup.mjs                            Checksum-verified scanner installation
 ```
 
@@ -267,8 +292,8 @@ payloads. Pass `{ tool, target, input }` and a host-owned executor to `createBro
 Only that executor may perform the simulated action, using the snapshot passed
 to it. Never perform writes inside a gate or before calling the broker.
 
-Register the tool in `server.mjs` and bind **all** applicable gates in
-`policies\default.json`. The executor may return safe result metadata such as an
+Register the tool in `server.mjs` and bind **all** applicable gates in the
+appropriate file under `policies\`. The executor may return safe result metadata such as an
 artifact path; never return raw sensitive content. Gate, policy, approval, output
 path, and executor selection must not be caller-controlled tool arguments.
 
@@ -289,7 +314,7 @@ Create new modules only when implementing them; there are no allow-all placehold
 | 2. Approve or stop | Shared `runtime\broker.mjs` before execution | Exact-action single-use approvals, expiry/recheck, protected targets, local stop |
 | 3. Share safely | `gates\secrets\`, additional gates and `tools\` | Personal-data/label rules, forbidden destinations, other payload sources; secrets draft demo exists |
 | 4. Explain a run | Shared broker receipts | Run context, approval receipts, export, replay; per-action receipts exist |
-| 5. Budget/tools (optional) | `select_model`, `gates\model-catalog\` | Script/version checks, budgets and atomic reservations; stub catalog default/ask-first/block exists |
+| 5. Budget/tools (optional) | `select_model`, `gates\model-catalog\`, `trending_cost`, `gates\trending-cost\` | Script/version checks, planned budgets, and atomic reservations; model catalog plus automatic local usage reporting exist |
 | 6. Security review (optional) | `review_dependency_change`, `gates\dependency-risk\`, and dated local fixtures | Transitive graph review, real advisory ingestion, standards checks, and shared review flow; direct-version demo exists |
 | 7. Research reuse (optional) | New local research-store module and guarded `tools\` | Provenance, freshness, access checks and conflict retention |
 
@@ -331,6 +356,12 @@ the documented bypass. Unknown packages or versions and expired evidence are
 `ask-first` (currently blocked as `approval-required`). The receipt records
 `synthetic-bypass-used`, but never the caller's bypass reason or package value.
 
+`trending-cost` runs from a plugin `userPromptSubmitted` hook before every
+submitted prompt. It prints local month-to-date cost, today's cost, and today's
+tokens. The default policy is advisory; `mode: "enforce"` blocks when
+month-to-date estimated cost is greater than or equal to the configured limit.
+The source database is opened read-only and no billing or network API is called.
+
 The plugin uses the legacy Copilot manifest with `.mcp.json` for compatibility
 with the installed Agency/Copilot host. All runtime files live here; it does not
 depend on source or packages at the repository root.
@@ -348,6 +379,9 @@ depend on source or packages at the repository root.
   must call it before performing a dependency change.
 - The dependency snapshot is a deterministic demo fixture, not proof that an
   approved version is secure or that a blocked version is vulnerable.
+- `trending-cost` is a local Copilot CLI estimate, not an invoice or an
+  account-wide total. Disabled or timed-out hooks are outside its enforcement
+  guarantee.
 - Pattern scanning is not comprehensive DLP. Clean means no configured detector
   matched, not proof that text has no sensitive information.
 - The local operator and installed plugin files are trusted. This is not a

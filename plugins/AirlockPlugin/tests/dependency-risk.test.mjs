@@ -148,7 +148,7 @@ test("MCP exposes dependency review and executes only allowed plans", async t =>
   await client.connect(transport);
   const { tools } = await client.listTools();
   assert.deepEqual(tools.map(tool => tool.name).sort(), [
-    "check_intent", "publish_draft", "review_dependency_change", "select_model",
+    "check_intent", "publish_draft", "review_dependency_change", "select_model", "trending_cost",
   ]);
   const accepted = await client.callTool({ name: "review_dependency_change", arguments: approved });
   assert.equal(accepted.isError, false);
