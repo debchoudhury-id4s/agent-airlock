@@ -41,28 +41,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             ffmpeg \
             fonts-dejavu-core \
-            fonts-inter \
-            fonts-noto-color-emoji \
-            asciinema
-
-      - name: Install agg (asciinema -> mp4/gif renderer)
-        run: |
-          curl -fL -o /tmp/agg https://github.com/asciinema/agg/releases/download/v1.5.0/agg-x86_64-unknown-linux-gnu
-          chmod +x /tmp/agg
-          sudo mv /tmp/agg /usr/local/bin/agg
-          agg --version
-
-      - name: Install Piper TTS (offline neural voice) + default voice
-        run: |
-          curl -fL -o /tmp/piper.tar.gz https://github.com/rhasspy/piper/releases/download/v1.2.0/piper_linux_x86_64.tar.gz
-          mkdir -p "$HOME/.local/piper"
-          tar -xzf /tmp/piper.tar.gz -C "$HOME/.local/piper" --strip-components=1
-          echo "$HOME/.local/piper" >> "$GITHUB_PATH"
-          mkdir -p "$HOME/.local/piper/voices"
-          curl -fL -o "$HOME/.local/piper/voices/en_US-amy-medium.onnx" \
-            https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx
-          curl -fL -o "$HOME/.local/piper/voices/en_US-amy-medium.onnx.json" \
-            https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx.json
+            fonts-noto-color-emoji
 
       - name: Install Python video/audio libraries
         run: |
@@ -79,7 +58,4 @@ jobs:
           node --version
           python --version
           ffmpeg -version | head -n 1
-          asciinema --version
-          agg --version
-          piper --version || true
-          echo "Piper voice: $(ls -l $HOME/.local/piper/voices)"
+          python -c "import edge_tts, PIL, imageio_ffmpeg; print('python libs ok')"
