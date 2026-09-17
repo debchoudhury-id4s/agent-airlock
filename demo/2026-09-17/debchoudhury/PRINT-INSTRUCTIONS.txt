@@ -1,0 +1,77 @@
+AGENT AIRLOCK - SCIENCE FAIR PLACARD
+===================================
+
+BOARD
+48 inches wide x 36 inches high (1219.2 x 914.4 mm).
+Left wing: 12 inches. Center: 24 inches. Right wing: 12 inches.
+The assembled preview is a flat, front-on view of the fully opened board.
+
+FILES
+final-placard.png          The complete assembled design, 7200 x 5400 pixels.
+a4-print-panels\           Twelve individual, 300 dpi, A4-size PNG images.
+print-all-panels-A4.pdf    The same twelve panels as exact-size vector PDF pages.
+assembly-guide.png        Numbered placement diagram; not part of the placard.
+assembly-guide-A4.pdf     Printable A4 version of the placement diagram.
+
+PRINTING
+1. Recommended: print print-all-panels-A4.pdf in color on WHITE A4 paper.
+2. Select Actual size / 100%. Turn OFF Fit, Fill, Shrink, Poster and Booklet.
+3. Print one PDF page per sheet, single-sided.
+4. Use automatic portrait/landscape orientation.
+   If the printer cannot rotate automatically:
+   - Pages 06 and 07: A4 portrait, 210 x 297 mm.
+   - Pages 01-05 and 08-12: A4 landscape, 297 x 210 mm.
+5. Every panel has a white printer-safe perimeter. Borderless printing is
+   unnecessary. Use a high-quality color setting, not draft mode.
+6. If printing the PNGs instead, use the same A4 orientation and preserve the
+   full image. Turn off photo cropping / Fill frame. Each landscape image is
+   3508 x 2480 pixels; each portrait image is 2480 x 3508 pixels at 300 dpi.
+7. Print one test sheet before printing the rest. Check that the full thin
+   rounded border appears and that the QR scans on the printed sheet.
+
+ASSEMBLY
+Use the numbered diagram in assembly-guide.png.
+Do not print final-placard.png as a single A4 sheet for the board; that file
+is only the full-board reference.
+
+All twelve complete A4 sheets fit without overlap or crossing a fold.
+You can mount the sheets untrimmed: their white paper merges into the board.
+For a cut-out finish, trim outside each rounded container border. Keep the
+artwork at the same location shown in the guide and retain the QR white area.
+
+The large project title uses two INDEPENDENT landscape sheets: 01 AGENT and
+02 AIRLOCK. Align them on the same horizontal baseline. No letter or graphic
+is split between sheets. Each other container is also one complete A4 print.
+
+EXACT PLACEMENT
+Coordinates below are the upper-left corner of the UNTRIMMED A4 sheet,
+measured from the upper-left corner of the fully opened, flat board.
+Use millimeters for the most accurate placement.
+
+ID  Panel                Orientation     X (mm)    Y (mm)
+01  AGENT title          Landscape        308.7      20.0
+02  AIRLOCK title        Landscape        613.5      20.0
+03  The problem          Landscape          3.9     114.3
+04  The control gap      Landscape          3.9     365.7
+05  Why it matters       Landscape          3.9     617.1
+06  The checkpoint       Portrait         385.6     270.0
+07  Three outcomes       Portrait         623.6     270.0
+08  Try the demo         Landscape        308.7     617.1
+09  Decision receipt     Landscape        613.5     617.1
+10  Configure once       Landscape        918.3     114.3
+11  Meet the team        Landscape        918.3     365.7
+12  Hack repo + QR       Landscape        918.3     617.1
+
+The upper side wings leave room for optional event stickers, without
+covering the artwork. The light vertical lines in the assembled preview
+indicate the physical board folds; they are not extra printed elements.
+
+CONTENT
+Project information and scope come from the project README.
+The main tagline is retained. Team names come from the supplied team sample.
+The configuration hierarchy is explicitly labeled PRODUCT VISION.
+The current checkpoint is labeled LOCAL PROTOTYPE: supported tools only,
+local results, and no interactive approval execution today.
+
+The real QR code links directly to:
+https://github.com/debchoudhury-id4s/agent-airlock
