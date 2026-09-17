@@ -1,0 +1,17 @@
+{
+  "name": "airlock-deep-dive-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local, editable PowerPoint generation for the Agent Airlock team showcase.",
+  "scripts": {
+    "build": "node build-deck.mjs",
+    "demo:prepare": "node demos/prepare.mjs",
+    "demo": "node demos/run.mjs",
+    "demo:test": "node --test demos/*.test.mjs"
+  },
+  "dependencies": {
+    "pptxgenjs": "4.0.1",
+    "@modelcontextprotocol/sdk": "1.29.0"
+  }
+}

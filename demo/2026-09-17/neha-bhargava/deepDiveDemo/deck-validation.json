@@ -1,0 +1,16 @@
+{
+  "baseline": "d4ca434",
+  "slideCount": 17,
+  "plannedSeconds": 1505,
+  "plannedMinutes": 25.083333333333332,
+  "slidesWithNotes": 17,
+  "gateSlides": [
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "expectedResultsAreNotCapturedEvidence": true,
+  "geometryCheck": "all text boxes within slide bounds"
+}
