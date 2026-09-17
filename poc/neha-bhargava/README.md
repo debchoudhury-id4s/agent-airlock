@@ -13,3 +13,8 @@ See the [plugin guide](../../plugins/AirlockPlugin/README.md) for setup and gate
 contributions. The plugin ID remains `airlock-outbound`.
 If you installed the old path persistently through Agency, reinstall from the
 new path using the guide.
+
+## Team showcase
+
+The presentation, speaker notes, gate-by-gate scripts, and optional recording
+slots are in [`deepDiveDemo`](./deepDiveDemo/).
