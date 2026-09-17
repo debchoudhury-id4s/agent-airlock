@@ -40,7 +40,7 @@ export function createBroker({ root = dataRoot, evaluate }) {
       id, policy: decision.policy, policyVersion: decision.policyVersion, policySha256: decision.policySha256,
       sha256: createHash("sha256").update(encoded).digest("hex"), bytes: Buffer.byteLength(encoded),
     };
-    const denied = decision.decision !== "allow";
+    const denied = ["block", "error", "ask-first"].includes(decision.decision);
     const result = {
       ...identity,
       ...decision,
@@ -51,7 +51,9 @@ export function createBroker({ root = dataRoot, evaluate }) {
         : decision.decision === "ask-first"
           ? "Approval is required, but the shared approval flow is not implemented. No action was executed."
           : denied ? "A required rule blocked the action. Instructions and approvals cannot override a block."
-            : "All required gates allowed the action.",
+            : decision.decision === "report"
+              ? "Required gates reported advisory findings; the action was allowed."
+              : "All required gates allowed the action.",
     };
     const receiptPath = join(receipts, `${id}.jsonl`);
     const receipt = (event, details = {}) => JSON.stringify({

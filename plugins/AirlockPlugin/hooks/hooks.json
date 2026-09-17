@@ -7,6 +7,12 @@
         "powershell": "node \"$env:COPILOT_PLUGIN_ROOT\\hooks\\user-prompt-submitted.mjs\"",
         "bash": "node \"$COPILOT_PLUGIN_ROOT/hooks/user-prompt-submitted.mjs\"",
         "timeoutSec": 10
+      },
+      {
+        "type": "command",
+        "powershell": "node \"$env:COPILOT_PLUGIN_ROOT\\hooks\\rfc-relevance.mjs\"",
+        "bash": "node \"$COPILOT_PLUGIN_ROOT/hooks/rfc-relevance.mjs\"",
+        "timeoutSec": 5
       }
     ],
     "preToolUse": [

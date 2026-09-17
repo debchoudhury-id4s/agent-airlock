@@ -18,18 +18,35 @@ test("every configured gate must allow; record each decision", async () => {
   assert.match(result.policySha256, /^[a-f0-9]{64}$/);
 });
 
-test("block wins over ask-first, allow, and gate failures regardless of order", async () => {
-  for (const ids of [["ask", "broken", "deny", "pass"], ["pass", "deny", "broken", "ask"]]) {
+test("advisory reports allow execution but remain visible", async () => {
+  const reportGate = {
+    id: "advisory",
+    async evaluate() {
+      return { decision: "report", reason: "review-recommended", findings: [{ ruleId: "relevant-rule", line: 1 }] };
+    },
+  };
+  const evaluate = createPolicyEvaluator({
+    policy: policy(["pass", "advisory"]),
+    gates: [gate("pass", "allow"), reportGate],
+  });
+  const result = await evaluate(action);
+  assert.equal(result.decision, "report");
+  assert.equal(result.reason, "review-recommended");
+  assert.deepEqual(result.findings, [{ ruleId: "relevant-rule", line: 1 }]);
+});
+
+test("block wins over ask-first, report, allow, and gate failures regardless of order", async () => {
+  for (const ids of [["ask", "broken", "advisory", "deny", "pass"], ["pass", "deny", "advisory", "broken", "ask"]]) {
     const evaluate = createPolicyEvaluator({
       policy: policy(ids),
-      gates: [gate("ask", "ask-first"), gate("deny", "block"), gate("pass", "allow"), {
+      gates: [gate("ask", "ask-first"), gate("advisory", "report"), gate("deny", "block"), gate("pass", "allow"), {
         id: "broken", async evaluate() { throw new Error("DO_NOT_RECORD_THIS"); },
       }],
     });
     const result = await evaluate(action);
     assert.equal(result.decision, "block");
     assert.equal(result.reason, "deny-result");
-    assert.equal(result.checks.length, 4);
+    assert.equal(result.checks.length, 5);
     assert.doesNotMatch(JSON.stringify(result), /DO_NOT_RECORD_THIS/);
   }
 });
@@ -39,6 +56,7 @@ test("exceptions, malformed results, and inconsistent allows fail closed", async
     async () => undefined,
     async () => ({ decision: "allow", reason: "ok", findings: [], approved: true }),
     async () => ({ decision: "allow", reason: "ok", findings: [{ ruleId: "match", line: 1 }] }),
+    async () => ({ decision: "report", reason: "ok", findings: [] }),
     async () => { throw new Error("raw draft"); },
   ]) {
     const evaluate = createPolicyEvaluator({ policy: policy(["check"]), gates: [{ id: "check", evaluate: evaluateGate }] });
