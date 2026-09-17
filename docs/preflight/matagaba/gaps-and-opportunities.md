@@ -1,5 +1,8 @@
 # Agent Airlock implementation gap analysis
 
+> Historical pre-fix analysis. Some findings described below have since been
+> resolved and should be revalidated against the current source.
+
 Scope reviewed: root `README.md`, `docs/prd.md`, non-excluded plugin docs/skills/gate docs, plugin manifests, policies, server/runtime/gates/tools/hooks/tests, and `sandbox/**`. Excluded from evidence and review: `demo/**`, `docs/preflight/**`, and `poc/**`.
 
 Local observations: initial `git status --short` only showed untracked `poc/**`; `plugins\AirlockPlugin\node_modules` and `sandbox\node_modules` were absent; Node was `v24.20.0`; `node --check` passed for every tracked non-excluded `.mjs` file. Plugin and sandbox test suites were not executed because required installed dependencies were absent and this analysis was not allowed to install them.
@@ -266,4 +269,3 @@ Not run:
 - Targeted plugin tests and MCP startup: same missing dependencies; scanner setup would require download unless already staged.
 - Sandbox tests: `sandbox\node_modules` was absent and this analysis avoided test-created temporary artifacts; no install was permitted.
 - Agency/Copilot live plugin checks: would require host interaction and installed plugin dependencies.
-

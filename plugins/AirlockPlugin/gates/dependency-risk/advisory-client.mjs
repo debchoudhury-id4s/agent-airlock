@@ -2,15 +2,17 @@ import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { z } from "zod";
+import {
+  dependencyPackageNameSchema,
+  dependencyVersionSchema,
+} from "./validation.mjs";
 
 const identifier = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/);
-const packageName = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/);
-const version = z.string().regex(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/);
 const cacheEntrySchema = z.object({
   schemaVersion: z.literal(1),
   ecosystem: z.literal("NuGet"),
-  packageName,
-  version,
+  packageName: dependencyPackageNameSchema,
+  version: dependencyVersionSchema,
   advisoryIds: z.array(identifier).max(100),
   source: z.literal("osv"),
   observedAt: z.string(),
@@ -55,7 +57,8 @@ export function createOsvAdvisoryProvider({
   const cacheRoot = join(resolve(root), "dependency-advisories");
 
   return async function resolveAdvisoryEvidence(input) {
-    if (!packageName.safeParse(input?.packageName).success || !version.safeParse(input?.version).success) {
+    if (!dependencyPackageNameSchema.safeParse(input?.packageName).success
+      || !dependencyVersionSchema.safeParse(input?.version).success) {
       return unavailable("invalid-dependency-proposal");
     }
     const checkedAt = now();

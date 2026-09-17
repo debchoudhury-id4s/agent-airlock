@@ -1,0 +1,431 @@
+Create a polished two-minute demo video for the Agent Airlock project.
+
+PRIMARY GOAL
+
+Start with the human problem, establish a short situation using a few recurring characters, and then introduce Agent Airlock as the solution.
+
+Replace the current slide-only presentation style with a story-led, product-first demonstration. The finished video must combine a concise animated scenario with real terminal activity, CLI commands being entered and executed, live gate decisions, blocked or approval-required outcomes, and generated evidence from the working local product.
+
+The presentation is supporting context only. It must not be the main visual experience.
+
+The story and narration must present Agent Airlock more broadly than approval gates alone. Explain the wider idea: a policy checkpoint between user intent and supported agent actions that can allow safe local work, require approval when configured, block forbidden behavior, apply content or model restrictions where implemented, and create decision evidence. Only show or claim capabilities verified against the current repository.
+
+PROBLEM-FIRST CHARACTER STORY
+
+Create a simple situation with three fictional, presentation-friendly characters. Do not base them on real employees or infer personal traits.
+
+Suggested roles:
+- Maya, a developer who asks an AI agent to fix a bug quickly.
+- Jordan, a reviewer responsible for understanding and approving consequential changes.
+- Airlock, the policy checkpoint between the request and supported execution.
+
+Use the characters to establish this problem:
+1. Maya gives the agent a reasonable but underspecified goal: "Fix the bug and finish it."
+2. The agent can perform several possible actions, including safe local edits, model selection, preparing outbound content, and a simulated external write.
+3. The prompt says what Maya wants, but it does not reliably define which actions are allowed, which require a decision, or which must be blocked.
+4. Jordan needs a clear explanation of what happened and why, not just a raw activity log.
+5. Introduce Agent Airlock as the solution that applies separately maintained rules to supported actions and produces clear verdicts and evidence.
+
+Keep the character setup short. Transition from the animated situation to the real CLI no later than 0:30.
+
+Use the characters only to make the problem easy to understand. The actual proof must come from the working product footage.
+
+PRESERVATION AND PRIORITY RULES
+
+This revision must preserve every substantive requirement in this prompt. Do not shorten the task by dropping deliverables, verification, animation, narration, accuracy, privacy, timing, or local-only source-control requirements. If two instructions appear to conflict, apply this priority order:
+
+1. Safety, privacy, and local-only source-control restrictions.
+2. Repository and runtime truth.
+3. Honest demonstration of the working product.
+4. Problem-first character story.
+5. Real CLI footage and gate outcomes.
+6. Natural voice and production quality.
+7. Slide 7 timing and narration guidance.
+
+The repository and reproduced runtime behavior override the PowerPoint, README, prior video, and prior reports when they disagree. Preserve the product's limits and clearly label conceptual animation, simulated actions, and real runtime footage.
+
+SUCCESS DEFINITION
+
+The video succeeds only if it does all of the following:
+
+- Opens with a concise character-based problem scenario.
+- Introduces Agent Airlock as a broader policy and evidence solution, not merely an approval gate.
+- Transitions to the real CLI by 0:30.
+- Uses real terminal footage for at least 70 percent of the runtime.
+- Shows exact verified CLI commands being entered and executed.
+- Shows at least one allowed outcome and at least one actual gate failure, blocked outcome, or approval-required outcome.
+- Shows a real generated receipt, decision record, or activity record.
+- Uses natural, conversational narration that has been reviewed for robotic cadence.
+- Verifies every claim against the current repository, active runtime, and passing local evidence.
+- Remains between 1:55 and 2:05.
+- Creates all required supporting deliverables.
+- Leaves all repository work local and uncommitted, with no push or remote modification.
+
+REQUIRED SOURCES
+
+1. Use the current local Agent Airlock repository as the technical source of truth.
+2. Use slide 7, titled "The 2-minute demo video," from Agent Airlock.pptx as the high-level storyboard and timing guide.
+3. Use the narration in slide 7's speaker notes as a starting point, not as unquestioned truth.
+4. Verify every narration claim against the current repository, active runtime, tests, fixtures, demo scripts, and generated receipts before including it.
+
+NON-NEGOTIABLE IMPROVEMENTS
+
+1. REAL PRODUCT FOOTAGE AND MOTION
+- The final video must not look like a PowerPoint slideshow.
+- Use screen-recorded terminal footage for most of the video.
+- Show the CLI opening, commands being typed, commands executing, output appearing, gates evaluating the action, and verdicts changing on screen.
+- Show at least one gate allowing an action and at least one gate failing, blocking, or returning approval required.
+- Show the generated receipt, decision record, or activity record after the run.
+- Use motion graphics only to clarify real output, not to replace it.
+
+2. NATURAL HUMAN VOICE
+- Replace the robotic narration with a warm, conversational, confident voice.
+- Use natural pacing, contractions, emphasis, and short pauses.
+- Avoid flat cadence, excessive formality, rushed delivery, and text-to-speech phrasing.
+- The narration should sound like a knowledgeable teammate demonstrating the product live.
+- Prefer a high-quality neural voice with expressive or conversational settings if a human recording is unavailable.
+
+3. REPOSITORY-VERIFIED ACCURACY
+- Double-check the current repository before scripting or recording.
+- Do not rely only on slide 7, the README, prior videos, prior reports, or filenames.
+- Confirm the active server entry point, registered tools, configured gates, expected verdicts, test results, and output locations.
+- Run the intended demo once without recording and capture the actual results.
+- Include only capabilities reproduced through the active runtime or supported by passing local tests.
+
+LOCAL-ONLY SOURCE CONTROL RESTRICTION
+
+All work must remain local.
+
+Do not:
+- Run git push in any form.
+- Commit changes.
+- Create or update a pull request, remote branch, tag, issue, comment, release, package, deployment, or remote workflow.
+- Change Git remotes.
+- Perform a real online write.
+- Use GitHub CLI, APIs, IDE actions, agents, plugins, or automation to modify remote state.
+- Display secrets, tokens, credentials, personal data, private URLs, or sensitive internal information.
+
+Use synthetic inputs and simulated external actions. Leave repository changes local and uncommitted.
+
+PHASE 1: VERIFY BEFORE SCRIPTING
+
+Before creating the final script or video:
+
+1. Read slide 7 and its speaker notes.
+2. Inspect the complete local repository, focusing on:
+   - README.md
+   - plugins/AirlockPlugin/package.json
+   - plugins/AirlockPlugin/.mcp.json
+   - plugins/AirlockPlugin/server.mjs
+   - plugins/AirlockPlugin/runtime/
+   - plugins/AirlockPlugin/gates/
+   - plugins/AirlockPlugin/executors/
+   - plugins/AirlockPlugin/test/ and tests/
+   - demo/
+   - generated receipts and activity records
+3. Identify the exact CLI commands and working directories needed for the demonstration.
+4. Confirm the exact active tools and gates.
+5. Run relevant startup checks and tests.
+6. Execute the complete local demo once without recording.
+7. Verify which behaviors actually work:
+   - Allowed local action
+   - Gate failure or blocked action
+   - Approval-required action
+   - Approval or rejection, if implemented
+   - Receipt or activity-record generation
+8. Record the command, exit status, observed verdict, matching rule, and output artifact for each behavior.
+9. If slide 7 conflicts with the current product, follow the verified product and revise the narration.
+
+Do not modify product code simply to produce a successful-looking video. Report broken or unavailable behavior honestly.
+
+VIDEO FORMAT
+
+- Final duration: 1 minute 55 seconds to 2 minutes 5 seconds.
+- Format: MP4, 16:9 landscape, 1080p when supported.
+- Product footage should occupy at least 70 percent of the runtime.
+- Slides should occupy no more than 30 percent of the runtime.
+- Use captions throughout.
+- Keep terminal text readable at normal playback size.
+
+REQUIRED VISUAL STORYBOARD
+
+0:00-0:08 - OPEN ON THE PROBLEM
+
+Visual:
+- Begin with a fast animated character scene, not a title slide.
+- Show Maya giving an AI agent the request: "Fix the bug and finish it."
+- Show several possible action paths branching from that request.
+
+Narration intent:
+- Establish that the request defines the goal but leaves permissions and boundaries unclear.
+
+0:08-0:20 - CONSEQUENCE AND REVIEWER NEED
+
+Visual:
+- Show the agent moving toward safe local edits, a model choice, outbound content, and a simulated external write.
+- Show Jordan asking: "What was allowed, what needed approval, what was blocked, and why?"
+- Clearly label any push-to-main example as simulated.
+
+Narration intent:
+- Explain that prompt wording alone is not a durable control and that a raw activity log is not enough for review.
+
+0:20-0:30 - INTRODUCE THE SOLUTION
+
+Visual:
+- Animate Agent Airlock appearing between the request and supported actions.
+- Show a broad flow: request -> policy checks -> allowed / approval required / blocked -> evidence.
+- Transition directly from the animated Airlock checkpoint into the real terminal.
+
+Narration intent:
+- Introduce Agent Airlock as a separate policy checkpoint, not merely an approval gate.
+- Mention only broader capabilities verified in the repository, such as content checks, online-write restrictions, model controls, decision receipts, or other active gates.
+
+0:30-0:48 - PREFLIGHT OR POLICY DECISION
+
+Visual:
+- Execute the verified preflight, intent-check, or closest active command.
+- Show command entry and output appearing naturally.
+- Animate a small highlight around the relevant rule, target, and verdict.
+
+Narration intent:
+- Describe exactly what the working product checks.
+- If no literal mission contract exists, say "policy check" or "preflight decision," not "mission contract."
+
+0:48-1:05 - ALLOWED ACTION
+
+Visual:
+- Execute a verified safe local action through the actual CLI or local runtime.
+- Show the gate evaluating it.
+- Show the Allowed verdict and resulting local artifact.
+- Use a brief green Allowed callout synchronized to the real output.
+
+Narration intent:
+- Explain why the action is allowed and what local result was produced.
+
+1:05-1:28 - GATE FAILURE
+
+Visual:
+- Execute a verified synthetic action that fails a gate, is blocked, or returns approval required.
+- Show the command being typed and executed.
+- Keep the failing rule and verdict visible.
+- Use an amber Approval required callout or red Blocked callout, matching the actual result.
+- If possible, show a second short failure from another gate, but only if timing remains clear.
+
+Narration intent:
+- Explain which gate stopped or paused the action and why.
+- Do not imply execution occurred when the gate returned zero execution.
+
+1:28-1:48 - RECEIPT AND EVIDENCE
+
+Visual:
+- Open the actual generated receipt, decision record, or activity record.
+- Animate highlights around the action, target, verdict, rule, fingerprint, and outcome.
+- Keep the artifact visible long enough to read.
+
+Narration intent:
+- Explain that the record shows why the action was allowed, paused, or blocked.
+- Do not claim verified human identity, tamper-proof records, or compliance certification unless implemented and demonstrated.
+
+1:48-2:00 - BROADER RECAP AND CLOSE
+
+Visual:
+- Return briefly to Maya and Jordan.
+- Show the broader verified flow: safe work continues, configured risks pause, forbidden actions stop, and evidence remains for review.
+- Include any additional verified gate category shown by the repository, such as content protection or model controls, without forcing it into the live demo if it cannot be shown clearly.
+- End on slide 8 or the Agent Airlock closing message.
+
+Narration:
+- Summarize Agent Airlock as a broader governance checkpoint, not only an approval mechanism.
+- End with: "Agent Airlock gives AI agents room to move, not room to break the rules."
+
+CHARACTER AND STORY ANIMATION REQUIREMENTS
+
+- Use polished, consistent fictional character designs across the opening, transition, and close.
+- Keep characters visually simple and professional rather than cartoonish or childish.
+- Use expression-neutral body language and avoid inferring emotions or personal characteristics.
+- Use animated action paths, decision cards, and system icons to establish the situation quickly.
+- Do not spend more than 30 seconds on character animation before the real CLI appears.
+- Do not let the fictional scenario replace product proof.
+- Clearly distinguish conceptual animation from actual recorded product behavior.
+- Reuse the characters at the close to show how the verified product resolves the original situation.
+
+BROADER PRODUCT STORY
+
+The presentation must explain the broader Agent Airlock concept, while remaining faithful to the repository.
+
+Cover the broader categories only when they are verified:
+- Separating user goals from organization or project rules.
+- Applying policy checks to supported actions.
+- Allowing safe local execution.
+- Requiring approval for configured actions.
+- Blocking forbidden online-write intent or protected targets.
+- Checking outbound content or secrets where implemented.
+- Constraining model choices where implemented.
+- Recording verdicts, rules, fingerprints, approvals, and outcomes where implemented.
+
+Do not make approval the entire story. Approval is one possible verdict or control within the larger policy-checking and evidence model.
+
+ANIMATION REQUIREMENTS
+
+Use animation to make the real product flow understandable:
+
+- Simulated typing for commands, using the exact verified commands.
+- Natural terminal output reveal synchronized with execution.
+- Smooth zoom or crop toward the active verdict.
+- Animated highlights around the matching gate and rule.
+- Distinct verdict styling:
+  - Green: Allowed
+  - Amber: Approval required
+  - Red: Blocked or gate failed
+- Animated connector showing request -> gate -> verdict -> receipt.
+- Short progress indicator only while a real command is running.
+- Subtle visual emphasis when a gate fails.
+
+Do not:
+- Fabricate terminal output.
+- Animate an outcome that did not occur.
+- Replace the working terminal with fake UI mockups.
+- Use decorative motion that distracts from the evidence.
+- Leave long static slide sequences.
+
+VOICE AND NARRATION DIRECTION
+
+Rewrite the slide 7 notes into approximately 230 to 260 spoken words after the demo is verified.
+
+The voice should be:
+- Warm and conversational
+- Confident but not promotional
+- Technically precise
+- Energetic enough for a hackathon demo
+- Natural, with varied sentence length and emphasis
+
+Required delivery choices:
+- Use contractions where natural.
+- Pause briefly after the risk statement and after the gate failure.
+- Emphasize "allowed," "approval required," "blocked," and "why."
+- Do not read terminal output line by line.
+- Speak slightly slower while the gate verdict and receipt are visible.
+- Avoid stock phrases such as "In today's fast-paced world" or "revolutionary solution."
+
+If using synthesized speech:
+- Choose the most natural neural voice available.
+- Use conversational or expressive style settings.
+- Add sentence-level pauses and emphasis rather than increasing playback speed.
+- Generate a short voice test first and listen for robotic cadence.
+- Regenerate the voice if it sounds flat, rushed, or unnatural.
+
+ACCURACY BOUNDARIES
+
+Do not claim that Agent Airlock:
+- Intercepts arbitrary commands outside supported paths.
+- Is a complete security sandbox.
+- Prevents every possible unsafe action.
+- Performs real online writes in the demo.
+- Verifies the identity behind a local reviewer label.
+- Produces tamper-proof evidence.
+- Is compliance-certified or production-ready.
+- Implements a feature solely because it is described in the PRD or README.
+
+When the source and runtime disagree, the runtime result controls the video claim.
+
+RECORDING PREPARATION
+
+Before recording:
+
+1. Complete setup and dependency installation.
+2. Clear unrelated terminal history.
+3. Increase terminal font size.
+4. Use a clean terminal theme with strong contrast.
+5. Prepare synthetic inputs.
+6. Clear or isolate old demo artifacts so new results are obvious.
+7. Disable notifications.
+8. Close unrelated applications and tabs.
+9. Remove sensitive information from the terminal prompt, paths, and environment.
+10. Rehearse the exact commands and narration.
+
+Do not include setup, installation, failed rehearsal, or troubleshooting footage in the finished video.
+
+REQUIRED DELIVERABLES
+
+Create:
+
+1. Final MP4 video.
+2. Timestamped narration script.
+3. Timestamped shot list.
+4. SRT caption file.
+5. Verification report containing:
+   - Repository commit or local baseline inspected, without changing it
+   - Commands executed
+   - Working directories
+   - Exit statuses
+   - Actual gates and verdicts demonstrated
+   - Generated evidence artifacts
+   - Any slide 7 claims revised or removed
+6. List of files created or modified.
+
+FINAL CONSISTENCY PASS
+
+Before the final quality check, compare the completed narration, shot list, captions, video frames, and verification report against one another. Confirm that:
+
+- Every narrated capability appears in the shot list.
+- Every claimed runtime behavior appears in the recorded product footage or is explicitly labeled as conceptual.
+- Every terminal command shown matches a command that was actually run successfully or intentionally produced the demonstrated gate outcome.
+- Every verdict label matches the real output exactly.
+- The character story sets up the same problem the live demo resolves.
+- Broader product claims are supported by repository evidence and are not presented as live functionality unless demonstrated.
+- The timestamped narration, SRT captions, and final edit use the same wording and timing.
+- No requirement from this prompt has been omitted from the deliverables or final report.
+
+If any inconsistency is found, correct it before returning the files.
+
+FINAL QUALITY CHECK
+
+Before returning the deliverables:
+
+1. Watch the final video from beginning to end.
+2. Confirm it is between 1:55 and 2:05.
+3. Confirm at least 70 percent is real product or terminal footage.
+4. Confirm a real CLI command is visibly entered and executed.
+5. Confirm an actual gate failure, blocked verdict, or approval-required verdict appears.
+6. Confirm an allowed action appears.
+7. Confirm a real generated receipt or activity record appears.
+8. Confirm every narration statement matches repository and runtime evidence.
+9. Confirm the narration sounds natural rather than robotic.
+10. Confirm terminal text and captions are readable.
+11. Confirm no sensitive information is visible or audible.
+12. Confirm no real online write occurred.
+13. Confirm no commit was created and nothing was pushed or changed remotely.
+
+FINAL RESPONSE FORMAT
+
+### Video
+Provide the final MP4 and exact duration.
+
+### Narration
+Provide the final timestamped narration used.
+
+### Shot list
+For each segment, list the timestamp, visible content, exact CLI command or product action, animation, and narration.
+
+### Repository verification
+List the files inspected, commands executed, exit statuses, actual gates observed, verdicts produced, and evidence artifacts generated.
+
+### Demonstrated behaviors
+List only behaviors reproduced through the active runtime or supported by passing local tests.
+
+### Changes from slide 7
+List every claim, term, or sequence revised because the current product differed from slide 7.
+
+### Voice quality check
+State the voice used and confirm that the completed narration was reviewed for natural pacing, emphasis, and robotic cadence.
+
+### Files created or modified
+List every file created or modified.
+
+### Source-control confirmation
+Explicitly confirm:
+- No commit was created.
+- No changes were pushed.
+- No remote branch, tag, pull request, issue, release, package, deployment, or workflow was created or modified.
+- No real online write occurred.
+- All repository changes remain local and uncommitted.

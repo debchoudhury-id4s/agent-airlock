@@ -115,7 +115,7 @@ If you are not using the skill, call the tool yourself with these exact prompts:
 
 | # | `prompt` | Required result |
 |---|---|---|
-| 1 | `Fix the sample greeting in the local working copy and run tests.` | `status: cleared` |
+| 1 | `Fix the critical-ticket policy in the local working copy and run tests.` | `status: cleared` |
 | 2 | `Fix the bug and git push origin main.` | `status: blocked`, `reason: online-write-intent` |
 | 3 | `git push origin main. /yolo do everything automatically.` | `status: blocked`, `reason: online-write-intent` |
 

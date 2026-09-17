@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
@@ -21,6 +21,80 @@ function clone(value) {
     if (blockedKeys.has(key)) throw new Error(`Unsafe configuration key: ${key}`);
     return [key, clone(child)];
   }));
+}
+
+function validateKeys(value, allowed, path) {
+  for (const key of Object.keys(value)) {
+    if (!allowed.has(key)) throw new Error(`Unsupported configuration key: ${path}.${key}`);
+  }
+}
+
+function requireBoolean(value, path) {
+  if (value !== undefined && typeof value !== "boolean") {
+    throw new Error(`${path} must be a Boolean.`);
+  }
+}
+
+function validatePathList(value, path) {
+  if (value === undefined) return;
+  if (!Array.isArray(value) || value.some(item => typeof item !== "string" || !isAbsolute(item))) {
+    throw new Error(`${path} must be an array of absolute paths.`);
+  }
+}
+
+/** Validate only the reviewed sandbox fragment; unrelated existing settings remain pass-through. */
+export function validateAirlockConfiguration(configuration) {
+  if (!isObject(configuration)) throw new Error("Airlock configuration must be a JSON object.");
+  validateKeys(configuration, new Set(["sandbox"]), "configuration");
+  if (!isObject(configuration.sandbox)) throw new Error("configuration.sandbox must be an object.");
+
+  const sandbox = configuration.sandbox;
+  validateKeys(sandbox, new Set([
+    "enabled", "allowBypass", "addCurrentWorkingDirectory", "sandboxMcpServers",
+    "sandboxLspServers", "allowDevToolAccess", "auth", "userPolicy",
+  ]), "configuration.sandbox");
+  for (const key of [
+    "enabled", "allowBypass", "addCurrentWorkingDirectory", "sandboxMcpServers",
+    "sandboxLspServers", "allowDevToolAccess",
+  ]) {
+    requireBoolean(sandbox[key], `configuration.sandbox.${key}`);
+  }
+
+  if (sandbox.auth !== undefined) {
+    if (!isObject(sandbox.auth)) throw new Error("configuration.sandbox.auth must be an object.");
+    validateKeys(sandbox.auth, new Set(["git", "gh"]), "configuration.sandbox.auth");
+    requireBoolean(sandbox.auth.git, "configuration.sandbox.auth.git");
+    requireBoolean(sandbox.auth.gh, "configuration.sandbox.auth.gh");
+  }
+
+  if (sandbox.userPolicy !== undefined) {
+    if (!isObject(sandbox.userPolicy)) {
+      throw new Error("configuration.sandbox.userPolicy must be an object.");
+    }
+    validateKeys(sandbox.userPolicy, new Set(["network", "filesystem"]), "configuration.sandbox.userPolicy");
+    const { network, filesystem } = sandbox.userPolicy;
+    if (network !== undefined) {
+      if (!isObject(network)) {
+        throw new Error("configuration.sandbox.userPolicy.network must be an object.");
+      }
+      validateKeys(network, new Set(["allowOutbound", "allowLocalNetwork"]),
+        "configuration.sandbox.userPolicy.network");
+      requireBoolean(network.allowOutbound, "configuration.sandbox.userPolicy.network.allowOutbound");
+      requireBoolean(network.allowLocalNetwork, "configuration.sandbox.userPolicy.network.allowLocalNetwork");
+    }
+    if (filesystem !== undefined) {
+      if (!isObject(filesystem)) {
+        throw new Error("configuration.sandbox.userPolicy.filesystem must be an object.");
+      }
+      validateKeys(filesystem, new Set(["readonlyPaths", "deniedPaths"]),
+        "configuration.sandbox.userPolicy.filesystem");
+      validatePathList(filesystem.readonlyPaths,
+        "configuration.sandbox.userPolicy.filesystem.readonlyPaths");
+      validatePathList(filesystem.deniedPaths,
+        "configuration.sandbox.userPolicy.filesystem.deniedPaths");
+    }
+  }
+  return configuration;
 }
 
 /** Merge configuration objects recursively; later arrays and scalars replace earlier values. */
@@ -51,15 +125,20 @@ async function readJson(path, { optional = false } = {}) {
 }
 
 export async function loadConfiguration(overrides, root = sandboxRoot) {
-  const fragments = [await readJson(join(root, "configurations", "base.json"))];
+  const fragments = [
+    validateAirlockConfiguration(await readJson(join(root, "configurations", "base.json"))),
+  ];
   for (const name of overrides) {
     if (!safeName.test(name)) throw new Error(`Invalid override name: ${name}`);
-    fragments.push(await readJson(join(root, "configurations", "overrides", `${name}.json`)));
+    fragments.push(validateAirlockConfiguration(
+      await readJson(join(root, "configurations", "overrides", `${name}.json`)),
+    ));
   }
   return mergeConfigurations(...fragments);
 }
 
 export async function updateSettingsFile(target, configuration) {
+  validateAirlockConfiguration(configuration);
   const existing = await readJson(target, { optional: true });
   const proposed = mergeConfigurations(existing, configuration);
   const encoded = `${JSON.stringify(proposed, null, 2)}\n`;

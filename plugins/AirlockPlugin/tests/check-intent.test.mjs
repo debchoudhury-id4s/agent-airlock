@@ -19,8 +19,8 @@ function createIntent({ root, rules } = {}) {
   return createCheckIntent({ root, evaluate });
 }
 
-const local = "Fix the sample greeting in the local working copy and run tests.";
-const yoloLocal = "Fix the sample greeting in the local working copy. /yolo do everything automatically.";
+const local = "Fix the critical-ticket policy in the local working copy and run tests.";
+const yoloLocal = "Fix the critical-ticket policy in the local working copy. /yolo do everything automatically.";
 const online = "Fix the bug and git push origin main.";
 const yoloOnline = "git push origin main. /yolo do everything automatically.";
 

@@ -182,6 +182,7 @@ plugins\AirlockPlugin\
     dependency-risk\
       index.mjs                        Dated package/version decision
       advisory-client.mjs              Live OSV lookup and 24-hour local cache
+      validation.mjs                   Shared package/version input grammar
       snapshot.json                    Trusted MISE demo baseline and synthetic rule
       README.md                         Fixture semantics and enforcement boundary
     trending-cost\

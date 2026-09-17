@@ -173,8 +173,12 @@ function integer(value) {
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
 }
 
+export function usdCents(value) {
+  return Math.round(value * 100);
+}
+
 function money(value) {
-  return `$${value.toFixed(2)}`;
+  return `$${(usdCents(value) / 100).toFixed(2)}`;
 }
 
 export function formatTrendingCost(report) {

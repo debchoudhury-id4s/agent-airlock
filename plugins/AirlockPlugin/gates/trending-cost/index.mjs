@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { findingsSchema } from "../../runtime/policies.mjs";
 import policy from "../../policies/trending-cost.json" with { type: "json" };
-import { trendingCostReportSchema } from "./usage.mjs";
+import { trendingCostReportSchema, usdCents } from "./usage.mjs";
 
 export const trendingCostSettingsSchema = z.object({
   mode: z.enum(["advisory", "enforce"]),
@@ -38,7 +38,7 @@ export function createTrendingCostGate({ settings = policy.settings } = {}) {
       if (Math.abs(calculated - report.monthToDate.costUsd) > 0.000001) {
         throw new Error("Usage cost does not match the aggregate.");
       }
-      if (calculated >= snapshot.monthToDateLimitUsd) {
+      if (usdCents(calculated) >= usdCents(snapshot.monthToDateLimitUsd)) {
         if (snapshot.mode === "enforce") {
           return decision("block", "month-to-date-cost-limit", [{ ruleId: "month-to-date-cost-limit", line: 1 }]);
         }

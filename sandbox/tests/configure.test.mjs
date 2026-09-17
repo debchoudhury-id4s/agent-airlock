@@ -9,6 +9,7 @@ import {
   parseArguments,
   resolveTarget,
   updateSettingsFile,
+  validateAirlockConfiguration,
 } from "../scripts/configure.mjs";
 
 test("later overrides replace scalar values and retain nested defaults", () => {
@@ -76,5 +77,39 @@ test("scope resolves to recognized Copilot settings files", () => {
   assert.equal(
     resolveTarget("user", "C:\\repo", { COPILOT_HOME: "C:\\copilot-home" }),
     join("C:\\copilot-home", "settings.json"),
+  );
+});
+
+test("Airlock fragments reject unsupported keys and invalid value types", () => {
+  assert.throws(
+    () => validateAirlockConfiguration({
+      sandbox: { userPolicy: { network: { allowOutbound: "no" } } },
+    }),
+    /allowOutbound must be a Boolean/,
+  );
+  assert.throws(
+    () => validateAirlockConfiguration({
+      sandbox: { imaginaryRestriction: true },
+    }),
+    /Unsupported configuration key/,
+  );
+});
+
+test("filesystem policy accepts only absolute path arrays", () => {
+  assert.doesNotThrow(() => validateAirlockConfiguration({
+    sandbox: {
+      userPolicy: {
+        filesystem: {
+          readonlyPaths: ["C:\\work\\shared"],
+          deniedPaths: ["C:\\Users\\example\\.ssh"],
+        },
+      },
+    },
+  }));
+  assert.throws(
+    () => validateAirlockConfiguration({
+      sandbox: { userPolicy: { filesystem: { deniedPaths: [".ssh"] } } },
+    }),
+    /array of absolute paths/,
   );
 });

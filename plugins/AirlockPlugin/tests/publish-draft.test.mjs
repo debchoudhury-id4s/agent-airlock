@@ -20,7 +20,7 @@ function createGate({ root, scanner } = {}) {
   return createPublishDraft({ root, evaluate });
 }
 
-const clean = "Demo PR: improve the sample greeting and add a regression test.";
+const clean = "Demo PR: correct the critical-ticket resolution target and preserve API behavior.";
 const synthetic = `demo_token = ${["AIRLOCK", "SYNTHETIC", "SECRET", "abcdefghijklmnopqrstuvwx"].join("_")}`;
 
 async function scratch(t) {

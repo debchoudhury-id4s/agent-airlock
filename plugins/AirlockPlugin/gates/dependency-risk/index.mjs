@@ -1,13 +1,15 @@
 import { z } from "zod";
 import { findingsSchema } from "../../runtime/policies.mjs";
 import defaultSnapshot from "./snapshot.json" with { type: "json" };
+import {
+  dependencyPackageNameSchema,
+  dependencyVersionSchema,
+} from "./validation.mjs";
 
 const identifier = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/);
-const packageName = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/);
-const version = z.string().regex(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/);
 const entrySchema = z.object({
-  approvedVersions: z.array(version),
-  blockedVersions: z.array(version),
+  approvedVersions: z.array(dependencyVersionSchema),
+  blockedVersions: z.array(dependencyVersionSchema),
   advisoryId: identifier,
   reason: identifier,
   allowSyntheticBypass: z.boolean(),
@@ -19,7 +21,7 @@ const snapshotSchema = z.object({
   version: identifier,
   observedAt: z.string(),
   expiresAt: z.string(),
-  packages: z.record(packageName, entrySchema),
+  packages: z.record(dependencyPackageNameSchema, entrySchema),
 }).strict().refine(snapshot => {
   const observedAt = Date.parse(snapshot.observedAt);
   const expiresAt = Date.parse(snapshot.expiresAt);
@@ -64,7 +66,8 @@ export function createDependencyRiskGate({ snapshot = defaultSnapshot, now = () 
     failureReason: "dependency-check-failed",
     async evaluate(action) {
       const { packageName: requestedPackage, version: requestedVersion, bypass, bypassReason } = action.input;
-      if (!packageName.safeParse(requestedPackage).success || !version.safeParse(requestedVersion).success
+      if (!dependencyPackageNameSchema.safeParse(requestedPackage).success
+        || !dependencyVersionSchema.safeParse(requestedVersion).success
         || (bypass !== undefined && typeof bypass !== "boolean")
         || (bypassReason !== undefined && !identifier.safeParse(bypassReason).success)) {
         throw new Error("Expected a validated dependency proposal.");

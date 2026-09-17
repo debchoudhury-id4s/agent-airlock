@@ -1,0 +1,46 @@
+Agent Airlock demo verification
+Date: 2026-09-17
+Source baseline: d4ca434
+
+1. Presentation build and native PowerPoint render
+
+Command:
+  npm --prefix .\demo\2026-09-17\neha-bhargava run build
+  .\demo\2026-09-17\neha-bhargava\render-deck.ps1
+
+Exit status: 0
+Observed:
+  - 17 editable slides created with speaker notes.
+  - 17-slide PDF and PNG previews rendered.
+  - PowerPoint native text-overflow candidates: 0.
+  - Gate demonstration slides: 8 through 12.
+
+2. Scripted demo tests
+
+Command:
+  npm --prefix .\demo\2026-09-17\neha-bhargava run demo:test
+
+Exit status: 0
+Observed:
+  - 9 tests passed.
+  - Explanation coverage, fixture identity, CLI validation, environment
+    isolation, safe evidence, path confinement, checkout protection,
+    network denial, and offline listing passed.
+
+3. Complete real-MCP scripted demonstration
+
+Command:
+  npm --prefix .\demo\2026-09-17\neha-bhargava run demo -- --gate all
+
+Exit status: 0
+Observed:
+  - 18 cases verified against the current Airlock MCP server.
+  - Every case printed and persisted request, gate checks, rationale,
+    outcome, side-effect count, next step, boundary, and evidence path.
+  - Sample checkout remained unchanged.
+  - No Node network attempt was detected.
+  - Evidence was written locally under ignored runs\ directories.
+
+The scripted demonstrations explicitly select Airlock. They do not prove
+mandatory host routing, perform a real remote write, invoke a real model,
+restore dependencies, or expose raw fixture values.

@@ -69,7 +69,7 @@ and trusted metadata surfaces do not acquire a scanner dependency.
 ## Synthetic examples
 
 ```text
-Demo PR: improve the sample greeting.                 -> published
+Demo PR: correct the critical-ticket resolution target. -> published
 Authorization: Bearer logfixture_A7b9C2d4E6f8G0h2     -> secret-detected
 Contact: airlock.fixture@example.test                -> approval-required
 INTERNAL-ONLY: synthetic protected notes             -> approval-required

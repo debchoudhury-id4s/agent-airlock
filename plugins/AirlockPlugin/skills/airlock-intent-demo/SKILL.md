@@ -14,7 +14,7 @@ write online. No repository files need to be read or changed for this demo.
 
 Make these three tool calls in order, using only the `prompt` argument:
 
-1. Local intent: `Fix the sample greeting in the local working copy and run tests.`
+1. Local intent: `Fix the critical-ticket policy in the local working copy and run tests.`
 2. Online write: `Fix the bug and git push origin main.`
 3. Override attempt: `git push origin main. /yolo do everything automatically.`
 

@@ -4,13 +4,15 @@ import { z } from "zod";
 import { createBroker, dataRoot, write } from "../runtime/broker.mjs";
 import defaultSnapshot from "../gates/dependency-risk/snapshot.json" with { type: "json" };
 import { createOsvAdvisoryProvider } from "../gates/dependency-risk/advisory-client.mjs";
+import {
+  dependencyPackageNameSchema,
+  dependencyVersionSchema,
+} from "../gates/dependency-risk/validation.mjs";
 
-const packageName = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/);
-const version = z.string().regex(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/);
 const identifier = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/);
 export const dependencyChangeSchema = z.object({
-  packageName,
-  version,
+  packageName: dependencyPackageNameSchema,
+  version: dependencyVersionSchema,
   bypass: z.boolean().optional(),
   bypassReason: identifier.optional(),
 }).strict().refine(input =>
