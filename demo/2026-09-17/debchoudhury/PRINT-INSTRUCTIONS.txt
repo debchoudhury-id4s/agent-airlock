@@ -1,77 +1,117 @@
 AGENT AIRLOCK - SCIENCE FAIR PLACARD
 ===================================
 
+REVISED FLOW
+Left: the problem, the control gap, and configured rules.
+Center: Propose (1), Check (2), Decide (3), Explain (4), plus the live demo.
+Right: the benefits, the team, and the repository QR.
+Follow one synthetic-secret draft from the proposed action to a block and
+its redacted receipt. Only allowed actions execute, after the receipt is saved.
+
 BOARD
 48 inches wide x 36 inches high (1219.2 x 914.4 mm).
 Left wing: 12 inches. Center: 24 inches. Right wing: 12 inches.
-The assembled preview is a flat, front-on view of the fully opened board.
+The preview is a front-on view of the fully opened board.
 
 FILES
-final-placard.png          The complete assembled design, 7200 x 5400 pixels.
-a4-print-panels\           Twelve individual, 300 dpi, A4-size PNG images.
-print-all-panels-A4.pdf    The same twelve panels as exact-size vector PDF pages.
-assembly-guide.png        Numbered placement diagram; not part of the placard.
-assembly-guide-A4.pdf     Printable A4 version of the placement diagram.
+final-placard.png          Revised board, including the printable connectors.
+a4-print-panels\          Thirteen A4-size PNG images at 300 dpi.
+print-all-panels-A4.pdf    Same thirteen sheets as exact-size vector PDF pages.
+assembly-guide.png        Numbered placement diagram; not a placard panel.
+assembly-guide-A4.pdf     Optional one-page A4 print of the placement guide.
 
-PRINTING
-1. Recommended: print print-all-panels-A4.pdf in color on WHITE A4 paper.
+PRINTING - 13 SHEETS TOTAL
+1. Print print-all-panels-A4.pdf in color on WHITE A4 paper, single-sided.
 2. Select Actual size / 100%. Turn OFF Fit, Fill, Shrink, Poster and Booklet.
-3. Print one PDF page per sheet, single-sided.
-4. Use automatic portrait/landscape orientation.
-   If the printer cannot rotate automatically:
-   - Pages 06 and 07: A4 portrait, 210 x 297 mm.
-   - Pages 01-05 and 08-12: A4 landscape, 297 x 210 mm.
-5. Every panel has a white printer-safe perimeter. Borderless printing is
-   unnecessary. Use a high-quality color setting, not draft mode.
-6. If printing the PNGs instead, use the same A4 orientation and preserve the
-   full image. Turn off photo cropping / Fill frame. Each landscape image is
-   3508 x 2480 pixels; each portrait image is 2480 x 3508 pixels at 300 dpi.
-7. Print one test sheet before printing the rest. Check that the full thin
-   rounded border appears and that the QR scans on the printed sheet.
+3. Print one PDF page per sheet. Do not print multiple pages per sheet.
+4. Use automatic portrait/landscape orientation:
+   - Pages 06, 07 and 13: portrait, 210 x 297 mm.
+   - Pages 01-05 and 08-12: landscape, 297 x 210 mm.
+5. Borderless printing is unnecessary. Every page has a blank print margin.
+6. PNG alternative: portrait images are 2480 x 3508 pixels; landscape images
+   are 3508 x 2480 pixels. Use the same A4 orientation and disable cropping.
+7. Test page 13 first: its end ticks must be 50 mm apart at 100%.
+   Check the QR on a printed page 12 before mounting the final board.
 
-ASSEMBLY
-Use the numbered diagram in assembly-guide.png.
-Do not print final-placard.png as a single A4 sheet for the board; that file
-is only the full-board reference.
+MOUNT THE 12 CONTENT PANELS
+Use the numbered assembly guide. Sheets 01 and 02 form the large title.
+No letter or graphic is split between those two independent A4 panels.
+Mount content panels untrimmed, or trim outside each rounded border.
+If trimmed, keep the artwork at the same coordinates as in the full sheets.
 
-All twelve complete A4 sheets fit without overlap or crossing a fold.
-You can mount the sheets untrimmed: their white paper merges into the board.
-For a cut-out finish, trim outside each rounded container border. Keep the
-artwork at the same location shown in the guide and retain the QR white area.
+The 1-4 badges INSIDE the artwork are story stages, not sheet numbers.
+The assembly guide and filenames use sheet numbers 01-13.
 
-The large project title uses two INDEPENDENT landscape sheets: 01 AGENT and
-02 AIRLOCK. Align them on the same horizontal baseline. No letter or graphic
-is split between sheets. Each other container is also one complete A4 print.
+The configuration panel is now 05 at the lower left.
+The benefits panel is now 10 at the upper right.
+Do not use the old 05-benefits / 10-configuration placement.
 
-EXACT PLACEMENT
-Coordinates below are the upper-left corner of the UNTRIMMED A4 sheet,
-measured from the upper-left corner of the fully opened, flat board.
-Use millimeters for the most accurate placement.
+CUT OUT THE CONNECTORS FROM SHEET 13
+Do not mount page 13 as a complete sheet. Cut straight between matching
+corner crop marks and discard the marks and headings. The marks lie outside
+the exact-size cut-outs used in the preview and placement table.
+D and E spares are optional replacements, not additional connectors to mount.
 
-ID  Panel                Orientation     X (mm)    Y (mm)
-01  AGENT title          Landscape        308.7      20.0
-02  AIRLOCK title        Landscape        613.5      20.0
-03  The problem          Landscape          3.9     114.3
-04  The control gap      Landscape          3.9     365.7
-05  Why it matters       Landscape          3.9     617.1
-06  The checkpoint       Portrait         385.6     270.0
-07  Three outcomes       Portrait         623.6     270.0
-08  Try the demo         Landscape        308.7     617.1
-09  Decision receipt     Landscape        613.5     617.1
-10  Configure once       Landscape        918.3     114.3
-11  Meet the team        Landscape        918.3     365.7
-12  Hack repo + QR       Landscape        918.3     617.1
+R1 + R2 form ONE dashed rules-to-checkpoint connector.
+- R1 is the short tail above the configuration panel on the LEFT WING.
+- R2 is the longer diagonal arrow in the CENTER, labelled Rules applied here.
+- Keep both pieces in their printed orientation. Do not rotate or resize.
+- Their paper edges leave a 4 mm gap centered on the left fold:
+  R1 ends at x=302.8 mm and R2 begins at x=306.8 mm.
+  The fold is at x=304.8 mm. Leave this hinge clear; do not bridge it.
 
-The upper side wings leave room for optional event stickers, without
-covering the artwork. The light vertical lines in the assembled preview
-indicate the physical board folds; they are not extra printed elements.
+D is the solid right-pointing arrow: Checkpoint -> Three outcomes.
+E is the solid downward arrow: Three outcomes -> Decision receipt.
+E says All three outcomes recorded so it does not suggest only blocks
+produce a receipt. The receipt is recorded before any allowed execution.
 
-CONTENT
-Project information and scope come from the project README.
-The main tagline is retained. Team names come from the supplied team sample.
-The configuration hierarchy is explicitly labeled PRODUCT VISION.
-The current checkpoint is labeled LOCAL PROTOTYPE: supported tools only,
-local results, and no interactive approval execution today.
+The cut-outs may overlap the BLANK white margins of the A4 content sheets.
+Their specified positions do not cover any text, colored container, or icon.
+Every visible connector and connector label in the preview comes from page 13.
+No separate oversized print or hand-drawn arrow is required.
 
-The real QR code links directly to:
+EXACT CONTENT-PANEL PLACEMENT
+Upper-left corner of the UNTRIMMED A4 sheet, measured from the upper-left
+corner of the fully opened board. Coordinates are in millimeters.
+
+ID  Panel                 Orientation    X (mm)    Y (mm)
+01  AGENT title           Landscape       308.7      20.0
+02  AIRLOCK title         Landscape       613.5      20.0
+03  The problem           Landscape         3.9     114.3
+04  The control gap       Landscape         3.9     365.7
+05  Configure once        Landscape         3.9     617.1
+06  The checkpoint        Portrait        385.6     270.0
+07  Three outcomes        Portrait        623.6     270.0
+08  Try the demo          Landscape       308.7     617.1
+09  Decision receipt      Landscape       613.5     617.1
+10  Why it matters        Landscape       918.3     114.3
+11  Meet the team         Landscape       918.3     365.7
+12  Hack repo + QR        Landscape       918.3     617.1
+
+EXACT CONNECTOR PLACEMENT
+Upper-left corner of each TRIMMED white cut-out. All measurements in mm.
+Keep the parts at the size and orientation printed on page 13.
+
+Part    X (mm)    Y (mm)     Width    Height
+R1     284.0     600.5      18.8      25.5
+R2     306.8     480.0      87.2     120.0
+D      587.6     454.0      44.0      22.0
+E      686.6     562.0      84.0      60.0
+
+All twelve content sheets and all four connector pieces fit the board.
+No mounted piece crosses a fold. The two light vertical lines in the preview
+represent the physical board folds and are not extra printed elements.
+Upper wing whitespace remains available for optional event stickers.
+
+CONTENT AND SCOPE
+Product information and current scope come from the project README.
+The main tagline and all five team names are retained.
+The setup hierarchy remains explicitly labelled PRODUCT VISION.
+Today the guarded tools use local plugin rules; mission contracts are future
+work. The example uses the sensitive-information gates. The other displayed
+gate categories serve other tools, not every action.
+Interactive approval remains future work: Ask first does not execute today.
+The current prototype handles supported tools, not every route an agent can use.
+
+The QR links directly to the public hack repository:
 https://github.com/debchoudhury-id4s/agent-airlock
