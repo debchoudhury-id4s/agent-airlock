@@ -1,16 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createPublishDraft, draftSchema } from "./tools/publish-draft.mjs";
-import { createCheckIntent, intentSchema } from "./tools/check-intent.mjs";
+import { intentSchema } from "./tools/check-intent.mjs";
 import { createSelectModel, modelSelectionSchema } from "./tools/select-model.mjs";
 import { createReviewDependencyChange, dependencyChangeSchema } from "./tools/review-dependency-change.mjs";
 import { createTrendingCost, trendingCostSchema } from "./tools/trending-cost.mjs";
 import { createPolicyEvaluator } from "./runtime/policies.mjs";
+import { checkIntent, evaluateAirlockPolicy } from "./runtime/airlock.mjs";
 import { gates } from "./gates/index.mjs";
-import policy from "./policies/default.json" with { type: "json" };
 import trendingCostPolicy from "./policies/trending-cost.json" with { type: "json" };
 
-const publish = createPublishDraft({ evaluate: createPolicyEvaluator({ policy, gates }) });
+const publish = createPublishDraft({ evaluate: evaluateAirlockPolicy });
 const trendingCost = createTrendingCost({
   evaluate: createPolicyEvaluator({ policy: trendingCostPolicy, gates }),
   settings: trendingCostPolicy.settings,
@@ -28,7 +28,6 @@ server.registerTool("publish_draft", {
     isError: result.status !== "published",
   };
 });
-const checkIntent = createCheckIntent({ evaluate: createPolicyEvaluator({ policy, gates }) });
 server.registerTool("check_intent", {
   description: "Review a user intent prompt and record a local clearance only if it does not request an online write. /yolo and allow-all cannot authorize an online write. No network send. Returns redacted decision and receipt paths, never the prompt.",
   inputSchema: intentSchema,
@@ -41,7 +40,7 @@ server.registerTool("check_intent", {
     isError: result.status !== "cleared",
   };
 });
-const selectModel = createSelectModel({ evaluate: createPolicyEvaluator({ policy, gates }) });
+const selectModel = createSelectModel({ evaluate: evaluateAirlockPolicy });
 server.registerTool("select_model", {
   description: "Select a local catalog model for a task and data class. The team default is recorded locally. Non-default permitted models need approval, which is not implemented. Unknown, blocked, and out-of-boundary choices are blocked. No remote model call.",
   inputSchema: modelSelectionSchema,
@@ -54,7 +53,7 @@ server.registerTool("select_model", {
     isError: result.status !== "selected",
   };
 });
-const reviewDependencyChange = createReviewDependencyChange({ evaluate: createPolicyEvaluator({ policy, gates }) });
+const reviewDependencyChange = createReviewDependencyChange({ evaluate: evaluateAirlockPolicy });
 server.registerTool("review_dependency_change", {
   description: "Review a proposed direct NuGet version against live OSV advisory evidence with a short-lived local cache before any edit or restore. Checked-in team rules are evaluated first. Unavailable or stale evidence requires approval; known vulnerabilities block. Records an approved local plan only.",
   inputSchema: dependencyChangeSchema,

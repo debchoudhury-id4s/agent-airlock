@@ -219,6 +219,26 @@ test("the prompt hook always prints the report and blocks only in enforce mode",
   }
 });
 
+test("the composed prompt hook can suppress the standalone cost decision output", async t => {
+  const home = await scratch(t);
+  const now = new Date(2026, 8, 17, 12, 0, 0);
+  const dbPath = await createStore(home, [
+    event(new Date(now.getTime() - 1_000).toISOString(), 80_000_000_000_000, 1, 1),
+  ]);
+  const report = readTrendingCost({ dbPath, now, usdPerAiu: 0.01 });
+  const chunks = [];
+  const result = await runTrendingCostHook({
+    policyConfig: configured({ mode: "enforce" }),
+    readUsage: async () => report,
+    write: text => chunks.push(text),
+    emitDecision: false,
+  });
+  const lines = chunks.join("").trim().split(/\r?\n/).map(JSON.parse);
+  assert.equal(lines.length, 1);
+  assert.equal(lines[0].type, "progress");
+  assert.equal(result.output.decision, "block");
+});
+
 test("the report tool uses the policy engine and writes only a local receipt", async t => {
   const root = await scratch(t);
   const now = new Date(2026, 8, 15, 22, 0, 0);
@@ -247,25 +267,32 @@ test("the report tool uses the policy engine and writes only a local receipt", a
 
 test("plugin hook registration targets every submitted prompt and the executable emits valid output", async t => {
   const config = JSON.parse(await readFile(join(pluginRoot, "hooks", "hooks.json"), "utf8"));
-  assert.deepEqual(Object.keys(config.hooks), ["userPromptSubmitted"]);
+  assert.deepEqual(Object.keys(config.hooks), ["userPromptSubmitted", "preToolUse", "sessionEnd"]);
   assert.equal(config.hooks.userPromptSubmitted.length, 1);
   assert.equal(config.hooks.userPromptSubmitted[0].matcher, undefined);
+  assert.equal(config.hooks.preToolUse[0].matcher, ".*");
 
   const home = await scratch(t);
   const now = new Date();
   await createStore(home, [
     event(new Date(now.getTime() - 1_000).toISOString(), 1_000_000_000, 10, 2, 1),
   ]);
-  const child = spawnSync(process.execPath, [join(pluginRoot, "hooks", "trending-cost.mjs")], {
+  const child = spawnSync(process.execPath, [join(pluginRoot, "hooks", "user-prompt-submitted.mjs")], {
     encoding: "utf8",
     env: { ...process.env, HOME: home, USERPROFILE: home },
-    input: JSON.stringify({ prompt: "How is the weather?" }),
+    input: JSON.stringify({
+      sessionId: "trending-cost-hook-test",
+      timestamp: now.getTime(),
+      cwd: home,
+      prompt: "How is the weather?",
+    }),
   });
   assert.equal(child.status, 0, child.stderr);
   const lines = child.stdout.trim().split(/\r?\n/).map(JSON.parse);
   assert.equal(lines[0].type, "progress");
   assert.match(lines[0].message, /Trending cost/);
-  assert.deepEqual(lines[1], {});
+  assert.equal(lines[1].type, "progress");
+  assert.equal(lines[1].message, "Airlock cleared the mission");
 });
 
 test("MCP exposes trending_cost and reads only the invoking profile's local store", async t => {

@@ -4,5 +4,6 @@
   "description": "Demonstrate local Sensitive Information Protection (secrets, bounded PII, INTERNAL-ONLY labels), intent, models, approvals, dependency risk, and automatic advisory AI-usage cost.",
   "author": { "name": "Agent Airlock contributors" },
   "skills": "./skills",
+  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }

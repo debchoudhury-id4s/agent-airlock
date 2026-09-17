@@ -18,6 +18,7 @@ export async function runTrendingCostHook({
   readUsage = readTrendingCost,
   write = text => process.stdout.write(text),
   now,
+  emitDecision = true,
 } = {}) {
   const gate = createTrendingCostGate({ settings: policyConfig.settings });
   const evaluate = createPolicyEvaluator({ policy: policyConfig, gates: [gate] });
@@ -34,7 +35,7 @@ export async function runTrendingCostHook({
   const output = result.decision === "block"
     ? { decision: "block", reason: formatTrendingCostBlock(report, policyConfig.settings.monthToDateLimitUsd) }
     : {};
-  emit(write, output);
+  if (emitDecision) emit(write, output);
   return { report, result, output };
 }
 
