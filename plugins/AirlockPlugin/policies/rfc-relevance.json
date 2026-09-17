@@ -1,0 +1,7 @@
+{
+  "id": "rfc-relevance",
+  "version": "1",
+  "tools": {
+    "review_rfc_relevance": ["rfc-relevance"]
+  }
+}

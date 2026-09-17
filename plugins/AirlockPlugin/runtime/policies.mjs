@@ -20,11 +20,13 @@ export const findingsSchema = z.array(z.object({
   line: z.number().int().positive(),
 }).strict()).max(4096);
 const resultSchema = z.object({
-  decision: z.enum(["allow", "block", "ask-first"]),
+  decision: z.enum(["allow", "report", "block", "ask-first"]),
   reason: identifier,
   findings: findingsSchema,
-}).strict().refine(result => result.decision !== "allow" || result.findings.length === 0);
-const decisionType = z.enum(["allow", "block", "ask-first", "error"]);
+}).strict()
+  .refine(result => result.decision !== "allow" || result.findings.length === 0)
+  .refine(result => result.decision !== "report" || result.findings.length > 0);
+const decisionType = z.enum(["allow", "report", "block", "ask-first", "error"]);
 
 /** Broker boundary: incomplete or contradictory evaluations cannot authorize execution. */
 export const evaluationSchema = z.object({
@@ -37,9 +39,17 @@ export const evaluationSchema = z.object({
   checks: z.array(z.object({
     gate: identifier, decision: decisionType, reason: identifier, findings: findingsSchema,
   }).strict()),
-}).strict().refine(result => result.decision !== "allow"
-  || (result.findings.length === 0 && result.checks.length > 0
-    && result.checks.every(check => check.decision === "allow" && check.findings.length === 0)));
+}).strict().refine(result => {
+  if (result.decision === "allow") {
+    return result.findings.length === 0 && result.checks.length > 0
+      && result.checks.every(check => check.decision === "allow" && check.findings.length === 0);
+  }
+  if (result.decision === "report") {
+    return result.findings.length > 0 && result.checks.some(check => check.decision === "report")
+      && result.checks.every(check => ["allow", "report"].includes(check.decision));
+  }
+  return true;
+});
 
 function freeze(value) {
   if (value && typeof value === "object") {
@@ -90,7 +100,9 @@ export function createPolicyEvaluator({ policy, gates }) {
         checks.push({ gate: id, decision: "error", reason: gate.failureReason, findings: [] });
       }
     }
-    const decisive = ["block", "error", "ask-first"].map(decision => checks.find(check => check.decision === decision)).find(Boolean);
+    const decisive = ["block", "error", "ask-first", "report"]
+      .map(decision => checks.find(check => check.decision === decision))
+      .find(Boolean);
     return {
       ...identity,
       decision: decisive?.decision ?? "allow",

@@ -1,7 +1,7 @@
 {
   "name": "airlock-outbound",
   "version": "0.2.0",
-  "description": "Demonstrate local Sensitive Information Protection (secrets, bounded PII, INTERNAL-ONLY labels), intent, models, approvals, dependency risk, and automatic advisory AI-usage cost.",
+  "description": "Demonstrate local Sensitive Information Protection, intent, models, approvals, dependency risk, automatic RFC relevance guidance, and advisory AI-usage cost.",
   "author": { "name": "Agent Airlock contributors" },
   "skills": "./skills",
   "hooks": "./hooks/hooks.json",

@@ -268,7 +268,7 @@ test("the report tool uses the policy engine and writes only a local receipt", a
 test("plugin hook registration targets every submitted prompt and the executable emits valid output", async t => {
   const config = JSON.parse(await readFile(join(pluginRoot, "hooks", "hooks.json"), "utf8"));
   assert.deepEqual(Object.keys(config.hooks), ["userPromptSubmitted", "preToolUse", "sessionEnd"]);
-  assert.equal(config.hooks.userPromptSubmitted.length, 1);
+  assert.equal(config.hooks.userPromptSubmitted.length, 2);
   assert.equal(config.hooks.userPromptSubmitted[0].matcher, undefined);
   assert.equal(config.hooks.preToolUse[0].matcher, ".*");
 

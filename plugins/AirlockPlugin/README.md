@@ -8,7 +8,7 @@ experiments; independent future plugins belong beside this one in `plugins\`.
 Information Protection (secrets, bounded PII, and explicit INTERNAL-ONLY labels),
 `check_intent` with a no-online-writes gate, `select_model` with a model-catalog
 gate, `review_dependency_change` with live OSV evidence and a short-lived local cache, and the
-automatic advisory `trending-cost` prompt hook.
+automatic advisory `trending-cost` and RFC-relevance prompt hooks.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
 This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely)
@@ -154,6 +154,15 @@ request. Its reviewed policy is advisory by default. See
 demo and the exact `mode: "enforce"` change that blocks prompts at a configured
 month-to-date threshold.
 
+The `rfc-relevance` gate also runs for every submitted prompt. It compares only
+the prompt text with the dated, checked-in
+[`gates\rfc-relevance\snapshot.json`](./gates/rfc-relevance/snapshot.json).
+When a topic such as bearer tokens, JWT validation, PKCE, DPoP, or OAuth mTLS
+matches, the hook suggests the mapped RFC Editor documents before design work
+continues. This is advisory: a match returns `report`, remains visible, and does
+not block the prompt. No match stays silent, and the hook makes no network
+request. Update and review the snapshot to add topics or refresh references.
+
 ## Structure
 
 ```text
@@ -174,6 +183,7 @@ plugins\AirlockPlugin\
   policies\
     default.json                       Versioned tool-to-gate bindings
     trending-cost.json                 Advisory/enforce prompt-cost policy
+    rfc-relevance.json                 Advisory prompt-to-RFC policy
   hooks\
     hooks.json                         Prompt, tool, and session lifecycle registration
     input.mjs                          Bounded hook input and JSON output helpers
@@ -181,6 +191,7 @@ plugins\AirlockPlugin\
     pre-tool-use.mjs                   Tool-execution enforcement adapter
     session-end.mjs                    Mission-state cleanup
     trending-cost.mjs                  Reusable cost evaluation and CLI adapter
+    rfc-relevance.mjs                  Relevant RFC suggestion adapter
   gates\
     index.mjs                          Explicit, trusted gate registrations
     secrets\
@@ -209,6 +220,9 @@ plugins\AirlockPlugin\
       index.mjs                        Advisory/enforce threshold decision
       usage.mjs                        Read-only local usage aggregation
       README.md                        End-to-end demo and enforcement switch
+    rfc-relevance\
+      index.mjs                        Validated topic matching and recommendations
+      snapshot.json                    Dated topic, keyword, and RFC mapping
   tools\
     publish-draft.mjs                   Input validation and fixed local outbox executor
     check-intent.mjs                    Intent validation and local clearance executor
@@ -231,6 +245,7 @@ plugins\AirlockPlugin\
     dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
     hooks.test.mjs                      Mission state and tool enforcement tests
     trending-cost.test.mjs              Reader, hook, threshold, and MCP tests
+    rfc-relevance.test.mjs             Snapshot, matching, and prompt-hook tests
   setup.mjs                            Checksum-verified scanner installation
   scripts\
     check-nuget-advisory.mjs            Reusable live OSV check and cache refresh
@@ -284,7 +299,7 @@ Gate contract:
 |---|---|
 | `id` | Stable unique identifier, at most 64 letters, digits, dots, underscores, or hyphens; start with a letter or digit |
 | `evaluate(action)` | Read-only async function; return `{ decision, reason, findings }` |
-| `decision` | `allow`, `block`, or `ask-first`; `allow` requires empty findings |
+| `decision` | `allow`, `report`, `block`, or `ask-first`; `allow` requires empty findings and advisory `report` requires findings |
 | `reason` | Nonsensitive identifier using the same format as `id`, not free-form payload text |
 | `findings` | Array of `{ ruleId, line }`; `line` is a positive integer; never include matched values |
 | `failureReason` | Optional static, safe identifier; thrown errors otherwise become `gate-failed` |
@@ -328,7 +343,8 @@ Unknown gate IDs, duplicate registrations/bindings, and empty gate lists fail
 startup. A tool absent from the policy cannot execute.
 
 All configured gates are evaluated. Precedence is **block > error > ask-first >
-allow**; execution requires every gate to allow. An allow cannot cancel a block.
+report > allow**. `report` permits execution while preserving advisory findings;
+an allow or report cannot cancel a block.
 `ask-first` currently returns `blocked` / `approval-required` without execution.
 It is an extension point, not a working approval mechanism; host auto-approve
 does not satisfy it.

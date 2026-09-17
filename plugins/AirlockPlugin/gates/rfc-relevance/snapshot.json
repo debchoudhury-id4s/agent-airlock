@@ -1,0 +1,115 @@
+{
+  "id": "rfc-topic-map",
+  "version": "2026-09-16",
+  "source": "RFC Editor",
+  "rfcs": [
+    {
+      "id": "RFC6749",
+      "title": "The OAuth 2.0 Authorization Framework",
+      "url": "https://www.rfc-editor.org/rfc/rfc6749.html"
+    },
+    {
+      "id": "RFC6750",
+      "title": "The OAuth 2.0 Authorization Framework: Bearer Token Usage",
+      "url": "https://www.rfc-editor.org/rfc/rfc6750.html"
+    },
+    {
+      "id": "RFC7519",
+      "title": "JSON Web Token (JWT)",
+      "url": "https://www.rfc-editor.org/rfc/rfc7519.html"
+    },
+    {
+      "id": "RFC7636",
+      "title": "Proof Key for Code Exchange by OAuth Public Clients",
+      "url": "https://www.rfc-editor.org/rfc/rfc7636.html"
+    },
+    {
+      "id": "RFC8705",
+      "title": "OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens",
+      "url": "https://www.rfc-editor.org/rfc/rfc8705.html"
+    },
+    {
+      "id": "RFC8725",
+      "title": "JSON Web Token Best Current Practices",
+      "url": "https://www.rfc-editor.org/rfc/rfc8725.html"
+    },
+    {
+      "id": "RFC9449",
+      "title": "OAuth 2.0 Demonstrating Proof of Possession (DPoP)",
+      "url": "https://www.rfc-editor.org/rfc/rfc9449.html"
+    },
+    {
+      "id": "RFC9700",
+      "title": "Best Current Practice for OAuth 2.0 Security",
+      "url": "https://www.rfc-editor.org/rfc/rfc9700.html"
+    }
+  ],
+  "topics": [
+    {
+      "id": "bearer-tokens",
+      "title": "OAuth bearer tokens",
+      "keywords": [
+        "bearer token",
+        "bearer tokens",
+        "bearer authentication",
+        "authorization: bearer"
+      ],
+      "rfcIds": ["RFC6750", "RFC9700"]
+    },
+    {
+      "id": "jwt-validation",
+      "title": "JWT validation",
+      "keywords": [
+        "jwt validation",
+        "validate jwt",
+        "json web token",
+        "tokenvalidationparameters"
+      ],
+      "rfcIds": ["RFC7519", "RFC8725"]
+    },
+    {
+      "id": "oauth-2",
+      "title": "OAuth 2.0",
+      "keywords": [
+        "oauth 2.0",
+        "oauth2",
+        "authorization code flow",
+        "refresh token rotation"
+      ],
+      "rfcIds": ["RFC6749", "RFC9700"]
+    },
+    {
+      "id": "pkce",
+      "title": "Proof Key for Code Exchange",
+      "keywords": [
+        "pkce",
+        "proof key for code exchange",
+        "code verifier",
+        "code challenge"
+      ],
+      "rfcIds": ["RFC7636", "RFC9700"]
+    },
+    {
+      "id": "dpop",
+      "title": "DPoP sender-constrained tokens",
+      "keywords": [
+        "dpop",
+        "sender-constrained token",
+        "sender constrained token",
+        "proof-of-possession token"
+      ],
+      "rfcIds": ["RFC9449", "RFC9700"]
+    },
+    {
+      "id": "oauth-mtls",
+      "title": "OAuth mutual TLS",
+      "keywords": [
+        "oauth mtls",
+        "oauth mutual tls",
+        "certificate-bound access token",
+        "certificate bound access token"
+      ],
+      "rfcIds": ["RFC8705", "RFC9700"]
+    }
+  ]
+}
