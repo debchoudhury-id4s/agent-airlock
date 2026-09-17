@@ -52,6 +52,18 @@ To keep it available across Agency sessions:
 agency plugin install "local:C:\Git\agent-airlock\plugins\AirlockPlugin" --engine copilot
 ```
 
+### Automatic prompt and tool enforcement
+
+Every submitted prompt runs both the existing trending-cost evaluation and the
+online-write intent preflight. Their most restrictive result is stored as a
+redacted per-session mission decision. The `preToolUse` hook denies tools for a
+blocked, invalid, or missing mission, rechecks shell commands, and rejects known
+direct online mutations. The `sessionEnd` hook removes transient mission state.
+
+Prompt and tool arguments are never stored in mission state. `/yolo` and host
+auto-approval do not override an Airlock denial. See [the hook lifecycle](hooks.md)
+for the invocation and enforcement boundaries.
+
 Then ask:
 
 > Run the airlock-demo skill. Show the clean draft, secret and override blocks,
@@ -151,16 +163,24 @@ plugins\AirlockPlugin\
   agency.json                          Optional Agency metadata
   server.mjs                           Composition and MCP tool registration
   runtime\
+    airlock.mjs                        Shared default-policy composition
+    hook-enforcement.mjs               Proposed-tool allow, ask, or deny decision
     policies.mjs                       Validated gate contracts and decision composition
     broker.mjs                         Check -> receipt -> execute -> outcome
     plain-text.mjs                     Shared 64 KiB valid-text boundary
+    prompt-preflight.mjs               Cost and intent decision composition
     sanitize-record-text.mjs           Explicit whole-field sanitizer with candidate rescan
+    session-state.mjs                  Redacted per-session mission decision
   policies\
     default.json                       Versioned tool-to-gate bindings
     trending-cost.json                 Advisory/enforce prompt-cost policy
   hooks\
-    hooks.json                         Every-prompt hook registration
-    trending-cost.mjs                  CLI progress/block adapter
+    hooks.json                         Prompt, tool, and session lifecycle registration
+    input.mjs                          Bounded hook input and JSON output helpers
+    user-prompt-submitted.mjs          Cost plus intent mission preflight
+    pre-tool-use.mjs                   Tool-execution enforcement adapter
+    session-end.mjs                    Mission-state cleanup
+    trending-cost.mjs                  Reusable cost evaluation and CLI adapter
   gates\
     index.mjs                          Explicit, trusted gate registrations
     secrets\
@@ -209,6 +229,7 @@ plugins\AirlockPlugin\
     check-intent.test.mjs               Intent, yolo, and MCP transport tests
     select-model.test.mjs               Catalog, ask-first, and MCP transport tests
     dependency-risk.test.mjs            Snapshot, bypass, freshness, and MCP tests
+    hooks.test.mjs                      Mission state and tool enforcement tests
     trending-cost.test.mjs              Reader, hook, threshold, and MCP tests
   setup.mjs                            Checksum-verified scanner installation
   scripts\
@@ -392,9 +413,10 @@ the documented bypass. Unknown packages or versions and expired evidence are
 `ask-first` (currently blocked as `approval-required`). The receipt records
 `synthetic-bypass-used`, but never the caller's bypass reason or package value.
 
-`trending-cost` runs from a plugin `userPromptSubmitted` hook before every
-submitted prompt. It prints local month-to-date cost, today's cost, and today's
-tokens. The default policy is advisory; `mode: "enforce"` blocks when
+`trending-cost` and `check_intent` run from a composed `userPromptSubmitted`
+hook before every submitted prompt. It prints local month-to-date cost, today's
+cost, and today's tokens, then stores the most restrictive prompt decision for
+`preToolUse`. The default cost policy is advisory; `mode: "enforce"` blocks when
 month-to-date estimated cost is greater than or equal to the configured limit.
 The source database is opened read-only and no billing or network API is called.
 
@@ -406,8 +428,9 @@ depend on source or packages at the repository root.
 
 - This is a local publication simulation. Online writes and human approval are
   outside this one-policy demo.
-- The plugin protects only its own tools. It cannot stop native shell writes,
-  another MCP publisher, or data sent to the agent's model.
+- The pre-tool hook rechecks supported shell tools and recognizes known online
+  mutation tool names. This is pattern-based enforcement, not a complete
+  capability sandbox, and it does not protect data sent to the agent's model.
 - `check_intent` is a keyword/regex intent check, not a sandbox around `git` or `gh`.
 - `select_model` does not change Copilot's model picker or call a model API.
 - `review_dependency_change` does not intercept arbitrary prompts, edit manifests,
