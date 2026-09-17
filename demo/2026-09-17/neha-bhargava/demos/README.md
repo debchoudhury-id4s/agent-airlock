@@ -1,6 +1,6 @@
 # Scripted gate demos — local only
 
-Run from `C:\Git\agent-airlock\poc\neha-bhargava\deepDiveDemo`:
+Run from `demo\2026-09-17\neha-bhargava`:
 
 ```powershell
 npm run demo:prepare

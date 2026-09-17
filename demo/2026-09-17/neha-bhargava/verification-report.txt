@@ -1,12 +1,12 @@
-Agent Airlock deepDiveDemo verification
+Agent Airlock demo verification
 Date: 2026-09-17
 Source baseline: d4ca434
 
 1. Presentation build and native PowerPoint render
 
 Command:
-  npm --prefix .\poc\neha-bhargava\deepDiveDemo run build
-  .\poc\neha-bhargava\deepDiveDemo\render-deck.ps1
+  npm --prefix .\demo\2026-09-17\neha-bhargava run build
+  .\demo\2026-09-17\neha-bhargava\render-deck.ps1
 
 Exit status: 0
 Observed:
@@ -18,7 +18,7 @@ Observed:
 2. Scripted demo tests
 
 Command:
-  npm --prefix .\poc\neha-bhargava\deepDiveDemo run demo:test
+  npm --prefix .\demo\2026-09-17\neha-bhargava run demo:test
 
 Exit status: 0
 Observed:
@@ -30,7 +30,7 @@ Observed:
 3. Complete real-MCP scripted demonstration
 
 Command:
-  npm --prefix .\poc\neha-bhargava\deepDiveDemo run demo -- --gate all
+  npm --prefix .\demo\2026-09-17\neha-bhargava run demo -- --gate all
 
 Exit status: 0
 Observed:
