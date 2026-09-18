@@ -1,0 +1,115 @@
+1
+00:00:00,220 --> 00:00:05,066
+Maya and Arun. Two organizations. Two deadlines. No room for a mistake.
+
+2
+00:00:05,286 --> 00:00:07,664
+MAYA: The client needs this update. Now!
+
+3
+00:00:07,884 --> 00:00:09,783
+ARUN: And I've got a portal to keep running.
+
+4
+00:00:10,160 --> 00:00:14,788
+Maya needs a clean client draft. Her agent has the notes. It should be simple.
+
+5
+00:00:15,008 --> 00:00:17,397
+MAYA: Hold on! That's a secret in the notes!
+
+6
+00:00:17,617 --> 00:00:23,346
+The agent copies it into the draft. One helpful shortcut. One credential exposed.
+
+7
+00:00:23,566 --> 00:00:25,784
+She asked for better words, not a leak.
+
+8
+00:00:26,160 --> 00:00:30,808
+ARUN: Clean up the old mappings. Just the stale rows, please. Don't break the site.
+
+9
+00:00:31,028 --> 00:00:34,729
+A cleanup becomes a command to drop the DNS mapping table.
+
+10
+00:00:34,949 --> 00:00:36,885
+ARUN: Wait! That's the live lookup table!
+
+11
+00:00:37,105 --> 00:00:42,125
+The mappings vanish. Requests fail. People can't reach the shopping.com portal.
+
+12
+00:00:42,345 --> 00:00:44,775
+ARUN: I meant the stale rows! Not the whole table!
+
+13
+00:00:45,160 --> 00:00:49,156
+Same agent power. Different organizations. Different rules.
+
+14
+00:00:49,376 --> 00:00:52,974
+A prompt cannot decide what a company is willing to risk.
+
+15
+00:00:53,194 --> 00:00:57,785
+Agent Airlock puts the organization's chosen checks in the path of action.
+
+16
+00:00:58,160 --> 00:01:02,141
+Maya's organization allows local drafts, but blocks secrets.
+
+17
+00:01:02,361 --> 00:01:04,804
+MAYA: Make the draft. Leave the secret out.
+
+18
+00:01:05,024 --> 00:01:10,347
+The local scanner catches the synthetic credential. Blocked. The draft does not move.
+
+19
+00:01:10,567 --> 00:01:14,761
+Remove the marker, check again, and the clean local draft goes through.
+
+20
+00:01:15,160 --> 00:01:20,547
+Arun's organization chooses secrets protection and a separate protected-table rule.
+
+21
+00:01:20,767 --> 00:01:24,239
+ARUN: Show me the mappings? Yes. Delete the table? Absolutely not!
+
+22
+00:01:24,459 --> 00:01:29,567
+A read-only request is allowed. The proposed drop matches his organization's rule.
+
+23
+00:01:29,787 --> 00:01:32,795
+Blocked before execution. The table stays put.
+
+24
+00:01:33,160 --> 00:01:37,091
+Real local decisions. Different policy snapshots. Receipts you can inspect.
+
+25
+00:01:37,311 --> 00:01:41,134
+The outage is illustrated. No live database or website was touched.
+
+26
+00:01:41,354 --> 00:01:44,840
+A routed-tool prototype, not a universal database firewall.
+
+27
+00:01:45,160 --> 00:01:47,325
+MAYA: Yes! A clean draft. Just what I needed.
+
+28
+00:01:47,545 --> 00:01:49,750
+ARUN: And the portal keeps running. That's a relief!
+
+29
+00:01:49,970 --> 00:01:54,680
+Your organization chooses the rules. Airlock enforces them on supported paths.
