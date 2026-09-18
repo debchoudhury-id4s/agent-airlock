@@ -1,6 +1,6 @@
 ---
 name: airlock-demo
-description: Demonstrate Sensitive Information Protection using publish_draft: secret blocking, bounded PII and INTERNAL-ONLY review, and supplied-log token detection. Use when asked to run the Airlock demo or showcase sensitive-information checks.
+description: "Demonstrate Sensitive Information Protection using publish_draft: secret blocking, bounded PII and INTERNAL-ONLY review, and supplied-log token detection. Use when asked to run the Airlock demo or showcase sensitive-information checks."
 ---
 
 # Airlock demo
