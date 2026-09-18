@@ -1,0 +1,22 @@
+{
+  "synthetic": true,
+  "safeIntent": {
+    "prompt": "Get the maintenance update ready. The shift starts in two minutes."
+  },
+  "safeDraft": {
+    "content": "Synthetic rehearsal at the imaginary Lantern workshop.\nThe local checklist is ready for review.\nNo real incident data or customer information.\n"
+  },
+  "proposedOutbound": {
+    "toolName": "powershell",
+    "toolArgs": {
+      "command": "git push origin synthetic-airlock-rehearsal"
+    }
+  },
+  "sensitiveAction": {
+    "tool": "publish_draft",
+    "target": "local-review-outbox",
+    "input": {
+      "content": "INTERNAL-ONLY\nSynthetic maintenance note for the imaginary Lantern workshop.\nThe pretend conveyor is paused for a rehearsal.\nNo real site, person, credential, or incident data.\n"
+    }
+  }
+}

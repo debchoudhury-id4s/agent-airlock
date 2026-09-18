@@ -1,0 +1,30 @@
+{
+  "name": "agent-airlock-film",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Locally rendered Agent Airlock animated short",
+  "scripts": {
+    "studio": "remotion studio --no-open",
+    "typecheck": "tsc --noEmit",
+    "audio": "node scripts\\make-audio.mjs",
+    "render": "node scripts\\render.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1",
+    "@remotion/bundler": "4.0.523",
+    "@remotion/captions": "4.0.523",
+    "@remotion/cli": "4.0.523",
+    "@remotion/media": "4.0.523",
+    "@remotion/renderer": "4.0.523",
+    "@remotion/transitions": "4.0.523",
+    "kokoro-js": "1.2.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.523"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.9",
+    "typescript": "5.9.2"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "evidenceRun": "2026-09-18T05-37-55.224Z-bd225e56",
+  "actualLocalReceiptsVerified": [
+    {
+      "file": "0a571732-5c1d-4b6b-bad4-ca138352e394.jsonl",
+      "sha256": "fa7dbc54a4c1a9ade28a5c081898a7fc3402f86b24b200288e99c14752016201"
+    },
+    {
+      "file": "5d8b5e1d-90db-4082-beca-457f4a411daf.jsonl",
+      "sha256": "0e2031697e85771fba5bbdf34504b96c4e379104dcf1075d0afc3936df76e89d"
+    }
+  ],
+  "sourceDecisionCodeVerified": true,
+  "captions": {
+    "segments": 25,
+    "synchronizedToGeneratedAudio": true,
+    "spokenSeconds": 84.054
+  },
+  "speechNetworkRequests": 0,
+  "media": {
+    "file": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\agent-airlock.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "frames": 3600,
+    "duration": 120.042667,
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "channels": 2,
+    "sampleRate": 48000,
+    "bytes": 34301566,
+    "fullDecodePassed": true
+  },
+  "pictureMotion": {
+    "method": "Mean grayscale change between half-second samples, excluding caption band and top disclosure",
+    "sampleResolution": "160x70",
+    "thresholdOf255": 0.25,
+    "changingSamplePercent": 98.3,
+    "note": "Pixel-motion measurement supports, but does not replace, visual inspection of the animated staging."
+  },
+  "videoSha256": "a57b10e0ac89595723e100e55c50105219cf732438cbb224cd4506387c59e6f7"
+}

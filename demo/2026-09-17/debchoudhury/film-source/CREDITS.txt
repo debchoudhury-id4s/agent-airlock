@@ -1,0 +1,17 @@
+Before It Leaves
+An original Agent Airlock animated short.
+
+1. Original characters, vector animation, score, and sound effects were created for this film.
+2. Narration was synthesized locally with Kokoro-82M v1.0, voice af_heart. Model and library: Apache-2.0. https://huggingface.co/hexgrad/Kokoro-82M and https://github.com/hexgrad/kokoro
+3. Animation and encoding use Remotion 4.0.523 and FFmpeg. https://www.remotion.dev and https://ffmpeg.org
+4. Product evidence comes only from docs\prd.md, plugins, and sandbox in the local Agent Airlock repository. Original runtime receipts and reproduction code are in the adjacent film-evidence folder.
+5. The Lantern workshop, Maya, deadline, and illustrated failure are fictional. No actual remote publication occurred. Terminal scenes are animated replays of genuine local gate/API calls, not live Agency footage.
+6. This local prototype covers supported routed actions. The film does not claim verified organizational identity, a complete sandbox, exhaustive sensitive-data detection, or tamper-proof receipts. The exercised shared approval path is not implemented, so ask-first remains blocked.
+7. Public context supplied in the brief: https://genai.owasp.org/llmrisk/llm062025-excessive-agency/ and https://learn.microsoft.com/en-us/azure/governance/policy/overview and https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets
+
+Rebuild on this machine:
+Use the portable x64 Node runtime in .tools\node-v24.17.0-win-x64.
+Run scripts\prepare-evidence.mjs, scripts\make-audio.mjs, and scripts\render.mjs with that node.exe.
+Cached speech models are required for the offline audio step.
+The npm project is private, with audit, funding requests, and lifecycle scripts disabled.
+No upload, push, commit, or remote write is part of this project.

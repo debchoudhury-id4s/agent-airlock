@@ -1,0 +1,315 @@
+{
+  "kind": "offline-runtime-gate-replay",
+  "startedAt": "2026-09-18T05:37:55.224Z",
+  "run": "2026-09-18T05-37-55.224Z-bd225e56",
+  "localIntent": {
+    "id": "local-intent",
+    "invocation": "createCheckIntent({root,evaluate})(input)",
+    "input": {
+      "prompt": "Get the maintenance update ready. The shift starts in two minutes."
+    },
+    "output": {
+      "artifactPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\cleared-intents\\de983f9f-5406-471c-8272-fdc77d7fffbe.json",
+      "id": "de983f9f-5406-471c-8272-fdc77d7fffbe",
+      "policy": "offline-two-gate-replay",
+      "policyVersion": "1",
+      "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+      "sha256": "d2deba3e99b9b14376fc349d6e3216244ce6c02e8fd12ce45772d02e451620b6",
+      "bytes": 143,
+      "decision": "allow",
+      "reason": "no-online-write-match",
+      "findings": [],
+      "checks": [
+        {
+          "gate": "no-online-writes",
+          "decision": "allow",
+          "reason": "no-online-write-match",
+          "findings": []
+        }
+      ],
+      "status": "cleared",
+      "message": "Intent does not request an online write. Local work may continue. Nothing was sent online.",
+      "receiptPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\receipts\\de983f9f-5406-471c-8272-fdc77d7fffbe.jsonl",
+      "execution": "completed"
+    }
+  },
+  "localWork": {
+    "id": "local-work",
+    "invocation": "createPublishDraft({root,evaluate})(input)",
+    "input": {
+      "content": "Synthetic rehearsal at the imaginary Lantern workshop.\nThe local checklist is ready for review.\nNo real incident data or customer information.\n"
+    },
+    "output": {
+      "artifactPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\outbox\\46ba1124-db66-4d56-8811-24c2f5929219.md",
+      "id": "46ba1124-db66-4d56-8811-24c2f5929219",
+      "policy": "offline-two-gate-replay",
+      "policyVersion": "1",
+      "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+      "sha256": "d008c6fb3ddfa73ec418a5dbacb43a0e68af599b32f57e4f4685275c8719140d",
+      "bytes": 224,
+      "decision": "allow",
+      "reason": "all-gates-passed",
+      "findings": [],
+      "checks": [
+        {
+          "gate": "no-secrets-in-drafts",
+          "decision": "allow",
+          "reason": "no-secret-match",
+          "findings": []
+        },
+        {
+          "gate": "personal-data-review",
+          "decision": "allow",
+          "reason": "no-personal-data-match",
+          "findings": []
+        },
+        {
+          "gate": "internal-label-review",
+          "decision": "allow",
+          "reason": "no-internal-label-match",
+          "findings": []
+        }
+      ],
+      "status": "published",
+      "message": "Copied the scanned text to the local review outbox. Nothing was sent online.",
+      "receiptPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\receipts\\46ba1124-db66-4d56-8811-24c2f5929219.jsonl",
+      "execution": "completed"
+    }
+  },
+  "outbound": {
+    "id": "outbound-evaluation-only",
+    "invocation": "decidePreToolUse({event,mission,check})",
+    "input": {
+      "sessionId": "offline-film-replay-2ef1183c-105a-4e67-bc3f-0278ef8eafea",
+      "timestamp": 1789709876710,
+      "cwd": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56",
+      "toolName": "powershell",
+      "toolArgs": {
+        "command": "git push origin synthetic-airlock-rehearsal"
+      }
+    },
+    "output": {
+      "permissionDecision": "deny",
+      "permissionDecisionReason": "Blocked by Airlock policy: online-write-intent"
+    },
+    "checkIntent": {
+      "input": {
+        "prompt": "git push origin synthetic-airlock-rehearsal"
+      },
+      "output": {
+        "id": "0a571732-5c1d-4b6b-bad4-ca138352e394",
+        "policy": "offline-two-gate-replay",
+        "policyVersion": "1",
+        "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+        "sha256": "939a6d15a38a07c995b7348d31395c18b0b988aba0f7e436aa78b69a0ad0fcf7",
+        "bytes": 120,
+        "decision": "block",
+        "reason": "online-write-intent",
+        "findings": [
+          {
+            "ruleId": "git-push",
+            "line": 1
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-online-writes",
+            "decision": "block",
+            "reason": "online-write-intent",
+            "findings": [
+              {
+                "ruleId": "git-push",
+                "line": 1
+              }
+            ]
+          }
+        ],
+        "status": "blocked",
+        "message": "A required rule blocked the action. Instructions and approvals cannot override a block.",
+        "receiptPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\receipts\\0a571732-5c1d-4b6b-bad4-ca138352e394.jsonl",
+        "execution": "not-started"
+      }
+    }
+  },
+  "sensitive": {
+    "id": "sensitive-evaluation-only",
+    "invocation": "createBroker({root,evaluate})(action) - executor omitted",
+    "input": {
+      "tool": "publish_draft",
+      "target": "local-review-outbox",
+      "input": {
+        "content": "INTERNAL-ONLY\nSynthetic maintenance note for the imaginary Lantern workshop.\nThe pretend conveyor is paused for a rehearsal.\nNo real site, person, credential, or incident data.\n"
+      }
+    },
+    "output": {
+      "id": "5d8b5e1d-90db-4082-beca-457f4a411daf",
+      "policy": "offline-two-gate-replay",
+      "policyVersion": "1",
+      "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+      "sha256": "af5c128dd40da0394688734ab511812bb76e144a085db86a6594f34e79b18d38",
+      "bytes": 259,
+      "decision": "ask-first",
+      "reason": "approval-required",
+      "findings": [
+        {
+          "ruleId": "internal-only-label",
+          "line": 1
+        }
+      ],
+      "checks": [
+        {
+          "gate": "no-secrets-in-drafts",
+          "decision": "allow",
+          "reason": "no-secret-match",
+          "findings": []
+        },
+        {
+          "gate": "personal-data-review",
+          "decision": "allow",
+          "reason": "no-personal-data-match",
+          "findings": []
+        },
+        {
+          "gate": "internal-label-review",
+          "decision": "ask-first",
+          "reason": "internal-label-detected",
+          "findings": [
+            {
+              "ruleId": "internal-only-label",
+              "line": 1
+            }
+          ]
+        }
+      ],
+      "status": "blocked",
+      "message": "Approval is required, but the shared approval flow is not implemented. No action was executed.",
+      "receiptPath": "C:\\Users\\debchoudhury\\Documents\\agent-airlock\\demo\\2026-09-17\\debchoudhury\\film-evidence\\runs\\2026-09-18T05-37-55.224Z-bd225e56\\runtime-records\\receipts\\5d8b5e1d-90db-4082-beca-457f4a411daf.jsonl",
+      "execution": "not-started"
+    }
+  },
+  "pushReceipt": {
+    "file": "0a571732-5c1d-4b6b-bad4-ca138352e394.jsonl",
+    "sha256": "fa7dbc54a4c1a9ade28a5c081898a7fc3402f86b24b200288e99c14752016201",
+    "records": [
+      {
+        "id": "0a571732-5c1d-4b6b-bad4-ca138352e394",
+        "policy": "offline-two-gate-replay",
+        "policyVersion": "1",
+        "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+        "sha256": "939a6d15a38a07c995b7348d31395c18b0b988aba0f7e436aa78b69a0ad0fcf7",
+        "bytes": 120,
+        "timestamp": "2026-09-18T05:37:56.711Z",
+        "event": "blocked",
+        "decision": "block",
+        "reason": "online-write-intent",
+        "findings": [
+          {
+            "ruleId": "git-push",
+            "line": 1
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-online-writes",
+            "decision": "block",
+            "reason": "online-write-intent",
+            "findings": [
+              {
+                "ruleId": "git-push",
+                "line": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "sensitiveReceipt": {
+    "file": "5d8b5e1d-90db-4082-beca-457f4a411daf.jsonl",
+    "sha256": "0e2031697e85771fba5bbdf34504b96c4e379104dcf1075d0afc3936df76e89d",
+    "records": [
+      {
+        "id": "5d8b5e1d-90db-4082-beca-457f4a411daf",
+        "policy": "offline-two-gate-replay",
+        "policyVersion": "1",
+        "policySha256": "84763b43e2a07d9efacd39c135b63c41903c42c0784e006a3e2607797fff905f",
+        "sha256": "af5c128dd40da0394688734ab511812bb76e144a085db86a6594f34e79b18d38",
+        "bytes": 259,
+        "timestamp": "2026-09-18T05:37:57.507Z",
+        "event": "blocked",
+        "decision": "ask-first",
+        "reason": "approval-required",
+        "findings": [
+          {
+            "ruleId": "internal-only-label",
+            "line": 1
+          }
+        ],
+        "checks": [
+          {
+            "gate": "no-secrets-in-drafts",
+            "decision": "allow",
+            "reason": "no-secret-match",
+            "findings": []
+          },
+          {
+            "gate": "personal-data-review",
+            "decision": "allow",
+            "reason": "no-personal-data-match",
+            "findings": []
+          },
+          {
+            "gate": "internal-label-review",
+            "decision": "ask-first",
+            "reason": "internal-label-detected",
+            "findings": [
+              {
+                "ruleId": "internal-only-label",
+                "line": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "sensitiveCheck": {
+    "gate": "internal-label-review",
+    "decision": "ask-first",
+    "reason": "internal-label-detected",
+    "findings": [
+      {
+        "ruleId": "internal-only-label",
+        "line": 1
+      }
+    ]
+  },
+  "noOnlineCode": {
+    "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\index.mjs",
+    "symbol": "createNoOnlineWritesGate.evaluate",
+    "startLine": 30,
+    "endLine": 46,
+    "excerpt": "    async evaluate(action) {\n      const prompt = action.input.prompt;\n      if (typeof prompt !== \"string\") throw new Error(\"Expected a text prompt.\");\n      const lines = prompt.split(/\\r?\\n/);\n      const findings = [];\n      for (const rule of compiled) {\n        lines.forEach((text, index) => {\n          if (rule.regex.test(text)) findings.push({ ruleId: rule.id, line: index + 1 });\n        });\n      }\n      const parsed = findingsSchema.parse(findings);\n      return {\n        decision: parsed.length ? \"block\" : \"allow\",\n        reason: parsed.length ? \"online-write-intent\" : \"no-online-write-match\",\n        findings: parsed,\n      };\n    },"
+  },
+  "sensitiveCode": {
+    "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\index.mjs",
+    "symbol": "reviewGate.evaluate",
+    "startLine": 10,
+    "endLine": 17,
+    "excerpt": "    async evaluate(action) {\n      const findings = findingsSchema.parse(await detector(action.input.content));\n      return {\n        decision: findings.length ? \"ask-first\" : \"allow\",\n        reason: findings.length ? matchReason : clearReason,\n        findings,\n      };\n    },"
+  },
+  "policy": {
+    "id": "offline-two-gate-replay",
+    "version": "1",
+    "tools": {
+      "check_intent": [
+        "no-online-writes"
+      ],
+      "publish_draft": [
+        "no-secrets-in-drafts",
+        "personal-data-review",
+        "internal-label-review"
+      ]
+    }
+  }
+}

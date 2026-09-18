@@ -1,0 +1,363 @@
+{
+  "sources": [
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\index.mjs",
+      "bytes": 1822,
+      "sha256": "ae9eaffc929cb51aa1e27cbfeeffeb149c14428487bad6773e7af0992047a3a5"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\rules.json",
+      "bytes": 857,
+      "sha256": "940b3cda31009f3f051032b8e460dd82e4e7318e8f98a540c2d0f9bbec84cc61"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\index.mjs",
+      "bytes": 1658,
+      "sha256": "f2706f4e857ee3d5d7190d0f6e4c4d928b1b8b6db7e493c3c3bdc92607613758"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\internal-label.mjs",
+      "bytes": 329,
+      "sha256": "eeb9a289bd1df56cc9b5ad696ac6e950e3eb4f610fd2f075a0a6340b33fb01bd"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\personal-data.mjs",
+      "bytes": 1827,
+      "sha256": "76962ff8ff37185e686daaa0bcb76937080a1715d387dbd5647a765c6c65e119"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\findings.mjs",
+      "bytes": 858,
+      "sha256": "653bc41186551eaa6a0cfc84f799d79f75b9693e93b07deaed2744f0ff4ca824"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\index.mjs",
+      "bytes": 656,
+      "sha256": "cecfef1b7e7b94f080e26a4514a926149da4b485b6b0c63205d45ea7c3733d3e"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\scanner.mjs",
+      "bytes": 3728,
+      "sha256": "0066070af767ea5db93cb217d5e119cea82c1fdf70b97ac6ce51cd361a70108d"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\gitleaks.toml",
+      "bytes": 1168,
+      "sha256": "e2b1421e2831a5b12a0eff3833ea62dfa8966e5b3b917fb706a0c662c00ab168"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\policies.mjs",
+      "bytes": 4491,
+      "sha256": "ffd483cbc9d1b10aa0dc500d7acc0c56525a99ac80be3e28bea4686b810571b7"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\broker.mjs",
+      "bytes": 4072,
+      "sha256": "1ba205d6fcfedb2007579028549d6e3d5a73a03a6af0899aa15f1bbb8c90e3d1"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\hook-enforcement.mjs",
+      "bytes": 2616,
+      "sha256": "7ec1989e86fd3ebd07e435c6df5beaf72eac529ac2017e1fdbb90c51562136d1"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\session-state.mjs",
+      "bytes": 1752,
+      "sha256": "4c2eb51074957bfcc4072dfc88262308d35664cc7c4554063e27cea9fdf21701"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\plain-text.mjs",
+      "bytes": 348,
+      "sha256": "8f8d6f8791dc50d148e19384de9e6d3b4681a0e209883ef5cd37408a61aad8b4"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\sanitize-record-text.mjs",
+      "bytes": 2326,
+      "sha256": "d749648cc6d9d5f09112ebaccd893a528ac3dc645ae141922015d2c51095c152"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\airlock.mjs",
+      "bytes": 560,
+      "sha256": "3ddae1720d033d78b9d252cac6333a360b2701714c65afc0784c1ca7958944f9"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\tools\\check-intent.mjs",
+      "bytes": 1962,
+      "sha256": "f75eaf1c0adc6985699dac7bbee48e9e6f9049ce02922acdf8af64b64f5ed87a"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\tools\\publish-draft.mjs",
+      "bytes": 2477,
+      "sha256": "b1a2c0a76f0cc4510b4bb1bb3650e34bff440af2ee333b07fc36d5c0af9c416f"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\policies\\default.json",
+      "bytes": 436,
+      "sha256": "3af2508e8cc39b41bca5f7c6fcd2697e6486415cdc5c3cefa4d556f458068928"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\hooks.json",
+      "bytes": 868,
+      "sha256": "4c1aab9c18a0d9171458ed0cc8f9058c254fe73a1ea5e706132dbfa2b0235c70"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\pre-tool-use.mjs",
+      "bytes": 847,
+      "sha256": "07376167ebe367704eb78c53dc4ac93e1f67ce279941e9522cfa6a2fa30936ce"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\user-prompt-submitted.mjs",
+      "bytes": 2619,
+      "sha256": "cb8e7596eac62297a7023a6a4b2749768c815c5219e5df9bea7000f4cc2d442e"
+    },
+    {
+      "path": "sandbox\\scripts\\configure.mjs",
+      "bytes": 10129,
+      "sha256": "41a6b128b787beb0f840744f0e8efae5b9999cdfd1db699219c3153b63ccbf3c"
+    },
+    {
+      "path": "sandbox\\configurations\\base.json",
+      "bytes": 179,
+      "sha256": "4ba7b5df4c7e0df02256b7a9e2a1b0b4a0c0976ddd6fd644b0727a63c9dbf8b1"
+    },
+    {
+      "path": "sandbox\\configurations\\overrides\\developer.json",
+      "bytes": 246,
+      "sha256": "a6e91e183409ac0adce7698408023d8887006157eeceb0d253b7b5aa73c59df7"
+    },
+    {
+      "path": "sandbox\\configurations\\overrides\\restricted.json",
+      "bytes": 250,
+      "sha256": "f3a1f2439f7a8a4d0b159e58241ad5373eb56270200a29269d90ffa2c59856b9"
+    },
+    {
+      "path": "docs\\prd.md",
+      "bytes": 25984,
+      "sha256": "0a534d6f0e564b233347aeb503a6df16aa0b1a602b617e5cbc43ea6935e99751"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\.tools\\gitleaks.exe",
+      "bytes": 21111296,
+      "sha256": "200df852fdecbedb19a33960657333cba5e231740bc8968972b507b50f93b194"
+    }
+  ],
+  "locations": [
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\index.mjs",
+      "symbol": "createNoOnlineWritesGate",
+      "line": 23,
+      "excerpt": "export function createNoOnlineWritesGate({ rules = defaultRules } = {}) {\n  let compiled;\n  try { compiled = compile(rules); }\n  catch { throw new Error(\"Invalid Airlock online-write rules.\"); }\n  return Object.freeze({"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\index.mjs",
+      "symbol": "no-online-writes.evaluate",
+      "line": 30,
+      "excerpt": "    async evaluate(action) {\n      const prompt = action.input.prompt;\n      if (typeof prompt !== \"string\") throw new Error(\"Expected a text prompt.\");\n      const lines = prompt.split(/\\r?\\n/);\n      const findings = [];"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\no-online-writes\\rules.json",
+      "symbol": "trusted git-push rule",
+      "line": 3,
+      "excerpt": "    { \"id\": \"git-push\", \"pattern\": \"\\\\bgit\\\\s+push\\\\b\", \"flags\": \"i\" },\n    { \"id\": \"push-origin\", \"pattern\": \"\\\\bpush\\\\s+to\\\\s+origin\\\\b\", \"flags\": \"i\" },\n    { \"id\": \"gh-pr\", \"pattern\": \"\\\\bgh\\\\s+pr\\\\b\", \"flags\": \"i\" },\n    { \"id\": \"create-pull-request\", \"pattern\": \"\\\\bcreate\\\\s+(a\\\\s+)?pull\\\\s+request\\\\b\", \"flags\": \"i\" },\n    { \"id\": \"az-deployment\", \"pattern\": \"\\\\baz\\\\s+deployment\\\\b\", \"flags\": \"i\" },"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\index.mjs",
+      "symbol": "reviewGate",
+      "line": 6,
+      "excerpt": "function reviewGate(id, detector, matchReason, clearReason) {\n  return Object.freeze({\n    id,\n    failureReason: \"sensitive-detector-failed\",\n    async evaluate(action) {"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\index.mjs",
+      "symbol": "createInternalLabelGate",
+      "line": 27,
+      "excerpt": "export function createInternalLabelGate({ detector = detectInternalLabel } = {}) {\n  return reviewGate(\"internal-label-review\", detector, \"internal-label-detected\", \"no-internal-label-match\");\n}\n\n/** One user-facing capability, composed from independent read-only gates. Host injection only. */"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\index.mjs",
+      "symbol": "createSensitiveInformationGates",
+      "line": 32,
+      "excerpt": "export function createSensitiveInformationGates({ scanner, personalDataDetector, labelDetector } = {}) {\n  return Object.freeze([\n    createSecretsGate({ scanner }),\n    createPersonalDataGate({ detector: personalDataDetector }),\n    createInternalLabelGate({ detector: labelDetector }),"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\internal-label.mjs",
+      "symbol": "detectInternalLabel",
+      "line": 4,
+      "excerpt": "export function detectInternalLabel(content) {\n  return detectLines(content, [{\n    ruleId: \"internal-only-label\",\n    pattern: /(?<![A-Za-z0-9_])INTERNAL-ONLY(?![A-Za-z0-9_])/gi,\n  }]);"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\personal-data.mjs",
+      "symbol": "detectPersonalData",
+      "line": 47,
+      "excerpt": "export function detectPersonalData(content) {\n  return detectLines(content, rules);\n}\n"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\sensitive-information\\findings.mjs",
+      "symbol": "detectLines",
+      "line": 4,
+      "excerpt": "export function detectLines(content, rules) {\n  if (!isSupportedText(content)) throw new Error(\"Unsupported sensitive-information text.\");\n  const findings = [];\n  for (const [index, line] of content.split(\"\\n\").entries()) {\n    const seen = new Set();"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\index.mjs",
+      "symbol": "sensitive-information's existing secret subgate",
+      "line": 5,
+      "excerpt": "export function createSecretsGate({ scanner = scan } = {}) {\n  return Object.freeze({\n    id: \"no-secrets-in-drafts\",\n    failureReason: \"scanner-failed\",\n    async evaluate(action) {"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\scanner.mjs",
+      "symbol": "scan",
+      "line": 52,
+      "excerpt": "export async function scan(content, command = executable) {\n  let scratch;\n  try {\n    if (typeof content !== \"string\" || Buffer.byteLength(content) > 65_536) throw new Error();\n    await mkdir(toolsRoot, { recursive: true, mode: 0o700 });"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\gates\\secrets\\gitleaks.toml",
+      "symbol": "existing local scanner configuration",
+      "line": 4,
+      "excerpt": "useDefault = true\n\n[[rules]]\nid = \"airlock-synthetic-secret\"\ndescription = \"Nonfunctional marker for the Airlock demo\""
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\policies.mjs",
+      "symbol": "createPolicyEvaluator",
+      "line": 58,
+      "excerpt": "export function createPolicyEvaluator({ policy, gates }) {\n  const parsed = policySchema.safeParse(policy);\n  if (!parsed.success) throw new Error(\"Invalid Airlock policy configuration.\");\n  const snapshot = freeze(parsed.data);\n  const registry = new Map();"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\policies.mjs",
+      "symbol": "block > error > ask-first > allow",
+      "line": 93,
+      "excerpt": "    const decisive = [\"block\", \"error\", \"ask-first\"].map(decision => checks.find(check => check.decision === decision)).find(Boolean);\n    return {\n      ...identity,\n      decision: decisive?.decision ?? \"allow\",\n      reason: decisive?.reason ?? (checks.length === 1 ? checks[0].reason : \"all-gates-passed\"),"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\broker.mjs",
+      "symbol": "createBroker",
+      "line": 21,
+      "excerpt": "export function createBroker({ root = dataRoot, evaluate }) {\n  if (typeof evaluate !== \"function\") throw new Error(\"Airlock requires a policy evaluator.\");\n  const receipts = join(resolve(root), \"receipts\");\n\n  return async function run(action, execute) {"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\broker.mjs",
+      "symbol": "non-allow returns before executor",
+      "line": 67,
+      "excerpt": "    if (denied) return { ...result, receiptPath, execution: \"not-started\" };\n\n    let execution = \"not-started\";\n    try {\n      execution = \"unknown\";"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\hook-enforcement.mjs",
+      "symbol": "describePotentialOnlineWrite",
+      "line": 34,
+      "excerpt": "export function describePotentialOnlineWrite(toolName, toolArgs) {\n  if (typeof toolName !== \"string\" || !toolName) {\n    return { blocked: true, reason: \"invalid-tool-request\" };\n  }\n  if (airlockToolName(toolName)) return null;"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\hook-enforcement.mjs",
+      "symbol": "decidePreToolUse",
+      "line": 49,
+      "excerpt": "export async function decidePreToolUse({ event, mission, check }) {\n  if (!mission || mission.sessionId !== event.sessionId) return deny(\"mission-state-missing\");\n  if (mission.decision !== \"allow\") return deny(mission.reason);\n\n  const candidate = describePotentialOnlineWrite(event.toolName, event.toolArgs);"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\session-state.mjs",
+      "symbol": "saveMissionState",
+      "line": 23,
+      "excerpt": "export async function saveMissionState(state, root = dataRoot) {\n  const snapshot = stateSchema.parse(state);\n  const path = statePath(snapshot.sessionId, root);\n  await mkdir(join(root, \"sessions\"), { recursive: true, mode: 0o700 });\n  const temporary = `${path}.${randomUUID()}.tmp`;"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\plain-text.mjs",
+      "symbol": "isSupportedText",
+      "line": 2,
+      "excerpt": "export function isSupportedText(content) {\n  return typeof content === \"string\" && Buffer.byteLength(content) <= 65_536\n    && Buffer.from(content).toString(\"utf8\") === content\n    && !/[\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]/u.test(content);\n}"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\sanitize-record-text.mjs",
+      "symbol": "createRecordTextSanitizer (not invoked)",
+      "line": 16,
+      "excerpt": "export function createRecordTextSanitizer(options = {}) {\n  const gates = createSensitiveInformationGates(options);\n  const evaluate = createPolicyEvaluator({\n    policy: { id: \"sensitive-record-text\", version: \"1\", tools: { record_text: gates.map(gate => gate.id) } },\n    gates,"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\runtime\\airlock.mjs",
+      "symbol": "installed composition root (not invoked)",
+      "line": 8,
+      "excerpt": "export const evaluateAirlockPolicy = createPolicyEvaluator({ policy, gates });\nexport const checkIntent = createCheckIntent({ evaluate: evaluateAirlockPolicy });\n"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\tools\\check-intent.mjs",
+      "symbol": "createCheckIntent",
+      "line": 9,
+      "excerpt": "export function createCheckIntent({ root = dataRoot, evaluate }) {\n  const run = createBroker({ root, evaluate });\n  const cleared = join(resolve(root), \"cleared-intents\");\n  return async function checkIntent(input) {\n    const parsed = intentSchema.safeParse(input);"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\tools\\publish-draft.mjs",
+      "symbol": "createPublishDraft",
+      "line": 11,
+      "excerpt": "export function createPublishDraft({ root = dataRoot, evaluate }) {\n  const run = createBroker({ root, evaluate });\n  const sanitizeText = createRecordTextSanitizer();\n  const outbox = join(resolve(root), \"outbox\");\n  return async function publishDraft(input) {"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\policies\\default.json",
+      "symbol": "installed sensitive-information bindings",
+      "line": 5,
+      "excerpt": "    \"publish_draft\": [\"no-secrets-in-drafts\", \"personal-data-review\", \"internal-label-review\"],\n    \"check_intent\": [\"no-online-writes\"],\n    \"select_model\": [\"model-catalog\"],\n    \"publish_approved_draft\": [\"no-secrets-in-drafts\", \"personal-data-review\", \"internal-label-review\", \"local-approval-required\"],\n    \"review_dependency_change\": [\"dependency-risk\"]"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\policies\\default.json",
+      "symbol": "installed no-online-writes binding",
+      "line": 6,
+      "excerpt": "    \"check_intent\": [\"no-online-writes\"],\n    \"select_model\": [\"model-catalog\"],\n    \"publish_approved_draft\": [\"no-secrets-in-drafts\", \"personal-data-review\", \"internal-label-review\", \"local-approval-required\"],\n    \"review_dependency_change\": [\"dependency-risk\"]\n  }"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\hooks.json",
+      "symbol": "preToolUse registration",
+      "line": 12,
+      "excerpt": "    \"preToolUse\": [\n      {\n        \"type\": \"command\",\n        \"matcher\": \".*\",\n        \"powershell\": \"node \\\"$env:COPILOT_PLUGIN_ROOT\\\\hooks\\\\pre-tool-use.mjs\\\"\","
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\pre-tool-use.mjs",
+      "symbol": "hook adapter (not launched)",
+      "line": 17,
+      "excerpt": "  emit(await decidePreToolUse({\n    event,\n    mission: await loadMissionState(event.sessionId),\n    check: checkIntent,\n  }));"
+    },
+    {
+      "path": "plugins\\AirlockPlugin\\hooks\\user-prompt-submitted.mjs",
+      "symbol": "prompt adapter (not launched)",
+      "line": 50,
+      "excerpt": "  const intentResult = await checkIntent({ prompt: event.prompt });\n  const decision = combinePromptPreflight(costResult, intentResult);\n  await saveMissionState({\n    sessionId: event.sessionId,\n    decision: decision.decision,"
+    },
+    {
+      "path": "sandbox\\scripts\\configure.mjs",
+      "symbol": "loadConfiguration (read only)",
+      "line": 127,
+      "excerpt": "export async function loadConfiguration(overrides, root = sandboxRoot) {\n  const fragments = [\n    validateAirlockConfiguration(await readJson(join(root, \"configurations\", \"base.json\"))),\n  ];\n  for (const name of overrides) {"
+    },
+    {
+      "path": "sandbox\\configurations\\base.json",
+      "symbol": "base allows bypass",
+      "line": 4,
+      "excerpt": "    \"allowBypass\": true,\n    \"addCurrentWorkingDirectory\": true,\n    \"sandboxMcpServers\": true,\n    \"sandboxLspServers\": true\n  }"
+    },
+    {
+      "path": "sandbox\\configurations\\overrides\\developer.json",
+      "symbol": "developer permits outbound",
+      "line": 10,
+      "excerpt": "        \"allowOutbound\": true,\n        \"allowLocalNetwork\": false\n      }\n    }\n  }"
+    },
+    {
+      "path": "sandbox\\configurations\\overrides\\restricted.json",
+      "symbol": "restricted disables outbound in configuration",
+      "line": 10,
+      "excerpt": "        \"allowOutbound\": false,\n        \"allowLocalNetwork\": false\n      }\n    }\n  }"
+    },
+    {
+      "path": "docs\\prd.md",
+      "symbol": "PRD local simulation scope",
+      "line": 9,
+      "excerpt": "**POC limits:** Run on one developer's computer. Use a sample repository, local files, a terminal interface, and recorded agent steps or a stub model. Simulate all online writes and model requests. No Azure deployment, administrator role, cross-team permission, or company service is required.\n\nOnly supported tools routed through Airlock are covered. The POC is not a security sandbox for arbitrary commands or other processes. Live integrations, shared cloud stores, enterprise sign-in, and production-scale controls are out of scope.\n\n## 1. Start a Safe Mission"
+    },
+    {
+      "path": "docs\\prd.md",
+      "symbol": "PRD coverage limit",
+      "line": 11,
+      "excerpt": "Only supported tools routed through Airlock are covered. The POC is not a security sandbox for arbitrary commands or other processes. Live integrations, shared cloud stores, enterprise sign-in, and production-scale controls are out of scope.\n\n## 1. Start a Safe Mission\n\n"
+    },
+    {
+      "path": "docs\\prd.md",
+      "symbol": "PRD approval requirement, not implemented by these gates",
+      "line": 39,
+      "excerpt": "1. Require approval for every simulated online write, including a working-branch push. Block protected `main` updates and production or critical-environment writes. [debchoudhury](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/debchoudhury/requirement-closure.md#L15>), [matagaba](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/matagaba/requirements-closure.md#L31>)\n2. Show the exact operation, target, safe input summary, matching rule, and expected effect. Explain what approval or rejection will do. [debchoudhury](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/debchoudhury/requirement-closure.md#L16>)\n3. Ask the named local reviewer to approve or reject the action and give a reason. Waiting or closing the prompt does not count as approval. [debchoudhury](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/debchoudhury/requirement-closure.md#L16>), [roennam](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/roennam/requirement-closure.md#L11>)\n4. Bind approval to one run, one action, its exact inputs, its target, and the rule version. Set an expiry time and allow only one use. [roennam](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/roennam/requirement-closure.md#L11>)\n5. Changed inputs or targets need a new approval. Rejected, expired, and used approvals must cause zero executions. Recheck all applicable controls immediately before running the action. [roennam](<https://github.com/debchoudhury-id4s/agent-airlock/blob/main/docs/preflight/roennam/requirement-closure.md#L11>)"
+    }
+  ],
+  "harnessSha256": "2a81b3b1c626170a33547990e38edcd57831f1c32d2c20854f202ede4f609a86"
+}

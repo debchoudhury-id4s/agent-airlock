@@ -1,0 +1,14 @@
+{
+  "id": "offline-two-gate-replay",
+  "version": "1",
+  "tools": {
+    "check_intent": [
+      "no-online-writes"
+    ],
+    "publish_draft": [
+      "no-secrets-in-drafts",
+      "personal-data-review",
+      "internal-label-review"
+    ]
+  }
+}

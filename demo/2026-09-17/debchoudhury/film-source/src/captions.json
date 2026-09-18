@@ -1,0 +1,177 @@
+[
+  {
+    "text": "The next shift is waiting.",
+    "startMs": 700,
+    "endMs": 2688,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Maya has two minutes to get a maintenance update ready.",
+    "startMs": 4300,
+    "endMs": 7762,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "An agent can do it in seconds.",
+    "startMs": 10200,
+    "endMs": 12714,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "She asks for an update. Not a publication.",
+    "startMs": 14200,
+    "endMs": 17397,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "But a helpful next step can cross a line she never meant to cross.",
+    "startMs": 19100,
+    "endMs": 23320,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The note moves toward a shared repository.",
+    "startMs": 28100,
+    "endMs": 31264,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "An internal-only detail goes with it.",
+    "startMs": 33000,
+    "endMs": 35741,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The draft took seconds. The damage lasts longer.",
+    "startMs": 37600,
+    "endMs": 41039,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Rewind. A prompt is not a policy.",
+    "startMs": 43400,
+    "endMs": 46267,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The organization owns the rules. Not the model.",
+    "startMs": 48000,
+    "endMs": 51519,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Same request. This time, through Airlock.",
+    "startMs": 53400,
+    "endMs": 56566,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The local work goes through. A real draft lands in the local outbox.",
+    "startMs": 57800,
+    "endMs": 62536,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Nothing goes online.",
+    "startMs": 63400,
+    "endMs": 65340,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Then comes a proposed push. The first gate says no.",
+    "startMs": 66200,
+    "endMs": 69967,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "No online writes. Its code matches the push against a separate rule file.",
+    "startMs": 71300,
+    "endMs": 76394,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The hook denies it before execution.",
+    "startMs": 77000,
+    "endMs": 79794,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "A second gate checks the draft itself.",
+    "startMs": 80300,
+    "endMs": 82990,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Sensitive information. An internal-only label means ask first.",
+    "startMs": 84700,
+    "endMs": 89088,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Here, approval isn't implemented. So it stays blocked.",
+    "startMs": 89600,
+    "endMs": 93461,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The runtime records the rule, the verdict, and the time.",
+    "startMs": 94500,
+    "endMs": 98217,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Not a promise. A record someone can inspect.",
+    "startMs": 100100,
+    "endMs": 103419,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Local evidence. Not tamper-proof.",
+    "startMs": 104200,
+    "endMs": 106995,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "A local prototype. Not a sandbox for every process.",
+    "startMs": 107500,
+    "endMs": 111614,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "The organization sets what agents may do.",
+    "startMs": 112500,
+    "endMs": 115870,
+    "timestampMs": null,
+    "confidence": null
+  },
+  {
+    "text": "Airlock makes that binding on the paths it checks.",
+    "startMs": 116300,
+    "endMs": 119492,
+    "timestampMs": null,
+    "confidence": null
+  }
+]
