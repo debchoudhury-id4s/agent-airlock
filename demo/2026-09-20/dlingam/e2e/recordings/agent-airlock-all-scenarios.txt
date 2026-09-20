@@ -1,0 +1,334 @@
+
+  AGENT AIRLOCK - COMPLETE TERMINAL TEST
+  Latest plugin on main | real gates | real receipts
+
+PS> .\run-all-airlock-scenarios.ps1
+
+
+================================================================
+SCENARIO 1 OF 18 | sensitive-information / clean
+================================================================
+Evidence: runs\2026-09-20T19-19-46-637Z-8LUvMe
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / clean ===
+REQUEST         Publish a clean synthetic draft from the sample repository.
+GATE CHECKS     no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: allow (no-personal-data-match) | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The secrets, personal-data, and internal-label gates found no policy match.
+GATE OUTCOME    published / all-gates-passed / execution completed
+SIDE EFFECT     1 business artifact(s); 1 verified receipt(s).
+NEXT STEP       No change is needed; the checked draft can reach the local publisher.
+BOUNDARY        Published means a local demo artifact was created, not a pull request or remote write.
+EVIDENCE        runs\2026-09-20T19-19-46-637Z-8LUvMe\sensitive-information--clean\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-19-46-637Z-8LUvMe\summary.json
+
+================================================================
+SCENARIO 2 OF 18 | sensitive-information / secret
+================================================================
+Evidence: runs\2026-09-20T19-19-51-326Z-7EJ2N8
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / secret ===
+REQUEST         Publish a synthetic draft containing a credential-shaped marker.
+GATE CHECKS     no-secrets-in-drafts: block (secret-detected); safe findings airlock-synthetic-secret@line-1 | personal-data-review: allow (no-personal-data-match) | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The secret detector returned block. Safe findings identify only the rule and line, not the matched value.
+GATE OUTCOME    blocked / secret-detected / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Remove or replace the sensitive value, then submit the changed draft as a new action for a full rescan.
+BOUNDARY        The blocked input is not copied into the evidence files or a publish artifact.
+EVIDENCE        runs\2026-09-20T19-19-51-326Z-7EJ2N8\sensitive-information--secret\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-19-51-326Z-7EJ2N8\summary.json
+
+================================================================
+SCENARIO 3 OF 18 | sensitive-information / override
+================================================================
+Evidence: runs\2026-09-20T19-19-58-821Z-XLWZjR
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / override ===
+REQUEST         Publish the same sensitive draft with an appended instruction asking Airlock to bypass policy.
+GATE CHECKS     no-secrets-in-drafts: block (secret-detected); safe findings airlock-synthetic-secret@line-1 | personal-data-review: allow (no-personal-data-match) | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The secret detector still returned block because prompt text is data, not authorization.
+GATE OUTCOME    blocked / secret-detected / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Remove or replace the sensitive value; stronger wording cannot clear the gate.
+BOUNDARY        This demonstrates instruction precedence only on the explicit Airlock route.
+EVIDENCE        runs\2026-09-20T19-19-58-821Z-XLWZjR\sensitive-information--override\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-19-58-821Z-XLWZjR\summary.json
+
+================================================================
+SCENARIO 4 OF 18 | sensitive-information / pii
+================================================================
+Evidence: runs\2026-09-20T19-20-06-332Z-AFDbSe
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / pii ===
+REQUEST         Publish a synthetic draft containing a reserved personal-data pattern.
+GATE CHECKS     no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: ask-first (personal-data-detected); safe findings email-address@line-1 | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The personal-data gate returned ask-first. The prototype has no approval-redemption workflow, so the broker stops execution as approval-required.
+GATE OUTCOME    blocked / approval-required / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       A reviewer must approve the exact action in a future approval flow, or the author can submit a safely changed draft for a new scan.
+BOUNDARY        Ask-first is intentionally not treated as allow.
+EVIDENCE        runs\2026-09-20T19-20-06-332Z-AFDbSe\sensitive-information--pii\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-06-332Z-AFDbSe\summary.json
+
+================================================================
+SCENARIO 5 OF 18 | sensitive-information / label
+================================================================
+Evidence: runs\2026-09-20T19-20-13-904Z-Z6So45
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / label ===
+REQUEST         Publish a synthetic draft marked INTERNAL-ONLY.
+GATE CHECKS     no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: allow (no-personal-data-match) | internal-label-review: ask-first (internal-label-detected); safe findings internal-only-label@line-1
+WHY THIS RESULT The internal-label gate classified the whole field as protected and returned ask-first.
+GATE OUTCOME    blocked / approval-required / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Use an authorized review/declassification process; simply deleting the label must not reveal the withheld body.
+BOUNDARY        The remediation candidate is withheld because removing a classification label is not declassification.
+EVIDENCE        runs\2026-09-20T19-20-13-904Z-Z6So45\sensitive-information--label\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-13-904Z-Z6So45\summary.json
+
+================================================================
+SCENARIO 6 OF 18 | sensitive-information / header-log
+================================================================
+Evidence: runs\2026-09-20T19-20-20-041Z-TnwYSd
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / header-log ===
+REQUEST         Publish the sample repository's already-masked authorization-header log fixture.
+GATE CHECKS     no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: allow (no-personal-data-match) | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The contextual-token detector found no active token because the fixture is already masked.
+GATE OUTCOME    published / all-gates-passed / execution completed
+SIDE EFFECT     1 business artifact(s); 1 verified receipt(s).
+NEXT STEP       No change is needed; the masked text can reach the local publisher.
+BOUNDARY        This is a safe nonmatch demonstration, not evidence that an active header token was blocked.
+EVIDENCE        runs\2026-09-20T19-20-20-041Z-TnwYSd\sensitive-information--header-log\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-20-041Z-TnwYSd\summary.json
+
+================================================================
+SCENARIO 7 OF 18 | sensitive-information / replacement
+================================================================
+Evidence: runs\2026-09-20T19-20-24-434Z-xAGpRM
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / replacement ===
+REQUEST         Request remediation for review-required text, then explicitly submit the returned candidate as a second action.
+GATE CHECKS     no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: ask-first (personal-data-detected); safe findings email-address@line-1 | internal-label-review: allow (no-internal-label-match) | no-secrets-in-drafts: allow (no-secret-match) | personal-data-review: allow (no-personal-data-match) | internal-label-review: allow (no-internal-label-match)
+WHY THIS RESULT The first action stopped for review. The separate replacement action was rescanned and all required gates allowed it.
+GATE OUTCOME    blocked / approval-required / execution not-started -> published / all-gates-passed / execution completed
+SIDE EFFECT     1 business artifact(s); 2 verified receipt(s).
+NEXT STEP       Always treat remediated content as new input and run the complete policy again.
+BOUNDARY        Airlock never publishes a replacement automatically or reuses the first decision.
+EVIDENCE        runs\2026-09-20T19-20-24-434Z-xAGpRM\sensitive-information--replacement\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-24-434Z-xAGpRM\summary.json
+
+================================================================
+SCENARIO 8 OF 18 | sensitive-information / input-limit
+================================================================
+Evidence: runs\2026-09-20T19-20-32-920Z-DlM0sN
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / input-limit ===
+REQUEST         Submit a draft whose encoded size exceeds the supported content limit.
+GATE CHECKS     No gate receipt: the request was rejected at the input boundary.
+WHY THIS RESULT Input validation rejected unsupported content before policy evaluation and before a receipt or business artifact could be created.
+GATE OUTCOME    blocked / unsupported-content / execution not-started
+SIDE EFFECT     0 business artifact(s); 0 verified receipt(s).
+NEXT STEP       Reduce the draft to the supported size and submit it as a new action.
+BOUNDARY        This is boundary validation, not a sensitive-information finding.
+EVIDENCE        runs\2026-09-20T19-20-32-920Z-DlM0sN\sensitive-information--input-limit\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-32-920Z-DlM0sN\summary.json
+
+================================================================
+SCENARIO 9 OF 18 | sensitive-information / schema-override
+================================================================
+Evidence: runs\2026-09-20T19-20-35-852Z-0mT3aj
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | sensitive-information / schema-override ===
+REQUEST         Call publish_draft with an extra override property that is not in the MCP tool schema.
+GATE CHECKS     No gate receipt: the request was rejected at the input boundary.
+WHY THIS RESULT MCP input validation rejected the unknown field before the broker ran.
+GATE OUTCOME    MCP-input-validation: rejected before execution
+SIDE EFFECT     0 business artifact(s); 0 verified receipt(s).
+NEXT STEP       Use only the documented content field; there is no caller-supplied policy override.
+BOUNDARY        No receipt exists because the request never became a valid Airlock action.
+EVIDENCE        runs\2026-09-20T19-20-35-852Z-0mT3aj\sensitive-information--schema-override\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-35-852Z-0mT3aj\summary.json
+
+================================================================
+SCENARIO 10 OF 18 | dependency-risk / offline-block
+================================================================
+Evidence: runs\2026-09-20T19-20-38-843Z-mOBshl
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | dependency-risk / offline-block ===
+REQUEST         Propose a deterministic synthetic Microsoft.Identity.Client version before any project edit or restore.
+GATE CHECKS     dependency-risk: block (dependency-version-blocked); safe findings AIRLOCK-DEMO-001@line-1
+WHY THIS RESULT The dependency-risk gate matched the reviewed synthetic rule AIRLOCK-DEMO-001 and returned block.
+GATE OUTCOME    blocked / dependency-version-blocked / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Choose a version that clears the current review and advisory path before changing the manifest.
+BOUNDARY        This is a synthetic policy demonstration, not a CVE claim or an existing dependency in the sample.
+EVIDENCE        runs\2026-09-20T19-20-38-843Z-mOBshl\dependency-risk--offline-block\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-38-843Z-mOBshl\summary.json
+
+================================================================
+SCENARIO 11 OF 18 | model-catalog / default
+================================================================
+Evidence: runs\2026-09-20T19-20-41-913Z-EeODYP
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | model-catalog / default ===
+REQUEST         Select the reviewed default model for a code-edit task with repo-local data.
+GATE CHECKS     model-catalog: allow (default-model-selected)
+WHY THIS RESULT The catalog found an allowed default matching the declared task and data class.
+GATE OUTCOME    selected / default-model-selected / execution completed
+SIDE EFFECT     1 business artifact(s); 1 verified receipt(s).
+NEXT STEP       No approval is needed for this catalog entry.
+BOUNDARY        The demo writes a local selection record; it does not switch Copilot's active model or run inference.
+EVIDENCE        runs\2026-09-20T19-20-41-913Z-EeODYP\model-catalog--default\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-41-913Z-EeODYP\summary.json
+
+================================================================
+SCENARIO 12 OF 18 | model-catalog / override
+================================================================
+Evidence: runs\2026-09-20T19-20-45-100Z-znNu9I
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | model-catalog / override ===
+REQUEST         Request a permitted non-default model override.
+GATE CHECKS     model-catalog: ask-first (non-default-model)
+WHY THIS RESULT The catalog marks the override as review-required, so the gate returned ask-first and the broker stopped.
+GATE OUTCOME    blocked / approval-required / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Redeem an approval bound to this exact selection when that workflow exists, or use the reviewed default.
+BOUNDARY        The caller supplies dataClass today; Airlock does not automatically classify the payload.
+EVIDENCE        runs\2026-09-20T19-20-45-100Z-znNu9I\model-catalog--override\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-45-100Z-znNu9I\summary.json
+
+================================================================
+SCENARIO 13 OF 18 | model-catalog / public
+================================================================
+Evidence: runs\2026-09-20T19-20-48-376Z-r0bunq
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | model-catalog / public ===
+REQUEST         Request a catalog entry explicitly marked blocked.
+GATE CHECKS     model-catalog: block (blocked-model); safe findings blocked-model@line-1
+WHY THIS RESULT The model-catalog gate returned block for the requested public model route.
+GATE OUTCOME    blocked / blocked-model / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Select an allowed catalog model appropriate for the declared task and data class.
+BOUNDARY        No model inference occurs in this prototype.
+EVIDENCE        runs\2026-09-20T19-20-48-376Z-r0bunq\model-catalog--public\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-48-376Z-r0bunq\summary.json
+
+================================================================
+SCENARIO 14 OF 18 | intent / local-review
+================================================================
+Evidence: runs\2026-09-20T19-20-51-607Z-AwdkLt
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | intent / local-review ===
+REQUEST         Ask for a local source review and unit-test suggestions.
+GATE CHECKS     no-online-writes: allow (no-online-write-match)
+WHY THIS RESULT No reviewed online-write pattern matched the supplied prompt text.
+GATE OUTCOME    cleared / no-online-write-match / execution completed
+SIDE EFFECT     1 business artifact(s); 1 verified receipt(s).
+NEXT STEP       The local intent can proceed through its supported action path.
+BOUNDARY        Clearance describes this text check; it is not a general authorization token.
+EVIDENCE        runs\2026-09-20T19-20-51-607Z-AwdkLt\intent--local-review\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-51-607Z-AwdkLt\summary.json
+
+================================================================
+SCENARIO 15 OF 18 | intent / online-write
+================================================================
+Evidence: runs\2026-09-20T19-20-54-897Z-vRF7B7
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | intent / online-write ===
+REQUEST         Submit '/yolo git push origin main' to the intent checker.
+GATE CHECKS     no-online-writes: block (online-write-intent); safe findings git-push@line-1
+WHY THIS RESULT The online-write pattern matched, and '/yolo' is not a permission grant.
+GATE OUTCOME    blocked / online-write-intent / execution not-started
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Use an authorized publish workflow that applies the required policy and approval.
+BOUNDARY        The prompt is never executed. This gate does not intercept an unrelated native shell command.
+EVIDENCE        runs\2026-09-20T19-20-54-897Z-vRF7B7\intent--online-write\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-54-897Z-vRF7B7\summary.json
+
+================================================================
+SCENARIO 16 OF 18 | trending-cost / below-limit
+================================================================
+Evidence: runs\2026-09-20T19-20-59-008Z-UPB25E
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | trending-cost / below-limit ===
+REQUEST         Read a synthetic local usage store reporting $12 month-to-date.
+GATE CHECKS     trending-cost: allow (trending-cost-reported)
+WHY THIS RESULT Usage was available and remained below the configured $800 advisory threshold.
+GATE OUTCOME    reported / trending-cost-reported / execution completed
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       No cost intervention is suggested by this advisory report.
+BOUNDARY        The numbers are disposable synthetic estimates, not billing data.
+EVIDENCE        runs\2026-09-20T19-20-59-008Z-UPB25E\trending-cost--below-limit\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-20-59-008Z-UPB25E\summary.json
+
+================================================================
+SCENARIO 17 OF 18 | trending-cost / above-limit
+================================================================
+Evidence: runs\2026-09-20T19-21-02-659Z-jLtqlQ
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | trending-cost / above-limit ===
+REQUEST         Read a synthetic local usage store reporting $900 month-to-date.
+GATE CHECKS     trending-cost: allow (month-to-date-cost-limit-advisory)
+WHY THIS RESULT Usage exceeded the configured $800 threshold, so the tool returned a cost advisory.
+GATE OUTCOME    reported / month-to-date-cost-limit-advisory / execution completed
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Review usage and model choices; a future enforcing policy could require approval or reservation.
+BOUNDARY        The checked-in policy is advisory, so this result reports rather than blocks.
+EVIDENCE        runs\2026-09-20T19-21-02-659Z-jLtqlQ\trending-cost--above-limit\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-21-02-659Z-jLtqlQ\summary.json
+
+================================================================
+SCENARIO 18 OF 18 | trending-cost / unavailable
+================================================================
+Evidence: runs\2026-09-20T19-21-06-152Z-g2LtU5
+Explicit Airlock routing; synthetic inputs and usage only. No mandatory-routing claim.
+
+=== VERIFIED | trending-cost / unavailable ===
+REQUEST         Request a cost report when the disposable usage store is absent.
+GATE CHECKS     trending-cost: allow (trending-cost-unavailable)
+WHY THIS RESULT The tool reported session-store-missing instead of inventing a zero or success-shaped estimate.
+GATE OUTCOME    reported / trending-cost-unavailable / execution completed
+SIDE EFFECT     0 business artifact(s); 1 verified receipt(s).
+NEXT STEP       Provide an authorized compatible usage source before relying on the report.
+BOUNDARY        Unavailable is an explicit operational result, not evidence of zero spend.
+EVIDENCE        runs\2026-09-20T19-21-06-152Z-g2LtU5\trending-cost--unavailable\result.json
+Verified 1 cases; sample unchanged; summary: runs\2026-09-20T19-21-06-152Z-g2LtU5\summary.json
+
+================================================================
+LIFECYCLE E2E | hooks, RFC relevance, sandbox, dependency MCP
+================================================================
+[PASS] automatic hooks enforce one mission from prompt through session end (2837.8053ms)
+[PASS] prompt and shell rechecks block online writes even with yolo (2592.2906ms)
+[PASS] RFC advice is visible without becoming execution permission (308.3483ms)
+[PASS] restricted sandbox remains authoritative after Airlock allows a local request (1444.6086ms)
+[PASS] dependency-risk MCP blocks the synthetic version and records only a receipt (1025.9083ms)
+ tests 5
+ suites 0
+ pass 5
+ fail 0
+ cancelled 0
+ skipped 0
+ todo 0
+ duration_ms 9222.0708
+
+================================================================
+FINAL RESULT: 18 GATE CASES + 5 LIFECYCLE SCENARIOS PASSED
+No sample repository files changed.
+================================================================
