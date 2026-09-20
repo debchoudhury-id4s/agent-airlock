@@ -29,3 +29,12 @@ claim to emulate the Copilot host sandbox inside Node.
 For a screen recording, start capture before running the command and end on the
 passing TAP summary. Keep notifications and unrelated windows hidden. The
 transcript and JSON summary are the authoritative machine-readable evidence.
+
+To render a short 720p MP4 from the recorded transcript:
+
+```powershell
+.\render-test-recording.ps1 -ArtifactRoot .\artifacts\<timestamp>
+```
+
+The generated video is a presentation-friendly replay of the exact execution
+summary. It does not claim to be a live desktop capture.

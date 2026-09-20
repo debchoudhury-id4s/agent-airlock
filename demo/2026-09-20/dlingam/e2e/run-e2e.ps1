@@ -27,26 +27,51 @@ $summary = [ordered]@{
     )
 }
 
-Start-Transcript -Path $transcript -Force | Out-Null
-try {
-    Write-Host "Agent Airlock fresh-clone E2E"
-    Write-Host "Source: $sourceSha"
-    Write-Host "Artifacts: $artifactRoot"
+function Write-Recorded {
+    param([string]$Text)
+    $Text | Tee-Object -FilePath $transcript -Append
+}
 
-    & git clone --quiet --no-hardlinks $repo $clone
-    if ($LASTEXITCODE -ne 0) { throw "git clone failed" }
-    & git -C $clone checkout --quiet --detach $sourceSha
-    if ($LASTEXITCODE -ne 0) { throw "git checkout failed" }
+function Invoke-Recorded {
+    param(
+        [string]$Label,
+        [scriptblock]$Command
+    )
+    Write-Recorded ""
+    Write-Recorded ">>> $Label"
+    & $Command 2>&1 | Tee-Object -FilePath $transcript -Append
+    if ($LASTEXITCODE -ne 0) { throw "$Label failed with exit code $LASTEXITCODE" }
+}
+
+@(
+    "Agent Airlock fresh-clone E2E"
+    "Started: $($summary.startedAt)"
+    "Source: $sourceSha"
+    "Artifacts: $artifactRoot"
+) | Set-Content -Path $transcript -Encoding utf8
+
+try {
+    Get-Content $transcript | Write-Host
+    Invoke-Recorded "git clone --no-hardlinks <repository> <temporary-clone>" {
+        & git clone --quiet --no-hardlinks $repo $clone
+    }
+    Invoke-Recorded "git checkout --detach $sourceSha" {
+        & git -C $clone checkout --quiet --detach $sourceSha
+    }
 
     $plugin = Join-Path $clone "plugins\AirlockPlugin"
-    & npm --prefix $plugin ci
-    if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
-    & npm --prefix $plugin run setup
-    if ($LASTEXITCODE -ne 0) { throw "plugin setup failed" }
-    & npm --prefix $plugin test
-    if ($LASTEXITCODE -ne 0) { throw "plugin tests failed" }
-    & node --test (Join-Path $clone "sandbox\tests\configure.test.mjs")
-    if ($LASTEXITCODE -ne 0) { throw "sandbox tests failed" }
+    Invoke-Recorded "npm ci" {
+        & npm --prefix $plugin ci
+    }
+    Invoke-Recorded "npm run setup" {
+        & npm --prefix $plugin run setup
+    }
+    Invoke-Recorded "npm test" {
+        & npm --prefix $plugin test
+    }
+    Invoke-Recorded "node --test sandbox/tests/configure.test.mjs" {
+        & node --test (Join-Path $clone "sandbox\tests\configure.test.mjs")
+    }
 
     $summary.status = "passed"
 }
@@ -59,11 +84,13 @@ finally {
     $summary.completedAt = (Get-Date).ToUniversalTime().ToString("o")
     $summary.artifactRoot = $artifactRoot
     $summary.transcript = $transcript
+    $summary.freshCloneRemoved = $true
     $summary | ConvertTo-Json -Depth 5 | Set-Content -Path $summaryPath -Encoding utf8
-    Stop-Transcript | Out-Null
     if (Test-Path $clone) {
         Remove-Item -LiteralPath $clone -Recurse -Force
     }
-    Write-Host "Summary: $summaryPath"
-    Write-Host "Transcript: $transcript"
+    Write-Recorded ""
+    Write-Recorded "Final status: $($summary.status)"
+    Write-Recorded "Summary: $summaryPath"
+    Write-Recorded "Transcript: $transcript"
 }
