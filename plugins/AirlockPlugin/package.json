@@ -9,6 +9,7 @@
   "scripts": {
     "setup": "node setup.mjs",
     "test": "node --test",
+    "test:e2e": "node --test tests/e2e-lifecycle.test.mjs",
     "check:nuget": "node scripts/check-nuget-advisory.mjs"
   },
   "dependencies": {
