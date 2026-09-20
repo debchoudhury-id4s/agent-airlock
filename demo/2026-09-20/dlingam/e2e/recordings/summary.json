@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-09-20T18:38:05.4434299Z",
+  "sourceSha": "8f69400adc5fc6b0db4f1b816d3c3afa67dda1c5",
+  "sourceBranch": "test/e2e-airlock-20260920",
+  "freshClone": "C:\\Users\\dlingam\\AppData\\Local\\Temp\\agent-airlock-e2e-20260920-113805",
+  "status": "passed",
+  "commands": [
+    "npm ci",
+    "npm run setup",
+    "npm test",
+    "node --test sandbox/tests/configure.test.mjs"
+  ],
+  "completedAt": "2026-09-20T18:39:06.5308956Z",
+  "artifactRoot": "C:\\Users\\dlingam\\OneDrive - Microsoft\\Documents\\Plans and Context\\Hackathon\\agent-airlock\\demo\\2026-09-20\\dlingam\\e2e\\artifacts\\20260920-113805",
+  "transcript": "C:\\Users\\dlingam\\OneDrive - Microsoft\\Documents\\Plans and Context\\Hackathon\\agent-airlock\\demo\\2026-09-20\\dlingam\\e2e\\artifacts\\20260920-113805\\test-execution.txt",
+  "freshCloneRemoved": true
+}

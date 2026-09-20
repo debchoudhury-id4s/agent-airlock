@@ -1,0 +1,138 @@
+Agent Airlock fresh-clone E2E
+Started: 2026-09-20T18:38:05.4434299Z
+Source: 8f69400adc5fc6b0db4f1b816d3c3afa67dda1c5
+Artifacts: C:\Users\dlingam\OneDrive - Microsoft\Documents\Plans and Context\Hackathon\agent-airlock\demo\2026-09-20\dlingam\e2e\artifacts\20260920-113805
+
+>>> git clone --no-hardlinks <repository> <temporary-clone>
+
+>>> git checkout --detach 8f69400adc5fc6b0db4f1b816d3c3afa67dda1c5
+
+>>> npm ci
+
+added 94 packages, and audited 95 packages in 7s
+
+33 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+>>> npm run setup
+
+> airlock-outbound-demo@0.2.0 setup
+> node setup.mjs
+
+Ready: checksum-verified Gitleaks 8.30.1. No global tools were installed.
+
+>>> npm test
+
+> airlock-outbound-demo@0.2.0 test
+> node --test
+
+✔ only all-allow runs once, after its redacted decision receipt exists (40.7212ms)
+✔ block and ask-first create receipts with zero executions (33.7039ms)
+✔ unknown actions, malformed evaluations, and errors never execute (126.0202ms)
+✔ the executor receives the snapshot evaluated before an await (16.8547ms)
+✔ executor failure never claims completion or automatically retries (44.5339ms)
+✔ local intent is cleared; online writes stay blocked even with yolo (96.4326ms)
+✔ another gate's allow cannot authorize an online write (19.7118ms)
+✔ rejects extra fields, overrides, and non-text prompts without running the gate (10.7153ms)
+✔ malformed prompts and invalid rule files fail closed (8.9389ms)
+✔ captures the prompt before awaiting the gate (37.423ms)
+✔ MCP exposes check_intent and yolo cannot authorize an online write (1295.1966ms)
+✔ live-clean, blocked, and synthetic bypass proposals stay distinct (106.5864ms)
+✔ bypass is limited to an explicitly enabled synthetic blocked rule (44.162ms)
+✔ known vulnerabilities block and unavailable evidence asks first (44.5523ms)
+✔ stale team policy and malformed evidence fail closed (38.8819ms)
+✔ invalid proposals cannot reach policy evaluation (29.5398ms)
+✔ OSV provider queries once, caches clean evidence, and exposes the same script behavior (86.397ms)
+✔ OSV provider reports advisories and fails closed on source or cache errors (39.346ms)
+✔ expired advisory evidence is refreshed instead of trusted (78.6329ms)
+✔ MCP exposes dependency review and blocks the offline fixture without repository edits (953.6116ms)
+✔ automatic hooks enforce one mission from prompt through session end (2388.8396ms)
+✔ prompt and shell rechecks block online writes even with yolo (1526.0267ms)
+✔ RFC advice is visible without becoming execution permission (260.7351ms)
+✔ restricted sandbox remains authoritative after Airlock allows a local request (936.6934ms)
+✔ dependency-risk MCP blocks the synthetic version and records only a receipt (596.6876ms)
+✔ prompt preflight chooses the most restrictive cost or intent result (1.7841ms)
+✔ mission state is replaced atomically and removed at session end (106.4679ms)
+✔ blocked or missing mission state denies every tool (0.8846ms)
+✔ allowed local tools fall through to normal host permissions (0.734ms)
+✔ shell commands are rechecked and direct online mutation tools are denied (1.336ms)
+✔ uninspectable shell requests fail closed (0.36ms)
+✔ every configured gate must allow; record each decision (14.452ms)
+✔ advisory reports allow execution but remain visible (1.6821ms)
+✔ block wins over ask-first, report, allow, and gate failures regardless of order (2.38ms)
+✔ exceptions, malformed results, and inconsistent allows fail closed (2.1533ms)
+✔ unknown tools and invalid actions never run gates (0.7855ms)
+✔ invalid configuration is rejected at startup (2.2345ms)
+✔ policy bindings and gate functions are snapshotted; action inputs are immutable (0.8399ms)
+✔ the README gate example composes with secrets before the real publisher (7814.7872ms)
+✔ one policy allows clean content and blocks secret/override attempts with the real scanner (10858.3271ms)
+✔ rejects non-text, oversized content, extra fields and caller-controlled output paths (5.9543ms)
+✔ scanner errors and malformed findings fail closed without exposing their contents (30.9607ms)
+✔ captures the content before awaiting the scanner (16.7212ms)
+✔ evidence failure prevents publication; outbox failure never claims success (17.3054ms)
+✔ MCP exposes only the guarded tool and works outside this repository (10002.9064ms)
+✔ bearer-token work reports the mapped RFCs without blocking (11.1888ms)
+✔ multiple topic matches retain prompt line numbers and deduplicate each topic (1.3582ms)
+✔ unrelated work is allowed without findings (1.1686ms)
+✔ invalid snapshots and prompt inputs fail safely (2.4936ms)
+✔ prompt hook suggests RFC Editor links only when a topic matches (2.6798ms)
+✔ registered hook executable consumes the submitted prompt (328.828ms)
+✔ catalog default is selected; non-default, unknown, and blocked choices cannot run (157.3791ms)
+✔ another gate's allow cannot authorize a blocked model (16.7046ms)
+✔ rejects extra fields and invalid identifiers without running the gate (9.8616ms)
+✔ invalid catalogs fail closed at startup (1.7582ms)
+✔ captures the selection before awaiting the gate (56.2324ms)
+✔ MCP exposes select_model and does not call a remote model (1201.1489ms)
+✔ bounded personal-data categories report only fixed rule IDs and positive lines (6.2422ms)
+✔ personal-data nonmatches exclude dates, versions, malformed SSNs and invalid cards (0.6735ms)
+✔ explicit INTERNAL-ONLY is case-insensitive, bounded and line-aware (0.4605ms)
+✔ detectors enforce finding and text bounds without treating excess as clean (61.0476ms)
+✔ default bindings review PII and labels, with credentials taking block precedence (8254.0643ms)
+✔ real Gitleaks blocks contextual tokens in supplied logs and header-like text (23369.7615ms)
+✔ detector exceptions, unsafe findings, excessive findings and unsupported content fail closed (18.143ms)
+✔ PII and label reviews never write an outbox artifact or leak into results/receipts (10007.3561ms)
+✔ gate errors never become review success or sanitized publication, even alongside a block (2014.3683ms)
+✔ a replacement is a distinct action and is checked again before exact-text execution (1920.1769ms)
+✔ record sanitizer removes entire multiline fields and rescans every reusable candidate (1.0536ms)
+✔ sanitization errors and candidate rescan matches never produce reusable text (2.2065ms)
+✔ reads month-to-date and current-day aggregates using local calendar boundaries (119.4955ms)
+✔ missing or incompatible local stores are reported explicitly without creating a database (16.0388ms)
+✔ advisory mode reports an overage; enforce mode blocks at or above the threshold (35.005ms)
+✔ displayed cents and threshold enforcement use the same precision (28.0721ms)
+✔ unavailable usage follows the reviewed allow-or-block setting (2.0738ms)
+✔ the prompt hook always prints the report and blocks only in enforce mode (24.5337ms)
+✔ the composed prompt hook can suppress the standalone cost decision output (21.1722ms)
+✔ the report tool uses the policy engine and writes only a local receipt (26.2447ms)
+✔ plugin hook registration targets every submitted prompt and the executable emits valid output (697.5628ms)
+✔ MCP exposes trending_cost and reads only the invoking profile's local store (925.0752ms)
+ℹ tests 79
+ℹ suites 0
+ℹ pass 79
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46263.1427
+
+>>> node --test sandbox/tests/configure.test.mjs
+✔ later overrides replace scalar values and retain nested defaults (2.0849ms)
+✔ developer and restricted configurations retain bypass (12.2782ms)
+✔ updating settings preserves unrelated existing values (41.543ms)
+✔ argument parsing defaults to a developer repository preview (0.4354ms)
+✔ scope resolves to recognized Copilot settings files (0.3344ms)
+✔ Airlock fragments reject unsupported keys and invalid value types (0.6373ms)
+✔ filesystem policy accepts only absolute path arrays (0.3807ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 220.3107
+
+Final status: passed
+Summary: C:\Users\dlingam\OneDrive - Microsoft\Documents\Plans and Context\Hackathon\agent-airlock\demo\2026-09-20\dlingam\e2e\artifacts\20260920-113805\summary.json
+Transcript: C:\Users\dlingam\OneDrive - Microsoft\Documents\Plans and Context\Hackathon\agent-airlock\demo\2026-09-20\dlingam\e2e\artifacts\20260920-113805\test-execution.txt
