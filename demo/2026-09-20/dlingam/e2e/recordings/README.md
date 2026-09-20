@@ -1,10 +1,14 @@
 # End-to-end execution evidence
 
-Recorded from a disposable fresh clone of commit
-`8f69400adc5fc6b0db4f1b816d3c3afa67dda1c5` on September 20, 2026.
+Recorded on September 20, 2026.
 
-- `agent-airlock-all-scenarios.mp4` - real terminal capture executing every
-  scripted gate and lifecycle scenario through the latest plugin.
+- `agent-airlock-all-scenarios.mp4` - full-desktop terminal capture with
+  human-speed command entry, executing every scripted gate and lifecycle
+  scenario through the plugin.
+- `agent-airlock-agency-copilot-mcp.mp4` - real Agency Copilot sessions started
+  from natural-language prompts. The agent invokes the Airlock MCP to clear a
+  local-only intent, block a `/yolo` Git push, and block the synthetic
+  dependency-risk scenario.
 - `agent-airlock-all-scenarios.txt` - complete sanitized terminal output from
   the recorded run.
 - `test-execution.txt` - complete command and TAP transcript.
