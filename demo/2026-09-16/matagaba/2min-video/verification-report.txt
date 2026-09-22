@@ -1,0 +1,137 @@
+AGENT AIRLOCK - TWO-MINUTE DEMO
+Verification report
+Produced September 16, 2026 (local host time), by GitHub Copilot CLI.
+
+BASELINE
+  Repository root inspected: C:\Users\matagaba\documents\dev\agent-airlock
+  Repository HEAD commit at capture time:
+    45e9a6530efd4f07a37b76a7d81e97c48c1df758  ("Create readme.md")
+  Working tree note: pre-existing untracked scratch files under
+    plugins/AirlockPlugin/scripts, plugins/AirlockPlugin/tests,
+    poc/matagaba, poc/neha-bhargava were left untouched. Nothing in
+    plugins/AirlockPlugin/{server.mjs, tools/, gates/, runtime/,
+    policies/, tests/} was modified for this deliverable.
+  New artifacts are contained in demo/2026-09-16/matagaba/2min-video/.
+
+SOURCE OF TRUTH
+  Repository code, active runtime output, and passing local tests are the
+  source of truth. Slide 7 was used as a storyboard reference only.
+  README claims were not used to justify any capability in the video.
+
+TOOL VERSIONS
+  Node.js v24.20.0
+  ffmpeg (bundled via imageio-ffmpeg 7.1)
+  Python 3.12.10
+  edge-tts (en-US-JennyNeural, casual conversational voice)
+
+STARTUP AND TEST STATUS
+  cwd: plugins/AirlockPlugin
+  npm ci: node_modules already present, skipped (unchanged since baseline).
+  npm test: 69 tests total, 66 pass, 3 fail. All three failures are in
+    tests/readme-startup.test.mjs and check README wording; none affects
+    the gate logic, executors, receipts, or capture used in the video.
+
+RUNTIME CAPTURE
+  Script:  demo/2026-09-16/matagaba/2min-video/build/capture_mcp.mjs
+  Server:  plugins/AirlockPlugin/server.mjs (unmodified)
+  Isolation: HOME and USERPROFILE overridden to
+             demo/2026-09-16/matagaba/2min-video/evidence/isolated-home
+             so all receipts, outbox, and cleared-intents were written
+             inside the deliverable and cannot touch the developer's own
+             ~/.agent-airlock/.
+
+  Six real MCP calls were recorded. Observed decision + gate + execution
+  values below match the persisted receipts (spot-checked on disk).
+
+    id       | tool                  | decision   | gate                 | execution
+    ---------|-----------------------|------------|----------------------|-------------
+    local    | check_intent          | allow      | no-online-writes     | completed
+    online   | check_intent          | block      | no-online-writes     | not-started
+    override | check_intent          | block      | no-online-writes     | not-started
+    askfirst | select_model          | ask-first  | model-catalog        | not-started
+    secret   | publish_draft         | block      | no-secrets-in-drafts | not-started
+    clean    | publish_draft         | allow      | no-secrets-in-drafts | completed
+
+  Every result carried the pinned policy identity:
+    policy = "outbound-demo"
+    policyVersion = "6"
+    policySha256 = "97a90130776bd0277f19cf5c143bb6c6b8c8bfa66bcc603572f2704019ff8b39"
+
+GENERATED EVIDENCE ARTIFACTS
+  demo/2026-09-16/matagaba/2min-video/evidence/mcp-capture.json
+    - full JSON record of the six MCP calls above.
+  demo/2026-09-16/matagaba/2min-video/evidence/isolated-home/
+    .agent-airlock/outbound-demo/
+      receipts/*.jsonl  - one JSONL receipt per call, one line per event.
+      cleared-intents/*.json  - clearance for the local intent.
+      outbox/*.md  - the clean draft artifact from the "clean" record.
+
+DEMONSTRATED BEHAVIORS
+  - Local intent clearance (no-online-writes ALLOW, execution=completed).
+  - Clean publish through the local outbox (no-secrets-in-drafts ALLOW,
+    execution=completed).
+  - Non-default model held for approval (model-catalog ASK-FIRST,
+    execution=not-started).
+  - Online-write intent block (no-online-writes BLOCK, finding rule=
+    git-push line=1, execution=not-started).
+  - "/yolo" override attempt still blocked (same gate, same rule,
+    execution=not-started).
+  - Synthetic secret block (no-secrets-in-drafts BLOCK, finding rule=
+    airlock-synthetic-secret line=2, execution=not-started, the token
+    text never appears in the receipt).
+  - Per-decision receipts persisted with pinned policy identity, version,
+    and SHA-256 fingerprint.
+
+DEVIATIONS FROM SLIDE 7 GUIDANCE
+  - Slide 7 spoke of "before every single tool call". The video says
+    "before every supported action" to match what the runtime actually
+    controls (guarded MCP tools registered in server.mjs).
+  - Slide 7 referred to a "mission contract" and "preflight linter". The
+    video uses "policy check" and "policy checkpoint" because the current
+    repository ships policy evaluation, not the mission contract feature.
+  - The push-to-main scenario is explicitly labeled as an illustrated
+    branch in the character opening; the runtime block on
+    "git push origin main" is a real MCP result, not a real git action.
+  - The interactive approval flow is not implemented; the video says
+    "approval required, execution held" to match the receipt.
+
+NON-IMPLEMENTED BEHAVIOR NOT CLAIMED
+  - No mission contract / preflight linter UI.
+  - No interactive approval collection or approval receipt signing.
+  - No tamper-proof audit or compliance certification.
+  - No blocking of arbitrary shell commands outside the guarded MCP tools.
+  - No real online write of any kind.
+
+VIDEO FORMAT
+  Final file: demo/2026-09-16/matagaba/2min-video/Agent-Airlock-2min.mp4
+  Duration:  1:57.81 (within the 1:55-2:05 window).
+  Video:     H.264 High profile, 1920x1080, yuv420p, 30 fps.
+  Audio:     AAC LC, 48 kHz mono, 192 kbps target.
+  Captions:  Burned into the video frames AND supplied as SRT.
+  Poster:    Agent-Airlock-poster.png (matches the close card).
+
+VOICE
+  edge-tts en-US-JennyNeural at +0% rate. Jenny is Microsoft's young,
+  warm, conversational neural voice; it was selected specifically because
+  it does not sound like a robotic TTS. The narration was tightened by
+  about 15 percent from the first draft after listening back for pacing
+  and cadence. All narration used in the video is included in
+  narration-script.txt and narration-timestamped.txt.
+
+RUN THROUGH THIS DELIVERABLE
+  1. npm test in plugins/AirlockPlugin (pass 66 / fail 3 README-only).
+  2. node capture_mcp.mjs from build/ (produces evidence/mcp-capture.json
+     and populates isolated-home).
+  3. python make_video.py from build/ (regenerates audio to build/audio,
+     frames to build/frames, per-shot mp4s to build/, concat to the final
+     MP4).
+
+SOURCE-CONTROL CONFIRMATION
+  - No commit was created.
+  - No changes were pushed. `git status` shows only untracked files.
+  - No remote branch, tag, pull request, issue, release, package,
+    deployment, or workflow was created or modified.
+  - No real online write occurred. edge-tts contacts Microsoft's TTS
+    service to synthesize speech; this is a read-side service call and
+    does not modify any Agent Airlock repository, remote, or system.
+  - All repository changes remain local and uncommitted.

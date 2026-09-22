@@ -1,0 +1,175 @@
+1
+00:00:00,000 --> 00:00:02,647
+Meet Maya.
+
+2
+00:00:02,647 --> 00:00:05,294
+She tells her agent —
+
+3
+00:00:05,294 --> 00:00:07,942
+fix the bug and finish it.
+
+4
+00:00:07,942 --> 00:00:10,589
+Simple ask.
+
+5
+00:00:10,589 --> 00:00:13,236
+But finish it could mean a safe edit, a model
+swap, or a push straight to main.
+
+6
+00:00:13,236 --> 00:00:15,853
+Meet Jordan.
+
+7
+00:00:15,853 --> 00:00:18,469
+He reviews whatever the agent did.
+
+8
+00:00:18,469 --> 00:00:21,086
+A raw log isn't enough.
+
+9
+00:00:21,086 --> 00:00:23,702
+He needs to know what was allowed, what needed
+approval, what got blocked —
+
+10
+00:00:23,702 --> 00:00:26,319
+and why.
+
+11
+00:00:26,319 --> 00:00:30,877
+Enter Agent Airlock.
+
+12
+00:00:30,877 --> 00:00:35,436
+A policy checkpoint between the request and
+every supported action.
+
+13
+00:00:35,436 --> 00:00:39,995
+It allows safe work, pauses risky calls, blocks
+the forbidden ones, and leaves a receipt.
+
+14
+00:00:39,995 --> 00:00:42,336
+Watch it run.
+
+15
+00:00:42,336 --> 00:00:44,676
+A plain intent —
+
+16
+00:00:44,676 --> 00:00:47,017
+fix a bug, run tests locally.
+
+17
+00:00:47,017 --> 00:00:49,358
+The no-online-writes gate returns allow.
+
+18
+00:00:49,358 --> 00:00:51,698
+A clearance is recorded.
+
+19
+00:00:51,698 --> 00:00:54,039
+Nothing goes online.
+
+20
+00:00:54,039 --> 00:00:56,898
+A clean draft.
+
+21
+00:00:56,898 --> 00:00:59,757
+The secrets gate scans, finds nothing, and
+publishes to a local outbox.
+
+22
+00:00:59,757 --> 00:01:02,616
+Green means allowed —
+
+23
+00:01:02,616 --> 00:01:05,475
+still fully local.
+
+24
+00:01:05,475 --> 00:01:08,110
+Pick a non-default model.
+
+25
+00:01:08,110 --> 00:01:10,746
+Model catalog says ask-first.
+
+26
+00:01:10,746 --> 00:01:13,382
+Execution held.
+
+27
+00:01:13,382 --> 00:01:15,734
+Try git push origin main —
+
+28
+00:01:15,734 --> 00:01:18,087
+blocked.
+
+29
+00:01:18,087 --> 00:01:20,440
+Sneak past with slash-yolo —
+
+30
+00:01:20,440 --> 00:01:22,792
+still blocked.
+
+31
+00:01:22,792 --> 00:01:25,145
+Drop a synthetic token in a draft —
+
+32
+00:01:25,145 --> 00:01:27,498
+the secrets gate blocks it, and the token never
+reaches the receipt.
+
+33
+00:01:27,498 --> 00:01:31,106
+Here's the paper trail.
+
+34
+00:01:31,106 --> 00:01:34,714
+Action, decision, rule, pinned policy version,
+sha-two-fifty-six.
+
+35
+00:01:34,714 --> 00:01:38,322
+It's what Jordan needs.
+
+36
+00:01:38,322 --> 00:01:41,930
+Not tamper-proof, but honest and reproducible.
+
+37
+00:01:41,930 --> 00:01:45,170
+Maya keeps her speed.
+
+38
+00:01:45,170 --> 00:01:48,409
+Jordan gets his answers.
+
+39
+00:01:48,409 --> 00:01:51,648
+Safe work runs, risky work waits, forbidden work
+stops.
+
+40
+00:01:51,648 --> 00:01:53,765
+Agent Airlock.
+
+41
+00:01:53,765 --> 00:01:55,883
+Room to move —
+
+42
+00:01:55,883 --> 00:01:58,000
+not room to break the rules.
