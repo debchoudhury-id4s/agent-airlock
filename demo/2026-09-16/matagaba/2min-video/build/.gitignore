@@ -1,0 +1,5 @@
+# Per-shot intermediates - regenerated from make_video.py; the final Agent-Airlock-2min.mp4 is one directory up.
+s*.mp4
+concat.txt
+final-duration.txt
+frames/anim/
