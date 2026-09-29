@@ -194,6 +194,18 @@ export function formatTrendingCost(report) {
   ].join(" | ");
 }
 
+export function formatTodayUsage(report) {
+  const parsed = trendingCostReportSchema.parse(report);
+  if (!parsed.available) {
+    return `Today's usage (local CLI estimate) | unavailable: ${parsed.reason}`;
+  }
+  return [
+    "Today's usage (local CLI estimate)",
+    `Cost: ${money(parsed.today.costUsd)}`,
+    `Tokens: ${integer(parsed.today.totalTokens)} (${integer(parsed.today.inputTokens)} input / ${integer(parsed.today.outputTokens)} output; ${integer(parsed.today.reasoningTokens)} reasoning)`,
+  ].join(" | ");
+}
+
 export function formatTrendingCostBlock(report, limitUsd) {
   const parsed = trendingCostReportSchema.parse(report);
   if (!parsed.available) {

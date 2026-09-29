@@ -10,6 +10,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { createTrendingCostGate } from "../gates/trending-cost/index.mjs";
 import {
   defaultSessionStorePath,
+  formatTodayUsage,
   readTrendingCost,
   trendingCostBounds,
 } from "../gates/trending-cost/usage.mjs";
@@ -239,6 +240,20 @@ test("the composed prompt hook can suppress the standalone cost decision output"
   assert.equal(result.output.decision, "block");
 });
 
+test("today's automatic usage omits month-to-date values", async t => {
+  const home = await scratch(t);
+  const now = new Date(2026, 8, 17, 12, 0, 0);
+  const dbPath = await createStore(home, [
+    event(new Date(now.getTime() - 1_000).toISOString(), 2_000_000_000, 10, 2, 1),
+  ]);
+  const message = formatTodayUsage(readTrendingCost({ dbPath, now, usdPerAiu: 0.01 }));
+  assert.equal(
+    message,
+    "Today's usage (local CLI estimate) | Cost: $0.02 | Tokens: 12 (10 input / 2 output; 1 reasoning)",
+  );
+  assert.doesNotMatch(message, /MTD|month/i);
+});
+
 test("the report tool uses the policy engine and writes only a local receipt", async t => {
   const root = await scratch(t);
   const now = new Date(2026, 8, 15, 22, 0, 0);
@@ -289,10 +304,13 @@ test("plugin hook registration targets every submitted prompt and the executable
   });
   assert.equal(child.status, 0, child.stderr);
   const lines = child.stdout.trim().split(/\r?\n/).map(JSON.parse);
-  assert.equal(lines[0].type, "progress");
-  assert.match(lines[0].message, /Trending cost/);
-  assert.equal(lines[1].type, "progress");
-  assert.equal(lines[1].message, "Airlock cleared the mission");
+  assert.equal(lines.length, 2);
+  assert.match(lines[0].message, /^Today's usage \(local CLI estimate\) \| Cost: \$0\.01 \| Tokens: 12 /);
+  assert.deepEqual(lines[1], {
+    type: "progress",
+    message: "Airlock cleared the mission",
+    temporary: true,
+  });
 });
 
 test("MCP exposes trending_cost and reads only the invoking profile's local store", async t => {

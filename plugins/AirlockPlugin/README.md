@@ -8,7 +8,8 @@ experiments; independent future plugins belong beside this one in `plugins\`.
 Information Protection (secrets, bounded PII, and explicit INTERNAL-ONLY labels),
 `check_intent` with a no-online-writes gate, `select_model` with a model-catalog
 gate, `review_dependency_change` with live OSV evidence and a short-lived local cache, and the
-automatic advisory `trending-cost` and RFC-relevance prompt hooks.
+manual `trending_cost` report, automatic current-day usage display, and the
+automatic RFC-relevance prompt hook.
 The runtime supports multiple required gates per tool. Adding a scenario must
 reuse its decision checks and receipts, not create a separate enforcement engine.
 This implements a small slice of [PRD section 3](../../docs/preflight/prd.md#3-share-content-safely)
@@ -54,9 +55,10 @@ agency plugin install "local:C:\Git\agent-airlock\plugins\AirlockPlugin" --engin
 
 ### Automatic prompt and tool enforcement
 
-Every submitted prompt runs both the existing trending-cost evaluation and the
-online-write intent preflight. Their most restrictive result is stored as a
-redacted per-session mission decision. The `preToolUse` hook denies tools for a
+Every submitted prompt displays today's estimated local CLI cost and token usage,
+then runs the online-write intent preflight. Month-to-date usage is not displayed
+automatically. The intent result is stored as a redacted per-session mission
+decision. The `preToolUse` hook denies tools for a
 blocked, invalid, or missing mission, rechecks shell commands, and rejects known
 direct online mutations. The `sessionEnd` hook removes transient mission state.
 
@@ -141,14 +143,12 @@ Set-Location C:\Git\agent-airlock\plugins\AirlockPlugin
 npm run check:nuget -- Microsoft.Identity.Client 4.87.0
 ```
 
-The `trending-cost` gate needs no demo prompt: while the plugin is loaded, its
-`userPromptSubmitted` hook prints local month-to-date estimated cost, today's
-estimated cost, and today's token usage before every submitted prompt. To show
-the structured result, ask:
+The automatic prompt display is limited to today's estimated cost and token
+usage. To show the full structured report, including month-to-date usage, ask:
 
 > Run the trending-cost skill and show the structured local usage report.
 
-The hook reads `~\.copilot\session-store.db` read-only and makes no network
+The tool reads `~\.copilot\session-store.db` read-only and makes no network
 request. Its reviewed policy is advisory by default. See
 [`gates\trending-cost\README.md`](./gates/trending-cost/README.md) for the full
 demo and the exact `mode: "enforce"` change that blocks prompts at a configured
@@ -429,12 +429,12 @@ the documented bypass. Unknown packages or versions and expired evidence are
 `ask-first` (currently blocked as `approval-required`). The receipt records
 `synthetic-bypass-used`, but never the caller's bypass reason or package value.
 
-`trending-cost` and `check_intent` run from a composed `userPromptSubmitted`
-hook before every submitted prompt. It prints local month-to-date cost, today's
-cost, and today's tokens, then stores the most restrictive prompt decision for
-`preToolUse`. The default cost policy is advisory; `mode: "enforce"` blocks when
-month-to-date estimated cost is greater than or equal to the configured limit.
-The source database is opened read-only and no billing or network API is called.
+`userPromptSubmitted` displays today's estimated local CLI cost and tokens, then
+`check_intent` stores its decision for `preToolUse`. The automatic usage display
+is advisory and does not enforce the month-to-date threshold. The
+`trending_cost` MCP tool remains available for the full structured report and
+reviewed policy evaluation. The source database is opened read-only and no
+billing or network API is called.
 
 The plugin uses the legacy Copilot manifest with `.mcp.json` for compatibility
 with the installed Agency/Copilot host. All runtime files live here; it does not

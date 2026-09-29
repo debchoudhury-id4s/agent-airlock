@@ -91,8 +91,13 @@ test("automatic hooks enforce one mission from prompt through session end", asyn
     promptEvent(sessionId, workspace, "Review README.md locally and suggest tests."),
     { cwd: workspace, env },
   );
-  assert.match(promptOutput[0].message, /Trending cost/);
-  assert.equal(promptOutput.at(-1).message, "Airlock cleared the mission");
+  assert.equal(promptOutput.length, 2);
+  assert.match(promptOutput[0].message, /^Today's usage \(local CLI estimate\) \| Cost: \$0\.01 \| Tokens: 120 /);
+  assert.deepEqual(promptOutput[1], {
+    type: "progress",
+    message: "Airlock cleared the mission",
+    temporary: true,
+  });
   assert.equal(JSON.parse(await readFile(sessionStatePath(home, sessionId), "utf8")).decision, "allow");
 
   const localTool = runNode(

@@ -424,8 +424,9 @@ The skill should produce the same results as these direct calls:
 
 ## Follow-up / Out of scope for this hackathon
 
-The local prototype demonstrates five guarded tools and one automatic advisory
-hook. The following ideas are valuable, but they are not part of the current
+The local prototype demonstrates five guarded tools, an automatic current-day
+usage display, and one automatic RFC advisory hook. The following ideas are
+valuable, but they are not part of the current
 demo:
 
 - **More agent platforms** - Use the same contract with Microsoft Agent Framework, Copilot Studio, Microsoft Foundry, and other agent tools.

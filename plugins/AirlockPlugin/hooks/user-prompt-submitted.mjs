@@ -1,9 +1,9 @@
 import { z } from "zod";
+import { formatTodayUsage, readTrendingCost } from "../gates/trending-cost/usage.mjs";
 import { checkIntent } from "../runtime/airlock.mjs";
 import { combinePromptPreflight } from "../runtime/prompt-preflight.mjs";
 import { saveMissionState } from "../runtime/session-state.mjs";
-import { runTrendingCostHook } from "./trending-cost.mjs";
-import { emit, progress, readHookInput } from "./input.mjs";
+import { progress, readHookInput } from "./input.mjs";
 import trendingCostPolicy from "../policies/trending-cost.json" with { type: "json" };
 
 const eventSchema = z.object({
@@ -12,22 +12,6 @@ const eventSchema = z.object({
   cwd: z.string(),
   prompt: z.string().max(65_536),
 }).passthrough();
-
-function fallbackCostResult() {
-  const block = trendingCostPolicy.settings?.mode === "enforce"
-    && trendingCostPolicy.settings?.unavailableBehavior === "block";
-  return {
-    result: {
-      decision: block ? "block" : "allow",
-      reason: "trending-cost-hook-failed",
-      policy: trendingCostPolicy.id,
-      policyVersion: trendingCostPolicy.version,
-    },
-    output: block
-      ? { decision: "block", reason: "Trending-cost gate could not evaluate usage in enforce mode." }
-      : {},
-  };
-}
 
 try {
   const event = eventSchema.parse(await readHookInput());
@@ -39,13 +23,21 @@ try {
     promptTimestamp: event.timestamp,
   });
 
-  let costResult;
   try {
-    costResult = await runTrendingCostHook({ emitDecision: false });
+    progress(formatTodayUsage(readTrendingCost({
+      usdPerAiu: trendingCostPolicy.settings.usdPerAiu,
+    })));
   } catch {
-    progress("Trending cost (local CLI estimate) | unavailable: trending-cost-hook-failed");
-    costResult = fallbackCostResult();
+    progress("Today's usage (local CLI estimate) | unavailable: trending-cost-hook-failed");
   }
+
+  const costResult = {
+    result: {
+      decision: "allow",
+      reason: "automatic-today-usage-advisory",
+    },
+    output: {},
+  };
 
   const intentResult = await checkIntent({ prompt: event.prompt });
   const decision = combinePromptPreflight(costResult, intentResult);
@@ -62,7 +54,6 @@ try {
   progress(decision.decision === "allow"
     ? "Airlock cleared the mission"
     : `Airlock ${decision.decision === "ask-first" ? "requires approval" : "blocked the mission"}: ${decision.reason}`);
-  if (costResult.output?.decision === "block") emit(costResult.output);
 } catch {
   progress("Airlock preflight failed; tool use will be denied");
   process.exitCode = 1;
