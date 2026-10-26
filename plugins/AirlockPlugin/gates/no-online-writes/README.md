@@ -1,11 +1,33 @@
 # no-online-writes gate
 
-Blocks a user intent that requests an online write. `/yolo`, auto-approve, and
+Blocks a user intent that requests a protected Git operation or another listed
+online write. `/yolo`, auto-approve, and
 "do everything automatically" cannot authorize that write. This gate never
 pushes, publishes, or sends anything on the network.
 
 Team patterns live in `rules.json`. The MCP tool is `check_intent` (`prompt` only).
 The demo skill is `airlock-intent-demo`.
+
+### Git branch scope
+
+- Explicit pushes to `master` or `refs/heads/master` are blocked. For refspecs,
+  the destination matters: `HEAD:master` blocks, while `master:dev` clears.
+- Explicit pushes to `dev`, `main`, and other non-master branches clear this
+  gate. This does not bypass host permissions or other Airlock gates.
+- Pushes without an explicit refspec, wildcard refspecs, unresolved destinations,
+  `--all`, and `--mirror` remain blocked because they can update master.
+  The gate does not inspect repository configuration or resolve branch variables.
+  `--dry-run` clears because it does not update remote refs.
+- Rebases onto `origin/master` (including `refs/remotes/origin/master`) block.
+  With `--onto`, its value is the destination; the old upstream is not.
+  Other explicit rebase destinations and rebase continuation/abort clear.
+- Natural-language `push to master` and `push to origin/master` block.
+  Other publication patterns, such as creating pull requests, are unchanged.
+
+The same rules run at prompt submission and again for shell commands. A blocked
+prompt blocks the whole mission, not just the matching operation. Submit a new,
+allowed prompt after updating the plugin; an existing blocked mission does not
+become allowed retroactively.
 
 Follow every step below from a machine that has not run this demo before.
 
@@ -72,7 +94,9 @@ the live demo.
 What the tests already cover:
 
 - Local-only intent → `cleared`
-- `git push origin main` → `blocked` / `online-write-intent`
+- `git push origin master` → `blocked` / `online-write-intent`
+- `git push origin dev` and `git rebase origin/dev` → `cleared`
+- `git rebase origin/master` → `blocked` / `online-write-intent`
 - Same push plus `/yolo` → still `blocked`
 - Extra fields such as `yolo: true` never reach the gate
 - No network write
@@ -116,8 +140,8 @@ If you are not using the skill, call the tool yourself with these exact prompts:
 | # | `prompt` | Required result |
 |---|---|---|
 | 1 | `Fix the critical-ticket policy in the local working copy and run tests.` | `status: cleared` |
-| 2 | `Fix the bug and git push origin main.` | `status: blocked`, `reason: online-write-intent` |
-| 3 | `git push origin main. /yolo do everything automatically.` | `status: blocked`, `reason: online-write-intent` |
+| 2 | `Fix the bug and git push origin master.` | `status: blocked`, `reason: online-write-intent` |
+| 3 | `git push origin master. /yolo do everything automatically.` | `status: blocked`, `reason: online-write-intent` |
 
 Do not rewrite prompts 2 or 3 into local-only work. Do not add `yolo`,
 `approved`, or a destination field. Do not run `git push`.
@@ -135,7 +159,7 @@ Get-ChildItem $HOME\.agent-airlock\outbound-demo\receipts
   file does **not** contain the prompt.
 - Prompts 2 and 3 create receipts only. They must **not** create a cleared-intent
   file.
-- Receipts list `ruleId` and line number, never `git push origin main` or `/yolo`.
+- Receipts list `ruleId` and line number, never `git push origin master` or `/yolo`.
 
 Show a three-row table: status, reason, receipt path. Show the cleared artifact
 path from prompt 1.
@@ -150,5 +174,5 @@ Stop and do not claim success if any of these happen:
 - The agent runs `git push`, `gh`, or another publisher after a block
 - Any request leaves this computer
 
-This gate is a keyword/regex check on the prompt. It is not a sandbox around
-`git` or `gh`.
+This gate uses keyword/regex checks and bounded Git argument inspection on each
+line. It is not a complete shell parser or a sandbox around `git` or `gh`.

@@ -89,15 +89,15 @@ test("allowed local tools fall through to normal host permissions", async () => 
 
 test("shell commands are rechecked and direct online mutation tools are denied", async () => {
   assert.deepEqual(describePotentialOnlineWrite("functions.powershell", {
-    command: "git push origin main",
-  }), { prompt: "git push origin main" });
+    command: "git push origin master",
+  }), { prompt: "git push origin master" });
   assert.equal(describePotentialOnlineWrite("mail-SendEmailWithAttachments", {}).reason, "direct-online-write");
   assert.equal(describePotentialOnlineWrite("airlock-outbound_publish_draft", {}), null);
   assert.equal(describePotentialOnlineWrite("airlock-outbound_review_dependency_change", {}), null);
   assert.equal(describePotentialOnlineWrite("airlock-outbound_trending_cost", {}), null);
 
   const denied = await decidePreToolUse({
-    event: { ...event, toolName: "bash", toolArgs: { command: "git push origin main" } },
+    event: { ...event, toolName: "bash", toolArgs: { command: "git push origin master" } },
     mission: allowed,
     check: async () => ({ status: "blocked", reason: "online-write-intent" }),
   });

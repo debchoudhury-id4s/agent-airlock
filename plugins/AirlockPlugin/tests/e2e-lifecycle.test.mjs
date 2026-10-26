@@ -139,7 +139,7 @@ test("prompt and shell rechecks block online writes even with yolo", async t => 
   const blockedSession = "e2e-blocked-prompt";
   const blockedPrompt = runNode(
     join(pluginRoot, "hooks", "user-prompt-submitted.mjs"),
-    promptEvent(blockedSession, workspace, "/yolo git push origin main"),
+    promptEvent(blockedSession, workspace, "/yolo git push origin master"),
     { cwd: workspace, env },
   );
   assert.match(blockedPrompt.at(-1).message, /online-write-intent/);
@@ -159,11 +159,26 @@ test("prompt and shell rechecks block online writes even with yolo", async t => 
   );
   const blockedShell = runNode(
     join(pluginRoot, "hooks", "pre-tool-use.mjs"),
-    toolEvent(shellSession, workspace, "functions.powershell", { command: "git push origin main" }),
+    toolEvent(shellSession, workspace, "functions.powershell", { command: "git push origin master" }),
     { cwd: workspace, env },
   );
   assert.equal(blockedShell[0].permissionDecision, "deny");
   assert.match(blockedShell[0].permissionDecisionReason, /online-write-intent/);
+
+  for (const command of ["git push origin dev", "git push origin main", "git rebase origin/dev"]) {
+    const output = runNode(
+      join(pluginRoot, "hooks", "pre-tool-use.mjs"),
+      toolEvent(shellSession, workspace, "functions.powershell", { command }),
+      { cwd: workspace, env },
+    );
+    assert.deepEqual(output, [{}], command);
+  }
+  const blockedRebase = runNode(
+    join(pluginRoot, "hooks", "pre-tool-use.mjs"),
+    toolEvent(shellSession, workspace, "functions.powershell", { command: "git rebase origin/master" }),
+    { cwd: workspace, env },
+  );
+  assert.equal(blockedRebase[0].permissionDecision, "deny");
 });
 
 test("RFC advice is visible without becoming execution permission", async t => {

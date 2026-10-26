@@ -62,6 +62,11 @@ decision. The `preToolUse` hook denies tools for a
 blocked, invalid, or missing mission, rechecks shell commands, and rejects known
 direct online mutations. The `sessionEnd` hook removes transient mission state.
 
+Git intent checks block pushes targeting `master` and rebases onto `origin/master`,
+not explicit pushes or rebases to development branches. Implicit or broad pushes
+remain blocked because their destinations may include master. See the
+[Git branch scope](gates/no-online-writes/README.md#git-branch-scope) for details.
+
 Prompt and tool arguments are never stored in mission state. `/yolo` and host
 auto-approval do not override an Airlock denial. See [the hook lifecycle](hooks.md)
 for the invocation and enforcement boundaries.

@@ -26,6 +26,11 @@ blocked mission cannot use tools. Allowed local tools fall through to Copilot's
 normal permissions. Shell commands are checked again, and known mutating online
 tools are denied before execution.
 
+Git shell rechecks use the same branch-aware rules as prompt preflight: explicit
+non-master pushes and rebases not onto `origin/master` clear the intent gate.
+An earlier blocked prompt still denies every tool until a new allowed prompt
+replaces the mission decision.
+
 Mission state contains only the session identifier, decision, reason, timestamp,
 and optional policy identity. It never contains the prompt or tool arguments.
 
