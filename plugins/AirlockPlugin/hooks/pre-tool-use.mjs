@@ -17,7 +17,7 @@ try {
   emit(await decidePreToolUse({
     event,
     mission: await loadMissionState(event.sessionId),
-    check: checkIntent,
+    check: input => checkIntent(input, { cwd: event.cwd }),
   }));
 } catch {
   emit({

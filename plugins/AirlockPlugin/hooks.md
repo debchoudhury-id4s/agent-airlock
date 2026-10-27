@@ -26,8 +26,16 @@ blocked mission cannot use tools. Allowed local tools fall through to Copilot's
 normal permissions. Shell commands are checked again, and known mutating online
 tools are denied before execution.
 
-Git shell rechecks use the same branch-aware rules as prompt preflight: explicit
-non-master pushes and rebases not onto `origin/master` clear the intent gate.
+Git push checks are explicitly deferred at prompt submission
+(`git-push-check-deferred`), since prompts may merely quote a manual command.
+This clears local work, not permission to push. At `preToolUse`, actual pushes to
+the active open PR's base branch block; explicit pushes to other branches and
+local rebases clear the intent gate. The host event's working directory (or
+explicit `git -C` context) is used to resolve the PR through read-only GitHub CLI
+or Azure DevOps REST metadata. Azure DevOps authentication reuses the existing
+Git credential helper without interactive prompts. Unavailable PR metadata blocks
+actual pushes with `git-pr-base-unavailable`. Explicit MCP intent reviews also
+use execution mode; callers cannot supply a phase override.
 An earlier blocked prompt still denies every tool until a new allowed prompt
 replaces the mission decision.
 

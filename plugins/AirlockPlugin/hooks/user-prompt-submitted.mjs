@@ -39,7 +39,7 @@ try {
     output: {},
   };
 
-  const intentResult = await checkIntent({ prompt: event.prompt });
+  const intentResult = await checkIntent({ prompt: event.prompt }, { cwd: event.cwd, phase: "prompt" });
   const decision = combinePromptPreflight(costResult, intentResult);
   await saveMissionState({
     sessionId: event.sessionId,
@@ -52,7 +52,9 @@ try {
   });
 
   progress(decision.decision === "allow"
-    ? "Airlock cleared the mission"
+    ? decision.reason === "git-push-check-deferred"
+      ? "Airlock cleared local work; Git pushes require execution-time destination checks"
+      : "Airlock cleared the mission"
     : `Airlock ${decision.decision === "ask-first" ? "requires approval" : "blocked the mission"}: ${decision.reason}`);
 } catch {
   progress("Airlock preflight failed; tool use will be denied");

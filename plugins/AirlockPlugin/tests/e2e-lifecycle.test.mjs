@@ -139,7 +139,7 @@ test("prompt and shell rechecks block online writes even with yolo", async t => 
   const blockedSession = "e2e-blocked-prompt";
   const blockedPrompt = runNode(
     join(pluginRoot, "hooks", "user-prompt-submitted.mjs"),
-    promptEvent(blockedSession, workspace, "/yolo git push origin master"),
+    promptEvent(blockedSession, workspace, "/yolo npm publish"),
     { cwd: workspace, env },
   );
   assert.match(blockedPrompt.at(-1).message, /online-write-intent/);
@@ -163,9 +163,9 @@ test("prompt and shell rechecks block online writes even with yolo", async t => 
     { cwd: workspace, env },
   );
   assert.equal(blockedShell[0].permissionDecision, "deny");
-  assert.match(blockedShell[0].permissionDecisionReason, /online-write-intent/);
+  assert.match(blockedShell[0].permissionDecisionReason, /git-pr-base-unavailable/);
 
-  for (const command of ["git push origin dev", "git push origin main", "git rebase origin/dev"]) {
+  for (const command of ["git rebase origin/master", "git rebase origin/main", "git rebase origin/dev"]) {
     const output = runNode(
       join(pluginRoot, "hooks", "pre-tool-use.mjs"),
       toolEvent(shellSession, workspace, "functions.powershell", { command }),
@@ -173,12 +173,13 @@ test("prompt and shell rechecks block online writes even with yolo", async t => 
     );
     assert.deepEqual(output, [{}], command);
   }
-  const blockedRebase = runNode(
+  const unresolvedPush = runNode(
     join(pluginRoot, "hooks", "pre-tool-use.mjs"),
-    toolEvent(shellSession, workspace, "functions.powershell", { command: "git rebase origin/master" }),
+    toolEvent(shellSession, workspace, "functions.powershell", { command: "git push origin dev" }),
     { cwd: workspace, env },
   );
-  assert.equal(blockedRebase[0].permissionDecision, "deny");
+  assert.equal(unresolvedPush[0].permissionDecision, "deny");
+  assert.match(unresolvedPush[0].permissionDecisionReason, /git-pr-base-unavailable/);
 });
 
 test("RFC advice is visible without becoming execution permission", async t => {
@@ -193,6 +194,43 @@ test("RFC advice is visible without becoming execution permission", async t => {
   assert.match(output[0].message, /RFC6750/);
   assert.match(output[0].message, /RFC9700/);
   assert.deepEqual(output[1], {});
+});
+
+test("the MISE prompt clears local tools outside a repo without authorizing the quoted push", async t => {
+  const home = await scratch(t, "airlock-e2e-home-");
+  const workspace = await scratch(t, "airlock-e2e-workspace-");
+  const env = isolatedEnvironment(home);
+  const sessionId = "e2e-mise-deferred-push";
+  await createUsageStore(home);
+  const prompt = String.raw`ON the local repo C:\Users\debchoudhury\Documents\MISE perform following actions (do not do these in some other worktree. do it directly in C:\Users\debchoudhury\Documents\MISE) 1)ensure local branch debchoudhury/security-3609547-mise-sni has all changes from origin/debchoudhury/security-3609547-mise-sni . 2) do a rebase with origin/master 3) ensure all merge is done correctly 4) run clean build and all tests 4) let me know (don't do this yourself) when I can run "git push --force-with-lease origin debchoudhury/security-3609547-mise-sni" to update remote branch`;
+  const output = runNode(
+    join(pluginRoot, "hooks", "user-prompt-submitted.mjs"),
+    promptEvent(sessionId, workspace, prompt),
+    { cwd: workspace, env },
+  );
+  assert.match(output.at(-1).message, /cleared local work.*execution-time destination checks/);
+  const mission = JSON.parse(await readFile(sessionStatePath(home, sessionId), "utf8"));
+  assert.equal(mission.decision, "allow");
+  assert.equal(mission.reason, "git-push-check-deferred");
+  for (const [tool, args] of [
+    ["view", { path: "README.md" }],
+    ["powershell", { command: "git rebase origin/master" }],
+  ]) {
+    assert.deepEqual(runNode(
+      join(pluginRoot, "hooks", "pre-tool-use.mjs"),
+      toolEvent(sessionId, workspace, tool, args),
+      { cwd: workspace, env },
+    ), [{}]);
+  }
+  const denied = runNode(
+    join(pluginRoot, "hooks", "pre-tool-use.mjs"),
+    toolEvent(sessionId, workspace, "powershell", {
+      command: "git push --force-with-lease origin debchoudhury/security-3609547-mise-sni",
+    }),
+    { cwd: workspace, env },
+  );
+  assert.equal(denied[0].permissionDecision, "deny");
+  assert.match(denied[0].permissionDecisionReason, /git-pr-base-unavailable/);
 });
 
 test("restricted sandbox remains authoritative after Airlock allows a local request", async t => {

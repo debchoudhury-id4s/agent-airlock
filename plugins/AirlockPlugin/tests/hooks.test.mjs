@@ -60,6 +60,14 @@ test("prompt preflight chooses the most restrictive cost or intent result", () =
   assert.equal(intentBlock.decision, "block");
   assert.equal(intentBlock.reason, "online-write-intent");
   assert.equal(intentBlock.policy, "outbound-demo");
+
+  const deferred = combinePromptPreflight(cost(), intent("allow", "git-push-check-deferred"));
+  assert.equal(deferred.decision, "allow");
+  assert.equal(deferred.reason, "git-push-check-deferred");
+  assert.equal(combinePromptPreflight(
+    cost("block", "month-to-date-cost-limit"),
+    intent("allow", "git-push-check-deferred"),
+  ).decision, "block");
 });
 
 test("mission state is replaced atomically and removed at session end", async t => {

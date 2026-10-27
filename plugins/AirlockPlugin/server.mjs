@@ -29,7 +29,7 @@ server.registerTool("publish_draft", {
   };
 });
 server.registerTool("check_intent", {
-  description: "Review a user intent prompt and record a local clearance only if it does not request an online write. /yolo and allow-all cannot authorize an online write. No network send. Returns redacted decision and receipt paths, never the prompt.",
+  description: "Review intent against execution-time publication rules. Pushes to the active PR base branch block; local rebases are allowed. Reads GitHub CLI or Azure DevOps REST PR metadata using existing authentication when a push is requested; unresolved PR destinations block. Automatic prompt preflight separately defers Git push checks until tool execution. Never publishes. No phase override; /yolo cannot override a block. Returns redacted decisions and receipt paths, never the prompt.",
   inputSchema: intentSchema,
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
 }, async input => {

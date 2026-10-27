@@ -62,9 +62,13 @@ decision. The `preToolUse` hook denies tools for a
 blocked, invalid, or missing mission, rechecks shell commands, and rejects known
 direct online mutations. The `sessionEnd` hook removes transient mission state.
 
-Git intent checks block pushes targeting `master` and rebases onto `origin/master`,
-not explicit pushes or rebases to development branches. Implicit or broad pushes
-remain blocked because their destinations may include master. See the
+Git execution checks resolve the active open PR's base branch using read-only
+GitHub CLI or Azure DevOps REST metadata and block pushes targeting that branch,
+not a hard-coded branch name. Azure DevOps reuses existing Git credential-helper
+authentication. Quoted/manual pushes in prompts do not block local work; Git
+checks are explicitly deferred to the tool-execution boundary. Local rebases are
+allowed, including onto the PR base. Unavailable PR metadata, implicit
+destinations, and broad pushes fail closed before execution. See the
 [Git branch scope](gates/no-online-writes/README.md#git-branch-scope) for details.
 
 Prompt and tool arguments are never stored in mission state. `/yolo` and host

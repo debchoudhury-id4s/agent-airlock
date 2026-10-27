@@ -25,7 +25,7 @@ export function combinePromptPreflight(costResult, intentResult) {
   const decisive = ["block", "error", "ask-first"]
     .map(decision => checks.find(check => check.decision === decision))
     .find(Boolean);
-  return decisive ?? {
+  return decisive ?? checks.find(check => check.reason === "git-push-check-deferred") ?? {
     source: "prompt-preflight",
     decision: "allow",
     reason: "all-prompt-checks-passed",

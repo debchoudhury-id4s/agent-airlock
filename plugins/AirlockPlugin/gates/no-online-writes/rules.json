@@ -1,9 +1,7 @@
 {
   "rules": [
     { "id": "git-push", "pattern": "\\bgit(?:\\s+(?:-C|-c|--git-dir|--work-tree)(?:=|\\s+)(?:\"[^\"]*\"|'[^']*'|\\S+))*\\s+push\\b", "flags": "i", "gitCommand": "push" },
-    { "id": "push-origin", "pattern": "\\bpush\\s+to\\s+(?:origin[ /])?(?:refs/heads/)?master(?![\\w/-]|\\.[\\w])", "flags": "i" },
-    { "id": "git-rebase", "pattern": "\\bgit(?:\\s+(?:-C|-c|--git-dir|--work-tree)(?:=|\\s+)(?:\"[^\"]*\"|'[^']*'|\\S+))*\\s+rebase\\b", "flags": "i", "gitCommand": "rebase" },
-    { "id": "rebase-origin-master", "pattern": "\\brebase\\s+(?:onto|to)\\s+(?:refs/remotes/)?origin/master(?![\\w/-]|\\.[\\w])", "flags": "i" },
+    { "id": "push-origin", "pattern": "\\bpush\\s+to\\s+(?:(?:origin|upstream)[ /])?(?:refs/heads/)?([\\w][\\w/.-]*)", "flags": "i", "gitCommand": "push-intent" },
     { "id": "gh-pr", "pattern": "\\bgh\\s+pr\\b", "flags": "i" },
     { "id": "create-pull-request", "pattern": "\\bcreate\\s+(a\\s+)?pull\\s+request\\b", "flags": "i" },
     { "id": "az-deployment", "pattern": "\\baz\\s+deployment\\b", "flags": "i" },
